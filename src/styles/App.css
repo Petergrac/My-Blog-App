@@ -34,3 +34,9 @@
 @utility header{
   @apply text-2xl font-extrabold
 }
+@utility component_image{
+  @apply object-scale-down object-center min-w-[20rem]
+}
+@utility article{
+  @apply flex px-10 py-5 flex-col gap-3.5 justify-center
+}

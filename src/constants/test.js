@@ -60,5 +60,14 @@ const posts = [
     ownerId: "admin-001"
   }
 ];
-
-export default posts;
+const contentBlock = [
+    {
+        heading:'Exprole Knowledge from every corner of life',
+        content: 'Over 1,000+ expert articles on a wide range of topics',
+        main_content: 'From everyday tech tips to groundbreaking scientific discoveries, our blog is a gateway to deep insights and practical knowledge.'
+    }
+];
+export  {
+    posts,
+    contentBlock
+};
