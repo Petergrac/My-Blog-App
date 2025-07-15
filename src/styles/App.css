@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+
+/* SIGN UP & LOGIN CSS */
+.michroma{
+  font-family: 'Michroma', sans-serif;
+}
+@utility image {
+  @apply h-[100vh];
+}
+@utility main-div {
+  @apply flex items-center min-h-[100vh];
+}
+@utility input {
+  @apply border-1 text-white/55 focus:border-blue-400 bg-transparent h-10 px-5 pr-6 rounded-lg text-sm focus:border-2 focus:outline-none;
+}
+@utility label-signup {
+  @apply text-blue-200 text-sm font-semibold leading-tight mb-2 flex flex-col invalid:text-red-500;
+}
+@utility heading{
+  @apply  text-white
+}
+@utility btn{
+  @apply bg-blue-600 text-white px-3.5 font-bold py-1.5 rounded-lg hover:bg-blue-800 active:bg-blue-900 transition-all hover:translate-y-0.5 duration-500;
+}
+@utility nav-link{
+  @apply text-blue-400 hover:underline px-4
+}
+
+/* DASHBOARD */  
+@utility nav{
+  @apply md:flex justify-around bg-slate-800 py-4 text-white items-center
+}
+@utility header{
+  @apply text-2xl font-extrabold
+}
