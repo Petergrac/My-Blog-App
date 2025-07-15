@@ -140,11 +140,11 @@ function Signup() {
                 required
               />
             </label>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <button className="btn" type="submit">
                 Sign Up
               </button>
-              <p className="text-blue-200">
+              <p className="text-blue-200 pl-2">
                 Already have an account?{" "}
                 <NavLink className="nav-link" to="/login">
                   Login

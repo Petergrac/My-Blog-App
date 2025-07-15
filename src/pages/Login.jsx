@@ -101,11 +101,11 @@ function Login() {
                 required
               />
             </label>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <button className="btn" type="submit">
                 Login
               </button>
-              <p className="text-blue-200">
+              <p className="text-blue-200 pl-3 ">
                 Don't have an account?
                 <NavLink className="nav-link" to="/">
                   Register

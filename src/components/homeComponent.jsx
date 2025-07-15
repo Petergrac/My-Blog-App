@@ -52,11 +52,11 @@ function HomeComponent() {
           <h2 className="text-2xl font-bold mb-2 head">
             🧑‍💻 Technology & Engineering
           </h2>
-          <p>
+          <p className="head">
             Dive into software engineering, DevOps, AI, cybersecurity, and
             electrical engineering.
           </p>
-          <p>
+          <p className="head">
             Real-world projects and industry trends shared by engineers and
             developers.
           </p>
@@ -71,11 +71,11 @@ function HomeComponent() {
       <div className={isMobile ? "flex flex-col px-5 py-5" : "article"}>
         <div>
           <h2 className="text-2xl font-bold mb-2 head">🧪 Science & Innovation</h2>
-          <p>
+          <p className="head">
             Discover how physics, chemistry, biology, and space science evolve
             our world.
           </p>
-          <p>Peer-reviewed style posts and easy-to-understand breakdowns.</p>
+          <p className="head">Peer-reviewed style posts and easy-to-understand breakdowns.</p>
         </div>
         <img
           className="component_image"
