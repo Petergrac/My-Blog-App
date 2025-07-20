@@ -3,8 +3,9 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { getAllPosts } from "../RESTapi/api";
 import gsap from "gsap";
-import PostCard from "../components/posts";
+import PostCard from "../components/postCard";
 import { useQuery } from "@tanstack/react-query";
+import Loading from "../components/Loading";
 const Footer = lazy(() => import("../components/postFooter"));
 
 function Articles() {
@@ -29,14 +30,14 @@ function Articles() {
     queryFn: () => getAllPosts(),
   });
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   if (error) {
     return <div>Error occurred and could not load data</div>;
   }
   return (
     <div className="bg-slate-700 md:min-h-[100vh] md:mb-0 mb-10">
-      <h1 className="text-3xl text-white gothic text-center md:py-5 text-bold py-5">
+      <h1 className="text-3xl sticky top-0 z-40 backdrop-blur-xs text-white gothic text-center md:py-5 text-bold py-5">
         All Articles
       </h1>
       <div ref={cardRef} className="flex flex-wrap gap-2 md:m-10 m-4">

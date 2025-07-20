@@ -1,41 +1,37 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 import { getPostById, postAComment, addLike } from "../RESTapi/api";
 import Comment from "../components/comments";
 import Footer from "../components/postFooter";
 import "../styles/App.css";
+import { useGSAP } from "@gsap/react";
+import Loading from "../components/Loading";
 
 function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const postRef = useRef();
+  const titleRef = useRef(null);
+  const contentRef = useRef(null);
 
   const [comment, setComment] = useState("");
 
   // Fetch post data
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["PostDetail", id],
     queryFn: () => getPostById(id),
   });
 
   // Post comment mutation
-  const {
-    mutate: postComment,
-    error: commentError,
-  } = useMutation({
+  const { mutate: postComment, error: commentError } = useMutation({
     mutationFn: () => postAComment(comment, id),
     onSuccess: () => {
       setComment("");
@@ -62,6 +58,39 @@ function PostDetail() {
     },
   });
 
+  // Animation
+  useGSAP(() => {
+    gsap.from(titleRef.current, {
+      duration: 0.5,
+      y: 200,
+      rotation: 360,
+      ease: "power2.out",
+    });
+  }, []);
+    useEffect(() => {
+      if (!data?.content || !contentRef.current) return;
+        const split = new SplitText(contentRef.current, { type: "lines" });
+
+        gsap.from(split.lines, {
+          scrollTrigger: {
+            trigger: contentRef.current,
+            start: "top 95%",
+            end: "bottom 10%",
+            toggleActions: "play none none none",
+            scrub: true,
+          },
+          opacity: .6,
+          y: 50,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power3.out",
+        });
+
+        return () => {
+          split.revert(); // Clean up when unmounting
+        };
+    },[data?.content]);
+
   const handleCommentSubmit = () => {
     if (comment.trim()) {
       postComment();
@@ -72,8 +101,9 @@ function PostDetail() {
     likeMutation.mutate();
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (isError) return <div>{error.message}</div>;
+  // Content animation
 
   // Handle comment error (like 401, 404, etc.)
   if (commentError) {
@@ -82,14 +112,16 @@ function PostDetail() {
     else if (code === 404) return <div>Post not found</div>;
     else return <div>Error posting comment</div>;
   }
-
   const { title, content, likes, author, createdAt, comments } = data;
 
   return (
     <div className="post-container">
-      <p className="title gothic">{title}</p>
+      <p ref={titleRef} className="title gothic">
+        {title}
+      </p>
 
       <div
+        ref={contentRef}
         className="inter text-lg px-5 md:px-20 pb-10 border-b border-slate-200"
         dangerouslySetInnerHTML={{ __html: content }}
       ></div>
@@ -120,8 +152,8 @@ function PostDetail() {
             name="comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            onKeyDown={(e)=>{
-                if(e.key === 'Enter') handleCommentSubmit();
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleCommentSubmit();
             }}
             onBlur={handleCommentSubmit}
             className="textarea"

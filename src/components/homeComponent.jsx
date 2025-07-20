@@ -1,6 +1,7 @@
 import { useMediaQuery } from "react-responsive";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/all";
+
 import gsap from "gsap";
 
 gsap.registerPlugin(SplitText);
@@ -26,8 +27,8 @@ function HomeComponent() {
     })
   },[]);
   return (
-    <div className={isMobile ? 'text-blue-100': 'text-blue-100 flex h-[95vh]'}>
-      <div className={isMobile ? "flex flex-col  px-5 py-5" : "article"}>
+    <div className={isMobile ? 'text-blue-100': 'text-blue-100 flex min-h-[95vh] flex-wrap'}>
+      <div className={isMobile ? "flex flex-col  px-5 py-5" : "article "}>
         <div>
           <h2 className="text-2xl head font-bold mb-2">
             Explore Knowledge from Every Corner of Life

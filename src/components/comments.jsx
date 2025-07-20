@@ -125,7 +125,7 @@ function Comment({ comment }) {
         )}
 
         {/* Dropdown trigger button */}
-        <div className="relative" ref={menuRef}>
+        <div className="relative flex justify-end" ref={menuRef}>
           <button
             className="text-2xl font-bold px-2"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -154,11 +154,11 @@ function Comment({ comment }) {
       </div>
 
       <div className="flex justify-end gap-3 py-4">
-        <p className="bg-slate-700 px-2 rounded-sm">{comment.user.username}</p>
+        <p className="bg-slate-700 px-2 rounded-sm h-8 items-center flex ">{comment.user.username}</p>
         <button
           ref={likeRef}
           onClick={handleLike}
-          className="font-bold text-[#beef00] border p-1 rounded-sm"
+          className="font-bold text-[#beef00] border p-1 rounded-sm "
         >
           Likes: <span className="text-cyan-400">{comment.likes}</span>
         </button>

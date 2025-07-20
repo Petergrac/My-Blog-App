@@ -15,19 +15,14 @@ function DashNavBar() {
       >
         Dashboard
       </h1>
-      <input
-        type="text"
-        placeholder="Search..."
-        className={isMobile ? "hidden" : "input flex-1/4"}
-      />
       <div
         className={
           isMobile ? "flex justify-around" : "flex-1/3 justify-around flex"
         }
       >
-        <NavLink to="/home">Home</NavLink>
+        <NavLink to="/">Home</NavLink>
         <NavLink to="/articles">Articles</NavLink>
-        <NavLink to="/profile">Profile</NavLink>
+        <NavLink to="/profile">Admin Bio</NavLink>
       </div>
     </nav>
   );
