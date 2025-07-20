@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useState } from "react";
 import { loginUser } from "../RESTapi/api";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   // States
@@ -58,7 +59,13 @@ function Login() {
       setPassError("");
     }
     if (data.token) {
-      localStorage.setItem("token",data.token);
+      localStorage.setItem("token", data.token);
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        const userId = decoded.id || decoded.userId;
+        localStorage.setItem("currentUser", userId);
+      }
       navigate("/");
     }
     setFormData({

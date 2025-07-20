@@ -34,7 +34,6 @@ function PostDetail() {
   // Post comment mutation
   const {
     mutate: postComment,
-    isPending: postingComment,
     error: commentError,
   } = useMutation({
     mutationFn: () => postAComment(comment, id),
@@ -121,14 +120,13 @@ function PostDetail() {
             name="comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
+            onKeyDown={(e)=>{
+                if(e.key === 'Enter') handleCommentSubmit();
+            }}
+            onBlur={handleCommentSubmit}
             className="textarea"
           ></textarea>
         </label>
-        <div className="pl-4">
-          <button className="btn" onClick={handleCommentSubmit}>
-            {postingComment ? "Posting..." : "Submit"}
-          </button>
-        </div>
       </div>
 
       <div>

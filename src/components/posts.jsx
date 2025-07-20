@@ -8,7 +8,7 @@ import { addLike } from "../RESTapi/api";
 function PostCard({ post }) {
   const [like, setLike] = useState(post.likes);
   const [hasLiked, setHasLiked] = useState(false);
-  const heartRef = useRef(null); // ✅ ref for the heart icon
+  const heartRef = useRef(null);
 
   const handleLike = async () => {
     setLike((prev) => (hasLiked ? prev - 1 : prev + 1));
@@ -16,52 +16,60 @@ function PostCard({ post }) {
     await addLike(post.id);
     gsap.fromTo(
       heartRef.current,
-      { scale: 0.7, rotateY: 0 },
-      {
-        scale: 1.4,
-        rotateY: 360,
-        duration: 0.6,
-        ease: "back.out(2)",
-      }
+      { scale: 0.8, rotate: 0 },
+      { scale: 1.2, rotate: 360, duration: 0.5, ease: "back.out(1.7)" }
     );
   };
+
   return (
-    <div className="bg-zinc-800 p-5 card rounded-lg shadow-lg w-full sm:w-[48%] md:w-[30%] lg:w-[24%]">
-      {post.imageUrl === null ? (
-        ""
-      ) : (
-        <img
-          src="/"
-          className="rounded w-full h-40 object-cover mb-3"
-          alt={post.title}
-        />
-      )}
-      <h1 className="oswald md:text-xl text-blue-400 text-lg">{post.title}</h1>
+    <div className="bg-slate-800 p-4 rounded-2xl card w-full sm:w-[48%] md:w-[30%] lg:w-[23%] flex flex-col justify-between shadow-lg border border-blue-400/30">
+      {/* Title */}
+      <h2 className="oswald text-xl md:text-2xl text-blue-300 mb-1 hover:underline">
+        {post.title}
+      </h2>
+
+      {/* Content Preview */}
       <div
-        className="inter max-h-20 mb-2 overflow-hidden text-white/65 border-b border-blue-400/65"
+        className="inter text-sm text-white/70 max-h-24 overflow-hidden border-b border-blue-300/30 pb-2 mb-2"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
-      <div className="flex justify-between items-center mt-2">
+
+      {/* Author + Date */}
+      <div className="flex justify-between text-xs text-white/40 mb-2">
+        <p>By {post.author?.username || "Unknown"}</p>
+        <p>
+          {new Date(post.createdAt).toLocaleDateString("en-us", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </p>
+      </div>
+
+      {/* Like and Comments */}
+      <div className="flex justify-between items-center text-white/75 mb-4">
         <button
           onClick={handleLike}
-          className="text-white/75 flex items-center gap-1"
+          className="flex items-center gap-1 hover:text-red-400"
         >
           <FontAwesomeIcon
             icon={faHeart}
             ref={heartRef}
-            className="text-red-500"
+            className={`${
+              hasLiked ? "text-red-500" : "text-red-300"
+            } transition-transform`}
           />
           <span>{like}</span>
         </button>
-        <p className="text-blue-400/75 text-sm">
-          Comments {post.comments.length}
+        <p className="text-blue-400 text-sm">
+          {post.comments.length} Comment{post.comments.length !== 1 && "s"}
         </p>
       </div>
+
+      {/* Read More */}
       <NavLink
-        className={
-          "text-white/55 hover:underline text-center border mt-10 p-1 rounded-md"
-        }
         to={`/post-detail/${post.id}`}
+        className="btn text-center w-full"
       >
         Read More
       </NavLink>

@@ -59,6 +59,18 @@ async function likeComment(id) {
     console.log(res.data);
     return res.data
 }
+// Edit a comment
+async function editComment(content,id) {
+    const res = await api.patch(`/comments/${id}`,{content});
+    console.log(res.data);
+    return res.data
+}
+// Delete Comment
+async function deleteComment(id) {
+    const res = await api.delete(`/comments/${id}`);
+    console.log(res.data);
+    return res.data
+}
 export {
     signUpUser,
     loginUser,
@@ -66,5 +78,7 @@ export {
     getPostById,
     postAComment,
     addLike,
-    likeComment
+    likeComment,
+    editComment,
+    deleteComment,
 }
