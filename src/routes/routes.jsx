@@ -3,10 +3,11 @@ const Home = lazy(() => import("../pages/Dashboard"));
 const Signup = lazy(() => import("../pages/Signup"));
 const Login = lazy(() => import("../pages/Login"));
 const Article = lazy(() => import("../pages/articles"));
+const Post = lazy(() => import("../pages/postDetail"));
 
 const AppRoutes = [
   {
-    path: "/",
+    path: "/register",
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <Signup />
@@ -22,7 +23,7 @@ const AppRoutes = [
     ),
   },
   {
-    path: "/home",
+    path: "/",
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <Home />
@@ -34,6 +35,14 @@ const AppRoutes = [
     element: (
       <Suspense fallback={<div>Loading</div>}>
         <Article />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/post-detail/:id",
+    element: (
+      <Suspense fallback={<div>Hello The</div>}>
+        <Post />
       </Suspense>
     ),
   },

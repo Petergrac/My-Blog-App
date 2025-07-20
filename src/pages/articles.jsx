@@ -1,13 +1,50 @@
-import { posts } from "../constants/test";
+import { lazy } from "react";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
+import { getAllPosts } from "../RESTapi/api";
+import gsap from "gsap";
 import PostCard from "../components/posts";
+import { useQuery } from "@tanstack/react-query";
+const Footer = lazy(() => import("../components/postFooter"));
 
 function Articles() {
+  const cardRef = useRef(null);
+  // Animation
+  useGSAP(() => {
+    gsap.from(cardRef.current, {
+      opacity: 1,
+      y: -400,
+      duration: 1,
+      ease: "power2.out",
+      stagger: {
+        from: "start",
+        axis: "y",
+        duration: 1,
+      },
+    });
+  }, []);
+  // Data fetching
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["Posts"],
+    queryFn: () => getAllPosts(),
+  });
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error occurred and could not load data</div>;
+  }
   return (
-    <div className="bg-slate-900">
-        <h1 className="text-3xl text-white ">All Articles</h1>
-      {posts.map((post, index) => (
-        <PostCard key={index} post={post} />
-      ))}
+    <div className="bg-slate-700 md:min-h-[100vh] md:mb-0 mb-10">
+      <h1 className="text-3xl text-white gothic text-center md:py-5 text-bold py-5">
+        All Articles
+      </h1>
+      <div ref={cardRef} className="flex flex-wrap gap-2 md:m-10 m-4">
+        {data.map((post, index) => (
+          <PostCard key={index} post={post} />
+        ))}
+      </div>
+      <Footer />
     </div>
   );
 }

@@ -1,12 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
-
 /* SIGN UP & LOGIN CSS */
-.michroma{
-  font-family: 'Michroma', sans-serif;
+.michroma {
+  font-family: "Michroma", sans-serif;
 }
 @utility image {
   @apply h-[100vh];
+}
+@utility error{
+  @apply text-rose-400 pt-2
 }
 @utility main-div {
   @apply flex items-center min-h-[100vh];
@@ -17,26 +22,57 @@
 @utility label-signup {
   @apply text-blue-200 text-sm font-semibold leading-tight mb-2 flex flex-col invalid:text-red-500;
 }
-@utility heading{
-  @apply  text-white
+@utility heading {
+  @apply text-white;
 }
-@utility btn{
+@utility btn {
   @apply bg-blue-600 text-white px-3.5 font-bold py-1.5 rounded-lg hover:bg-blue-800 active:bg-blue-900 transition-all hover:translate-y-0.5 duration-500;
 }
-@utility nav-link{
-  @apply text-blue-400 hover:underline px-4
+@utility nav-link {
+  @apply text-blue-400 hover:underline px-4;
 }
 
-/* DASHBOARD */  
-@utility nav{
-  @apply md:flex justify-around bg-slate-800 py-4 text-white items-center
+/* DASHBOARD */
+@utility nav {
+  @apply md:flex justify-around bg-slate-800 py-4 text-white items-center;
 }
-@utility header{
-  @apply text-2xl font-extrabold
+@utility header {
+  @apply text-2xl font-extrabold;
 }
-@utility component_image{
-  @apply object-scale-down object-center min-w-[20rem]
+@utility component_image {
+  @apply object-scale-down object-center min-w-[20rem];
 }
-@utility article{
-  @apply flex px-10 py-5 flex-col gap-3.5 justify-center
+@utility article {
+  @apply flex px-10 py-5 flex-col gap-3.5 justify-center;
+}
+.gothic {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.oswald{
+  font-family: "Oswald", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+}
+.inter{
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+}
+@utility card{
+  @apply drop-shadow-lg drop-shadow-blue-500 hover:translate-y-1 duration-500 transition-all
+}
+
+/* Post Detail Component/Page */
+@utility title{
+  @apply text-3xl font-bold text-center py-10 sticky top-0 z-50 bg-slate-900/55 hover:cursor-none
+}
+@utility post-container{
+  @apply bg-slate-800 text-white/75 min-h-[100vh]
+}
+@utility textarea{
+  @apply border w-full h-30 m-5 items-center p-2 rounded-md
 }

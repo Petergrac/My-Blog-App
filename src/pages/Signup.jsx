@@ -4,9 +4,10 @@ import { useNavigate, NavLink } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useState } from "react";
+import { signUpUser } from "../RESTapi/api";
 
 function Signup() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // Form states
   const [formData, setFormData] = useState({
     name: "",
@@ -14,6 +15,7 @@ function Signup() {
     password: "",
     confirm_Password: "",
   });
+  const [emailError, setEmailError] = useState("hidden");
   const [message, setMessage] = useState("hidden");
   // Responsiveness
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
@@ -44,23 +46,34 @@ function Signup() {
   // Handling form data
   const handleSignupForm = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
   // Handle the form submit
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     if (formData.confirm_Password !== formData.password) {
-      console.error("Passwords don't match");
       return setMessage("");
     }
-    setMessage('hidden')
-    console.log("Submitted name", formData.name);
-    console.log("Submitted password", formData.password);
-    navigate('/login')
+    setMessage("hidden");
+    const res = await signUpUser(
+      formData.name,
+      formData.email,
+      formData.password
+    );
+    if (res.errors) {
+      if (res.errors[0].field === "email") {
+        setEmailError("");
+        setTimeout(() => {
+          setEmailError("hidden");
+        }, 5000);
+      }
+    }
+    if (res.message) {
+      navigate("/login");
+    }
   };
   return (
     <div className="main-div">
@@ -110,6 +123,9 @@ function Signup() {
                 placeholder="Enter your email"
                 required
               />
+              <p className={`error ${emailError}`}>
+                Email already exists. Use another Email
+              </p>
             </label>
             <label className="label-signup" htmlFor="">
               Password *:

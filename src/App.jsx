@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./styles/App.css";
-
 import AppRoutes from "./routes/routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

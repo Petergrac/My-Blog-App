@@ -1,9 +1,10 @@
 import "../styles/App.css";
 import { useMediaQuery } from "react-responsive";
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useState } from "react";
+import { loginUser } from "../RESTapi/api";
 
 function Login() {
   // States
@@ -11,7 +12,9 @@ function Login() {
     email: "",
     password: "",
   });
-
+  const navigate = useNavigate();
+  const [emailError, setEmailError] = useState("hidden");
+  const [passError, setPassError] = useState("hidden");
   // Responsiveness
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
   // Animation
@@ -46,14 +49,22 @@ function Login() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   //   Submitting the form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitted Email', formData.email);
-    console.log("Submitted Password", formData.password);
+    const data = await loginUser(formData.email, formData.password);
+    if (data.message === "Incorrect email") {
+      setEmailError("");
+    } else if (data.message === "Incorrect Password") {
+      setPassError("");
+    }
+    if (data.token) {
+      localStorage.setItem("token",data.token);
+      navigate("/");
+    }
     setFormData({
-        email:'',
-        password:''
-    })
+      email: "",
+      password: "",
+    });
   };
   return (
     <div className="main-div">
@@ -87,6 +98,7 @@ function Login() {
                 placeholder="example123@gmail.com"
                 required
               />
+              <p className={`error ${emailError}`}>Incorrect Email</p>
             </label>
             <label className="label-signup" htmlFor="">
               Password *:
@@ -100,6 +112,7 @@ function Login() {
                 placeholder="Enter your password"
                 required
               />
+              <p className={`error ${passError}`}>Incorrect Password</p>
             </label>
             <div className="flex justify-between items-center">
               <button className="btn" type="submit">

@@ -1,3 +1,4 @@
+import Footer from "../components/postFooter";
 import "../styles/App.css";
 import { lazy } from "react";
 const Navbar = lazy(() => import("../components/dashNavBar"))
@@ -9,6 +10,7 @@ function Home() {
       <Navbar />
       <main className="bg-slate-700">
         <HomePage />
+        <Footer />
       </main>
     </div>
   );
