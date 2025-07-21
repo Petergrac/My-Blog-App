@@ -22,7 +22,7 @@ function DashNavBar() {
       >
         <NavLink to="/">Home</NavLink>
         <NavLink to="/articles">Articles</NavLink>
-        <NavLink to="/profile">Admin Bio</NavLink>
+        <NavLink to="/profile">Profile</NavLink>
       </div>
     </nav>
   );

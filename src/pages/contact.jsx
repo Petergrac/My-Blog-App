@@ -2,7 +2,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import Footer from "../components/postFooter";
+import Footer from "../components/footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,14 +29,18 @@ function Contact() {
   return (
     <div className="min-h-screen bg-slate-800 text-white px-4 py-16 md:px-20">
       <div className="max-w-3xl mx-auto mb-16" ref={containerRef}>
-        <h1 className="text-4xl font-bold mb-6 text-center">Contact LinuxLabs</h1>
+        <h1 className="text-4xl font-bold mb-6 text-center">
+          Contact LinuxLabs
+        </h1>
         <p className="text-lg mb-10 text-center text-slate-300">
           Let's build something awesome together. Reach out below!
         </p>
 
         <form className="space-y-6">
           <div>
-            <label className="block mb-2 text-sm font-medium text-slate-200">Name</label>
+            <label className="block mb-2 text-sm font-medium text-slate-200">
+              Name
+            </label>
             <input
               type="text"
               className="w-full px-4 py-2 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -45,7 +49,9 @@ function Contact() {
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-slate-200">Email</label>
+            <label className="block mb-2 text-sm font-medium text-slate-200">
+              Email
+            </label>
             <input
               type="email"
               className="w-full px-4 py-2 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -54,7 +60,9 @@ function Contact() {
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-slate-200">Message</label>
+            <label className="block mb-2 text-sm font-medium text-slate-200">
+              Message
+            </label>
             <textarea
               rows="5"
               className="w-full px-4 py-2 rounded bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"

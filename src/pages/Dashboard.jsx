@@ -1,8 +1,8 @@
-import Footer from "../components/postFooter";
+import Footer from "../components/footer";
 import "../styles/App.css";
 import { lazy } from "react";
-const Navbar = lazy(() => import("../components/dashNavBar"))
-const HomePage = lazy(()=> import('../components/homeComponent'));
+const Navbar = lazy(() => import("../components/dashNavBar"));
+const HomePage = lazy(() => import("../components/homeComponent"));
 
 function Home() {
   return (

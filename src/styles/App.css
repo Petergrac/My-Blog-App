@@ -76,3 +76,8 @@
 @utility textarea{
   @apply border w-full h-30 m-5 items-center p-2 rounded-md
 }
+
+/* Error Detail */
+@utility error-page{
+  @apply justify-center bg-slate-800 min-h-[90vh] text-2xl font-bold flex  items-center
+}

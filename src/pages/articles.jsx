@@ -6,7 +6,7 @@ import gsap from "gsap";
 import PostCard from "../components/postCard";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../components/Loading";
-const Footer = lazy(() => import("../components/postFooter"));
+const Footer = lazy(() => import("../components/footer"));
 
 function Articles() {
   const cardRef = useRef(null);
@@ -31,6 +31,14 @@ function Articles() {
   });
   if (isLoading) {
     return <Loading />;
+  }
+  if (!data.length > 0) {
+    return (
+      <div>
+        {" "}
+        <div className="error-page text-white/75">No Published Articles.</div> <Footer />
+      </div>
+    );
   }
   if (error) {
     return <div>Error occurred and could not load data</div>;

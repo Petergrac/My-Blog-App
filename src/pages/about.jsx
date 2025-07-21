@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import Footer from "../components/postFooter";
+import Footer from "../components/footer";
 
 function About() {
   const sectionRef = useRef();
@@ -21,14 +21,18 @@ function About() {
         <div className="max-w-3xl text-center space-y-6" ref={sectionRef}>
           <h1 className="text-4xl font-bold">About LinuxLabs</h1>
           <p className="text-lg text-slate-300">
-            LinuxLabs is a developer-focused initiative to educate and inspire innovation through open source, clean architecture, and practical software engineering skills.
+            LinuxLabs is a developer-focused initiative to educate and inspire
+            innovation through open source, clean architecture, and practical
+            software engineering skills.
           </p>
           <p className="text-slate-400">
-            Whether you're just starting out or pushing production-ready systems, LinuxLabs is built to support your growth through articles, tools, and community.
+            Whether you're just starting out or pushing production-ready
+            systems, LinuxLabs is built to support your growth through articles,
+            tools, and community.
           </p>
         </div>
       </div>
-        <Footer />
+      <Footer />
     </div>
   );
 }

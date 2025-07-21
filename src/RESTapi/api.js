@@ -1,84 +1,100 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const api = axios.create({
-    baseURL: 'http://localhost:3000/api/',
+  baseURL: "http://10.71.60.224:3000/api/",
 });
 
 // Intercept the response
-api.interceptors.request.use((config)=>{
-    const token = localStorage.getItem('token');
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 export default api;
 // Sign up a user
-async function signUpUser(username,email,password) {
-    const res = await axios.post('http://localhost:3000/api/register',{
-        username,email,password
-    })
-    return res.data;
+async function signUpUser(username, email, password) {
+  const res = await axios.post("http://10.71.60.224:3000/api/register", {
+    username,
+    email,
+    password,
+  });
+  return res.data;
 }
 // Log in
-async function loginUser(email,password) {
-    const res = await axios.post('http://localhost:3000/api/login',{email,password});
-    return res.data;
+async function loginUser(email, password) {
+  const res = await axios.post("http://10.71.60.224:3000/api/login", {
+    email,
+    password,
+  });
+  return res.data;
 }
-// Use the api to all protected routes
-
 // Get all posts
 async function getAllPosts() {
-    const res = await axios.get('http://localhost:3000/api/posts');
-    return res.data;
+  const res = await axios.get("http://10.71.60.224:3000/api/posts");
+  return res.data;
 }
-
 
 // Get post by id
 async function getPostById(id) {
-    const res = await axios.get(`http://localhost:3000/api/posts/${id}`);
-    return res.data.post;
+  const res = await axios.get(`http://10.71.60.224:3000/api/posts/${id}`);
+  return res.data.post;
 }
 
+// Use the api to all protected routes
+
+// Get user by id
+async function getUserById(id){
+    const res  = await api.get(`/me/${id}`);
+    return res.data.user;
+}
+async function updateUser(userId, updatedFields) {
+    console.log(updatedFields);
+    const res = await api.patch(`/users/${userId}`,{updatedFields})
+    return res.data;
+}
 // Post a comment
-async function postAComment(comment,id) {
-    const res = await api.post(`/posts/${id}/comments`,{comment});
-    console.log(res.data);
-    return res.data
+async function postAComment(comment, id) {
+  const res = await api.post(`/posts/${id}/comments`, { comment });
+  console.log(res.data);
+  return res.data;
 }
 
 // Add a like
-async function addLike(id){
-    const res = api.post(`/posts/${id}/like`);
-    console.log(res.data);
-    return res.data;
+async function addLike(id) {
+  const res = api.post(`/posts/${id}/like`);
+  console.log(res.data);
+  return res.data;
 }
 // Like a comment
 async function likeComment(id) {
-    const res = await api.post(`/comments/${id}/like`);
-    console.log(res.data);
-    return res.data
+  const res = await api.post(`/comments/${id}/like`);
+  console.log(res.data);
+  return res.data;
 }
 // Edit a comment
-async function editComment(content,id) {
-    const res = await api.patch(`/comments/${id}`,{content});
-    console.log(res.data);
-    return res.data
+async function editComment(content, id) {
+  const res = await api.patch(`/comments/${id}`, { content });
+  console.log(res.data);
+  return res.data;
 }
 // Delete Comment
 async function deleteComment(id) {
-    const res = await api.delete(`/comments/${id}`);
-    console.log(res.data);
-    return res.data
+  const res = await api.delete(`/comments/${id}`);
+  console.log(res.data);
+  return res.data;
 }
 export {
-    signUpUser,
-    loginUser,
-    getAllPosts,
-    getPostById,
-    postAComment,
-    addLike,
-    likeComment,
-    editComment,
-    deleteComment,
-}
+  signUpUser,
+  loginUser,
+  getUserById,
+  updateUser,
+  getAllPosts,
+  getPostById,
+  postAComment,
+  addLike,
+  likeComment,
+  editComment,
+  deleteComment,
+};

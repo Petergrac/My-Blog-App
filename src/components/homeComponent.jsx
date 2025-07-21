@@ -20,7 +20,7 @@ function HomeComponent() {
         duration: 0.3,
         ease: 'power2.out'
     }).from('.component_image',{
-        y: +500,
+        y: +800,
         duration: 1,
         ease: 'power2.out',
         stagger: .1

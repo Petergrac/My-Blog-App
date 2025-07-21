@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 import { getPostById, postAComment, addLike } from "../RESTapi/api";
 import Comment from "../components/comments";
-import Footer from "../components/postFooter";
+import Footer from "../components/footer";
 import "../styles/App.css";
 import { useGSAP } from "@gsap/react";
 import Loading from "../components/Loading";
@@ -67,29 +67,29 @@ function PostDetail() {
       ease: "power2.out",
     });
   }, []);
-    useEffect(() => {
-      if (!data?.content || !contentRef.current) return;
-        const split = new SplitText(contentRef.current, { type: "lines" });
+  useEffect(() => {
+    if (!data?.content || !contentRef.current) return;
+    const split = new SplitText(contentRef.current, { type: "lines" });
 
-        gsap.from(split.lines, {
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: "top 95%",
-            end: "bottom 10%",
-            toggleActions: "play none none none",
-            scrub: true,
-          },
-          opacity: .6,
-          y: 50,
-          stagger: 0.1,
-          duration: 0.8,
-          ease: "power3.out",
-        });
+    gsap.from(split.lines, {
+      scrollTrigger: {
+        trigger: contentRef.current,
+        start: "top 95%",
+        end: "bottom 10%",
+        toggleActions: "play none none none",
+        scrub: true,
+      },
+      opacity: 0.6,
+      y: 50,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: "power3.out",
+    });
 
-        return () => {
-          split.revert(); // Clean up when unmounting
-        };
-    },[data?.content]);
+    return () => {
+      split.revert(); // Clean up when unmounting
+    };
+  }, [data?.content]);
 
   const handleCommentSubmit = () => {
     if (comment.trim()) {
