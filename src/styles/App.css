@@ -74,7 +74,7 @@
   @apply text-3xl font-bold text-center py-10 sticky top-0 z-50 bg-slate-900/55 hover:cursor-none
 }
 @utility post-container{
-  @apply bg-slate-800 text-white/75 min-h-[100vh]
+  @apply bg-slate-800 text-white/75 min-h-[100vh] text-lg
 }
 @utility textarea{
   @apply border w-full h-30 m-5 items-center p-2 rounded-md

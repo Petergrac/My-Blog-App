@@ -53,7 +53,7 @@ function Articles() {
     }
   }
   return (
-    <div className="bg-slate-700 md:min-h-[100vh] md:mb-0 mb-10">
+    <div className="bg-slate-700 min-h-[100vh] md:mb-0">
       <Navbar />
       <h1 className="text-3xl sticky top-0 z-40 backdrop-blur-xs text-white gothic text-center md:py-5 text-bold py-5">
         All Articles
@@ -63,7 +63,6 @@ function Articles() {
           <PostCard key={index} post={post} />
         ))}
       </div>
-      <Footer />
     </div>
   );
 }
