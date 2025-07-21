@@ -6,9 +6,10 @@ import { getUserById, updateUser } from "../RESTapi/api";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import Footer from "../components/footer";
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faSave } from "@fortawesome/free-solid-svg-icons";
+const Navbar = lazy(()=> import('../components/dashNavBar'))
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -91,6 +92,9 @@ function ProfilePage() {
         onChange={(e) =>
           setFormData((prev) => ({ ...prev, [field]: e.target.value }))
         }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSave(field);
+        }}
         onBlur={() => handleSave(field)}
         autoFocus
       />
@@ -121,80 +125,80 @@ function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-800 text-white flex flex-col justify-around items-center">
-      <div className="profile-card bg-slate-700 shadow-xl rounded-2xl p-8 w-full max-w-md text-center">
-        <img
-          src={data.avatar}
-          alt="your-avatar"
-          className="w-32 h-32 flex justify-center items-center rounded-full mx-auto object-cover border-4 border-slate-500 mb-4"
-        />
-
-        {/* Username */}
-        <div className="info-item flex justify-between items-center">
-          {editMode.username ? (
-            inputField("username")
-          ) : (
-            <>
-              <h1 className="text-2xl font-bold mb-1">{data.username}</h1>
-              <button onClick={() => toggleEdit("username")}>
-                <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
-              </button>
-            </>
-          )}
-        </div>
-
-        <p className="text-sm text-slate-300 mb-4 text-start">{data.email}</p>
-
-        <div className="space-y-4 text-left">
-          {/* Role */}
+    <div className=" bg-slate-800 text-white ">
+      <Navbar />
+      <div className="flex flex-col justify-around items-center min-h-[80vh]">
+        <h1 className="michroma text-2xl text-cyan-500 font-bold">
+          Your Profile
+        </h1>
+        <div className="profile-card bg-slate-700 shadow-xl rounded-2xl p-8 w-full max-w-md text-center">
+          <img
+            src={data.avatar}
+            alt="your-avatar"
+            className="w-32 h-32 flex justify-center items-center rounded-full mx-auto object-cover border-4 border-slate-500 mb-4"
+          />
+          {/* Username */}
           <div className="info-item flex justify-between items-center">
-            <div className="w-full">
-              <span className="font-semibold text-slate-400">Role:</span>
-              <span className="text-white pl-2">
-                {editMode.role ? selectField : data.role}
-              </span>
-            </div>
-            {!editMode.role && (
-              <button onClick={() => toggleEdit("role")}>
-                <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
-              </button>
-            )}
-          </div>
-
-          {/* Bio */}
-          <div className="info-item flex justify-between items-center">
-            <div className="w-full">
-              <span className="font-semibold text-slate-400">Bio:</span>
-              <span className="text-white pl-2">
-                {editMode.bio ? inputField("bio") : data.bio || "No bio yet"}
-              </span>
-            </div>
-            {!editMode.bio && (
-              <button onClick={() => toggleEdit("bio")}>
-                <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
-              </button>
-            )}
-          </div>
-
-          {/* Joined Date */}
-          <div className="info-item">
-            <span className="font-semibold text-slate-400">Joined:</span>
-            <span className="text-white pl-2">
-              {new Date(data.createdAt).toDateString()}
-            </span>
-          </div>
-
-          {/* Post Count */}
-          <div className="info-item">
-            <span className="font-semibold text-slate-400">Posts:</span>
-            <span className="text-white pl-2">{data._count?.posts || 0}</span>
-          </div>
-          <div>
-            {data.role === "AUTHOR" || data.role === "ADMIN" ? (
-              <p>Visit This App to add posts</p>
+            {editMode.username ? (
+              inputField("username")
             ) : (
-              <p>Become an author to add posts</p>
+              <>
+                <h1 className="text-2xl font-bold mb-1">{data.username}</h1>
+                <button onClick={() => toggleEdit("username")}>
+                  <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
+                </button>
+              </>
             )}
+          </div>
+          <p className="text-sm text-slate-300 mb-4 text-start">{data.email}</p>
+          <div className="space-y-4 text-left">
+            {/* Role */}
+            <div className="info-item flex justify-between items-center">
+              <div className="w-full">
+                <span className="font-semibold text-slate-400">Role:</span>
+                <span className="text-white pl-2">
+                  {editMode.role ? selectField : data.role}
+                </span>
+              </div>
+              {!editMode.role && (
+                <button onClick={() => toggleEdit("role")}>
+                  <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
+                </button>
+              )}
+            </div>
+            {/* Bio */}
+            <div className="info-item flex justify-between items-center">
+              <div className="w-full">
+                <span className="font-semibold text-slate-400">Bio:</span>
+                <span className="text-white pl-2">
+                  {editMode.bio ? inputField("bio") : data.bio || "No bio yet"}
+                </span>
+              </div>
+              {!editMode.bio && (
+                <button onClick={() => toggleEdit("bio")}>
+                  <FontAwesomeIcon icon={faEdit} className="text-[18px]" />
+                </button>
+              )}
+            </div>
+            {/* Joined Date */}
+            <div className="info-item">
+              <span className="font-semibold text-slate-400">Joined:</span>
+              <span className="text-white pl-2">
+                {new Date(data.createdAt).toDateString()}
+              </span>
+            </div>
+            {/* Post Count */}
+            <div className="info-item">
+              <span className="font-semibold text-slate-400">Posts:</span>
+              <span className="text-white pl-2">{data._count?.posts || 0}</span>
+            </div>
+            <div>
+              {data.role === "AUTHOR" || data.role === "ADMIN" ? (
+                <p>Visit This App to add posts</p>
+              ) : (
+                <p>Become an author to add posts</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import gsap from "gsap";
 import PostCard from "../components/postCard";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../components/Loading";
+const Navbar = lazy(() => import("../components/dashNavBar"));
 const Footer = lazy(() => import("../components/footer"));
 
 function Articles() {
@@ -35,7 +36,7 @@ function Articles() {
   if (!data.length > 0) {
     return (
       <div>
-        {" "}
+        <Navbar />
         <div className="error-page text-white/75">No Published Articles.</div> <Footer />
       </div>
     );
@@ -45,6 +46,7 @@ function Articles() {
   }
   return (
     <div className="bg-slate-700 md:min-h-[100vh] md:mb-0 mb-10">
+      <Navbar />
       <h1 className="text-3xl sticky top-0 z-40 backdrop-blur-xs text-white gothic text-center md:py-5 text-bold py-5">
         All Articles
       </h1>

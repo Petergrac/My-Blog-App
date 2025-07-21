@@ -36,6 +36,9 @@
 @utility nav {
   @apply md:flex justify-around bg-slate-800 py-4 text-white items-center;
 }
+@utility active{
+  @apply text-orange-400 translate-y-0.5
+}
 @utility header {
   @apply text-2xl font-extrabold;
 }

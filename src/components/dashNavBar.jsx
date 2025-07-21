@@ -5,7 +5,7 @@ import "../styles/App.css";
 function DashNavBar() {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   return (
-    <nav className="nav">
+    <nav className="nav sticky top-0 z-70">
       <h1
         className={
           isMobile
