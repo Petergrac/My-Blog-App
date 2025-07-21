@@ -15,14 +15,9 @@ function Articles() {
   useGSAP(() => {
     gsap.from(cardRef.current, {
       opacity: 1,
-      y: -400,
+      y: -100,
       duration: 1,
       ease: "power2.out",
-      stagger: {
-        from: "start",
-        axis: "y",
-        duration: 1,
-      },
     });
   }, []);
   // Data fetching
@@ -33,16 +28,29 @@ function Articles() {
   if (isLoading) {
     return <Loading />;
   }
-  if (!data.length > 0) {
+
+  if (error) {
     return (
       <div>
-        <Navbar />
-        <div className="error-page text-white/75">No Published Articles.</div> <Footer />
+        <div className="error-page text-white/75">
+          <p>Error occurred and could not load data</p>
+        </div>
+        <Footer />
       </div>
     );
   }
-  if (error) {
-    return <div>Error occurred and could not load data</div>;
+  if (data) {
+    if (!data.length > 0) {
+      return (
+        <div>
+          <Navbar />
+          <div className="error-page text-white/75">
+            No Published Articles.
+          </div>
+          <Footer />
+        </div>
+      );
+    }
   }
   return (
     <div className="bg-slate-700 md:min-h-[100vh] md:mb-0 mb-10">

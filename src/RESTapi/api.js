@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://10.71.60.224:3000/api/",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Intercept the response
@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
 export default api;
 // Sign up a user
 async function signUpUser(username, email, password) {
-  const res = await axios.post("http://10.71.60.224:3000/api/register", {
+  const res = await axios.post(`${import.meta.env.VITE_API_URL}/register`,{
     username,
     email,
     password,
@@ -24,7 +24,7 @@ async function signUpUser(username, email, password) {
 }
 // Log in
 async function loginUser(email, password) {
-  const res = await axios.post("http://10.71.60.224:3000/api/login", {
+  const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
     email,
     password,
   });
@@ -32,27 +32,27 @@ async function loginUser(email, password) {
 }
 // Get all posts
 async function getAllPosts() {
-  const res = await axios.get("http://10.71.60.224:3000/api/posts");
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
   return res.data;
 }
 
 // Get post by id
 async function getPostById(id) {
-  const res = await axios.get(`http://10.71.60.224:3000/api/posts/${id}`);
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts/${id}`);
   return res.data.post;
 }
 
 // Use the api to all protected routes
 
 // Get user by id
-async function getUserById(id){
-    const res  = await api.get(`/me/${id}`);
-    return res.data.user;
+async function getUserById(id) {
+  const res = await api.get(`/me/${id}`);
+  return res.data.user;
 }
 async function updateUser(userId, updatedFields) {
-    console.log(updatedFields);
-    const res = await api.patch(`/users/${userId}`,{updatedFields})
-    return res.data;
+  console.log(updatedFields);
+  const res = await api.patch(`/users/${userId}`, { updatedFields });
+  return res.data;
 }
 // Post a comment
 async function postAComment(comment, id) {

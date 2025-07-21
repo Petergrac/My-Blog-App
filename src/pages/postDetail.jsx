@@ -109,8 +109,20 @@ function PostDetail() {
   if (commentError) {
     const code = commentError.response?.status;
     if (code === 401) navigate("/login");
-    else if (code === 404) return <div>Post not found</div>;
-    else return <div>Error posting comment</div>;
+    else if (code === 404)
+      return (
+        <div>
+          <div className="error-page text-white/75">Post not found</div>
+          <Footer />
+        </div>
+      );
+    else
+      return (
+        <div>
+          <div className="error-page text-white/75">Error posting comment</div>
+          <Footer />
+        </div>
+      );
   }
   const { title, content, likes, author, createdAt, comments } = data;
 

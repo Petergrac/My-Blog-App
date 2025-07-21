@@ -22,7 +22,7 @@ function PostCard({ post }) {
   };
 
   return (
-    <div className="bg-slate-800 p-4 rounded-2xl card w-full sm:w-[48%] md:w-[30%] lg:w-[23%] flex flex-col justify-between shadow-lg border border-blue-400/30">
+    <div  className="bg-slate-800 p-4 rounded-2xl card w-full sm:w-[48%] md:w-[30%] lg:w-[23%] flex flex-col justify-between shadow-lg border border-blue-400/30">
       {/* Title */}
       <h2 className="oswald text-xl md:text-2xl text-blue-300 mb-1 hover:underline">
         {post.title}
