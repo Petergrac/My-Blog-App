@@ -20,7 +20,6 @@ function ProfilePage() {
   const { error, isLoading, data } = useQuery({
     queryKey: ["UserInfo"],
     queryFn: () => getUserById(userId),
-    cacheTime: 0,
   });
 
   // Update user info

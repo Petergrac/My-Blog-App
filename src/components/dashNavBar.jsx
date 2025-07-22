@@ -20,9 +20,9 @@ function DashNavBar() {
           isMobile ? "flex justify-around" : "flex-1/3 justify-around flex"
         }
       >
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/articles">Articles</NavLink>
-        <NavLink to="/profile">Profile</NavLink>
+        <NavLink className='nav-links' to="/">Home</NavLink>
+        <NavLink className='nav-links' to="/articles">Articles</NavLink>
+        <NavLink className='nav-links' to="/profile">Profile</NavLink>
       </div>
     </nav>
   );
