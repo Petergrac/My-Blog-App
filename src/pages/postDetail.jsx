@@ -40,7 +40,7 @@ function PostDetail() {
   const likeMutation = useMutation({
     mutationFn: () => addLike(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["PostDetail", id] });
+      queryClient.invalidateQueries({ queryKey: ["PostDetail"] });
 
       gsap.fromTo(
         postRef.current,
@@ -99,16 +99,14 @@ function PostDetail() {
       );
   }
   const { title, content, likes, author, createdAt, comments } = data;
-
   return (
     <div className="post-container outline-20">
       <p ref={titleRef} className="title gothic">
         {title}
       </p>
-
       <div
         ref={contentRef}
-        className="inter  prose prose-invert min-w-screen text-lg px-5 md:px-20 pb-10 border-b border-slate-200"
+        className="inter prose prose-invert max-w-none min-w-screen text-lg px-5 md:px-20 pb-10 border-b border-slate-200"
         dangerouslySetInnerHTML={{ __html: content }}
       ></div>
 
@@ -120,7 +118,10 @@ function PostDetail() {
         >
           Likes: <span className="text-cyan-400 font-bold">{likes}</span>
         </button>
-        <p className="font-bold text-teal-300 md:text-lg">{author.username}</p>
+        <div className="flex items-center gap-2 mt-4 md:mt-0">
+          <img src={author.avatar} alt="Avatar" className="w-16 h-16 rounded-full"/>
+          <p className="font-bold text-teal-300 md:text-lg">{author.username}</p>
+        </div>
         <p className="text-lg font-bold">
           Created at:{" "}
           {new Date(createdAt).toLocaleDateString("en-us", {

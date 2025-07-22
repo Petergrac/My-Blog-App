@@ -63,6 +63,7 @@ function Articles() {
           <PostCard key={index} post={post} />
         ))}
       </div>
+      <Footer />
     </div>
   );
 }

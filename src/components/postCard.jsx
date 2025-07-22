@@ -22,7 +22,7 @@ function PostCard({ post }) {
   };
 
   return (
-    <div  className="bg-slate-800 p-4 rounded-2xl card w-full sm:w-[48%] md:w-[30%] lg:w-[23%] flex flex-col justify-between shadow-lg border border-blue-400/30">
+    <div className="bg-slate-800 p-4 rounded-2xl card w-full sm:w-[48%] md:w-[30%] lg:w-[23%] flex flex-col justify-between shadow-lg border border-blue-400/30">
       {/* Title */}
       <h2 className="oswald text-xl md:text-2xl text-blue-300 mb-1 hover:underline">
         {post.title}
@@ -35,8 +35,16 @@ function PostCard({ post }) {
       />
 
       {/* Author + Date */}
-      <div className="flex justify-between text-xs text-white/40 mb-2">
-        <p>By {post.author?.username || "Unknown"}</p>
+
+      <div className="flex justify-between text-xs items-center text-white/40 mb-2">
+        <div className="flex items-center gap-2">
+          <img
+            src={post.author.avatar}
+            className="w-8 h-8 rounded-full"
+            alt="avatar"
+          />
+          <p className="text-cyan-200/76">By {post.author?.username || "Unknown"}</p>
+        </div>
         <p>
           {new Date(post.createdAt).toLocaleDateString("en-us", {
             month: "short",

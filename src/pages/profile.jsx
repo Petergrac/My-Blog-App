@@ -8,19 +8,22 @@ import Loading from "../components/Loading";
 import Footer from "../components/footer";
 import { lazy, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faSave, faUpload } from "@fortawesome/free-solid-svg-icons";
+import AvatarUpload from "../components/upload";
 const Navbar = lazy(() => import("../components/dashNavBar"));
 
 function ProfilePage() {
   const queryClient = useQueryClient();
   const userId = localStorage.getItem("currentUser");
 
+  // Get user info
   const { error, isLoading, data } = useQuery({
     queryKey: ["UserInfo"],
     queryFn: () => getUserById(userId),
     cacheTime: 0,
   });
 
+  // Update user info
   const mutation = useMutation({
     mutationFn: (updatedFields) => updateUser(userId, updatedFields),
     onSuccess: () => {
@@ -28,18 +31,23 @@ function ProfilePage() {
     },
   });
 
+  // Edit mode
   const [editMode, setEditMode] = useState({
     username: false,
     bio: false,
+    avatar: false,
     role: false,
   });
 
+  // Form data
   const [formData, setFormData] = useState({
     username: "",
     bio: "",
     role: "USER",
+    avatar: ''
   });
 
+  // Animation
   useGSAP(() => {
     gsap.from(".profile-card", {
       opacity: 0,
@@ -57,6 +65,7 @@ function ProfilePage() {
     });
   }, []);
 
+  // Loading & Error handlers
   if (isLoading) return <Loading />;
   if (error) {
     const status = error?.response?.status;
@@ -81,6 +90,7 @@ function ProfilePage() {
   }
 
   // Handlers
+  //  Edit handler
   const toggleEdit = (field) => {
     setEditMode((prev) => ({
       ...prev,
@@ -92,13 +102,24 @@ function ProfilePage() {
     }));
   };
 
+  // Save handler
   const handleSave = async (field) => {
     setEditMode((prev) => ({ ...prev, [field]: false }));
     if (formData[field] !== data[field]) {
       mutation.mutate({ [field]: formData[field] });
     }
   };
-
+  // Handle image upload
+  const handleClick = () =>{
+     if(editMode.avatar) toggleEdit("avatar");
+     else toggleEdit("avatar");
+  }
+  const onUploaded = (avatar)=>{
+    mutation.mutate({['avatar']:avatar})
+    toggleEdit('avatar');
+    alert('Saved sucessfully');
+  }
+  // Input fields
   const inputField = (field) => (
     <div className="flex w-full items-center justify-between gap-2">
       <input
@@ -119,6 +140,7 @@ function ProfilePage() {
     </div>
   );
 
+  // Select Fields
   const selectField = (
     <div className="flex w-full items-center justify-between gap-2">
       <select
@@ -147,11 +169,19 @@ function ProfilePage() {
           Your Profile
         </h1>
         <div className="profile-card bg-slate-700 shadow-xl rounded-2xl p-8 w-full max-w-md text-center">
-          <img
-            src={data.avatar}
-            alt="your-avatar"
-            className="w-32 h-32 flex justify-center items-center rounded-full mx-auto object-cover border-4 border-slate-500 mb-4"
-          />
+          {/* Image section */}
+          {editMode.avatar ? <AvatarUpload userId={userId} onUploaded={onUploaded}/> : ''}
+          <div className="relative flex justify-center">
+            <img
+              src={data.avatar}
+              alt="your-avatar"
+              className="avatar"
+            />
+            <button onClick={handleClick} className="upload-btn">
+              <FontAwesomeIcon icon={faUpload} className="text-[18px]" />
+            </button>
+          </div>
+
           {/* Username */}
           <div className="info-item flex justify-between items-center">
             {editMode.username ? (
