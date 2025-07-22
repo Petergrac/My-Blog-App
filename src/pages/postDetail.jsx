@@ -3,7 +3,6 @@ import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 
-
 import { getPostById, postAComment, addLike } from "../RESTapi/api";
 import Comment from "../components/comments";
 import Footer from "../components/footer";
@@ -119,8 +118,14 @@ function PostDetail() {
           Likes: <span className="text-cyan-400 font-bold">{likes}</span>
         </button>
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <img src={author.avatar} alt="Avatar" className="w-16 h-16 rounded-full"/>
-          <p className="font-bold text-teal-300 md:text-lg">{author.username}</p>
+          <img
+            src={author.avatar}
+            alt="Avatar"
+            className="w-16 h-16 rounded-full object-center object-cover"
+          />
+          <p className="font-bold text-teal-300 md:text-lg">
+            {author.username}
+          </p>
         </div>
         <p className="text-lg font-bold">
           Created at:{" "}

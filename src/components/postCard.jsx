@@ -40,7 +40,7 @@ function PostCard({ post }) {
         <div className="flex items-center gap-2">
           <img
             src={post.author.avatar}
-            className="w-8 h-8 rounded-full"
+            className="w-8 h-8 rounded-full object-cover"
             alt="avatar"
           />
           <p className="text-cyan-200/76">By {post.author?.username || "Unknown"}</p>
