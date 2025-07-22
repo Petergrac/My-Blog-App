@@ -58,8 +58,11 @@ function Login() {
     } else if (data.message === "Incorrect Password") {
       setPassError("");
     }
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+    if (data.accessToken && data.refreshToken) {
+      // Save both access & request tokens in localstorage
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem('refresh_token',data.refreshToken);
+      // Save the user id from the token
       const token = localStorage.getItem("token");
       if (token) {
         const decoded = jwtDecode(token);
@@ -133,7 +136,11 @@ function Login() {
               </p>
             </div>
           </form>
+          
         </div>
+        <NavLink className={`btn text-lg mt-5`} to={`/`}>
+            Go to homepage
+          </NavLink>
       </div>
     </div>
   );

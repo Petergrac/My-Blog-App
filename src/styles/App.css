@@ -82,5 +82,5 @@
 
 /* Error Detail */
 @utility error-page{
-  @apply justify-center bg-slate-800 min-h-[90vh] text-2xl font-bold flex  items-center
+  @apply justify-center bg-slate-800 min-h-screen text-2xl font-bold flex  items-center
 }

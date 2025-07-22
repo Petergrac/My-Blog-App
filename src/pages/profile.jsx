@@ -3,22 +3,22 @@ import gsap from "gsap";
 import "../styles/App.css";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUserById, updateUser } from "../RESTapi/api";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Loading from "../components/Loading";
 import Footer from "../components/footer";
 import { lazy, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faSave } from "@fortawesome/free-solid-svg-icons";
-const Navbar = lazy(()=> import('../components/dashNavBar'))
+const Navbar = lazy(() => import("../components/dashNavBar"));
 
 function ProfilePage() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const userId = localStorage.getItem("currentUser");
 
   const { error, isLoading, data } = useQuery({
     queryKey: ["UserInfo"],
     queryFn: () => getUserById(userId),
+    cacheTime: 0,
   });
 
   const mutation = useMutation({
@@ -60,9 +60,24 @@ function ProfilePage() {
   if (isLoading) return <Loading />;
   if (error) {
     const status = error?.response?.status;
-    if (status === 401) return navigate("/login");
+    if (status === 401)
+      return (
+        <div className="error-page flex flex-col gap-4">
+          <p className="  text-white">
+            You must be logged in to view your profile.
+          </p>
+          <div>
+            <NavLink className={`btn text-lg m-4`} to={`/login`}>
+              Go to login
+            </NavLink>
+            <NavLink className={`btn text-lg`} to={`/`}>
+              Back to homepage
+            </NavLink>
+          </div>
+        </div>
+      );
     if (status === 404) return <p className="error-page">User not found</p>;
-    return <div className="error-page">Error loading user. Try again.</div>;
+    return <div className="error-page ">Error loading user. Try again.</div>;
   }
 
   // Handlers

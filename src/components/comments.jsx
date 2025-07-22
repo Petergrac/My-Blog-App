@@ -113,7 +113,7 @@ function Comment({ comment }) {
         {edit ? (
           <input
             onChange={handleChange}
-            className="input h-16 w-1/2"
+            className="input h-16 md:w-1/2 w-full"
             value={content}
             onKeyDown={(e) => {
               if (e.key === "Enter") commentEdit();

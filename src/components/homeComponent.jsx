@@ -22,6 +22,7 @@ function HomeComponent() {
     }).from('.component_image',{
         y: +800,
         duration: 1,
+        scale: 0.2,
         ease: 'power2.out',
         stagger: .1
     })

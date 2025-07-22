@@ -9,7 +9,11 @@ export default function ErrorPage() {
       <h1 className="text-3xl font-bold text-red-600">Oops!</h1>
       <p>Sorry, an unexpected error has occurred.</p>
       <p className="text-gray-500">
-        <i>{error.statusText || error.message}</i>
+        <i>
+          {error.message === "data is undefined"
+            ? "Problem connecting to the server"
+            : "Make sure you are connected to the internet"}
+        </i>
       </p>
     </div>
   );
