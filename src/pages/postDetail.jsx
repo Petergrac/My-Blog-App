@@ -2,6 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import gsap from "gsap";
+import "prismjs/themes/prism.css"; // Or prism-okaidia.css
+import "prismjs"; // Core
+import "prismjs/components/prism-javascript"; // Add more as needed
 
 import { getPostById, postAComment, addLike } from "../RESTapi/api";
 import Comment from "../components/comments";
@@ -9,6 +12,7 @@ import Footer from "../components/footer";
 import "../styles/App.css";
 import { useGSAP } from "@gsap/react";
 import Loading from "../components/Loading";
+import RenderContent from "../components/render";
 
 function PostDetail() {
   const { id } = useParams();
@@ -103,11 +107,9 @@ function PostDetail() {
       <p ref={titleRef} className="title gothic">
         {title}
       </p>
-      <div
-        ref={contentRef}
-        className="inter prose prose-invert max-w-none min-w-screen text-lg px-5 md:px-20 pb-10 border-b border-slate-200"
-        dangerouslySetInnerHTML={{ __html: content }}
-      ></div>
+      <div ref={contentRef}>
+        <RenderContent content={content} />
+      </div>
 
       <div className="pl-2 py-3 md:py-10 md:flex md:items-end gap-4 md:flex-col md:pr-10">
         <button
