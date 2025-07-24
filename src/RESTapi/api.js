@@ -73,9 +73,17 @@ async function getPostById(id) {
   const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts/${id}`);
   return res.data.post;
 }
+// Search query
+async function search(query) {
+    const result = await axios.get(`${import.meta.env.VITE_API_URL}/search`,{
+      params: {q: query}
+    });
+    return result.data.results;
+    }
 
-// Use the api to all protected routes
 
+// ====================================== PROTECTED ROUTES =====================================
+// 
 // Get user by id
 async function getUserById(id) {
   const res = await api.get(`/me/${id}`);
@@ -123,6 +131,7 @@ export {
   getUserById,
   updateUser,
   getAllPosts,
+  search,
   getPostById,
   postAComment,
   addLike,
