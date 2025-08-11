@@ -2,7 +2,7 @@ import { ModeToggle } from "./ModeToggle";
 import UserAvatar from "./UserAvatar";
 const NavBar = () => {
   return (
-    <nav className="flex w-full justify-between gap-10 py-2 pl-10 pr-4 border-b-1 pb-4">
+    <nav className="flex w-full justify-between gap-10 py-2 pl-10 pr-4 pb-4">
       <div>
         <h1 className="text-sm md:font-medium text-cyan-500">
           Blog Dashboard

@@ -2,11 +2,15 @@ import { JSONContent } from "@tiptap/core";
 import { create } from "zustand";
 
 type EditorState = {
-  content: Node | JSONContent | undefined;
-  setContent: (content: Node | JSONContent | undefined) => void;
+  postContent: Node | JSONContent | undefined;
+  title: string | null;
+  setPostContent: (content: Node | JSONContent | undefined) => void;
+  setTitle: (title: string | null) => void;
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
-  content: undefined,
-  setContent: (content) => set({ content }),
+  postContent: undefined,
+  setPostContent: (postContent) => set({ postContent }),
+  title: '',
+  setTitle: (title)=>set({title})
 }));

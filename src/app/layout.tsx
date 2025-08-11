@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/provider/ThemeProvider";
 import NavBar from "@/components/NavBar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSideBar";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} w-full ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -43,12 +44,13 @@ export default async function RootLayout({
         >
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
-            <main className="w-full">
+            <main className="">
               <div className="flex items-center">
                 <SidebarTrigger className="mx-4" size="lg" />
                 <NavBar />
               </div>
               {children}
+              <Toaster richColors position="top-center" />
             </main>
           </SidebarProvider>
         </ThemeProvider>

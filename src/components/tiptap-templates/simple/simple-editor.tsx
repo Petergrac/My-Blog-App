@@ -228,15 +228,16 @@ export function SimpleEditor() {
   });
 
   // Save the data to the global state
-  const setContent = useEditorStore((state) => state.setContent);
+  const setContent = useEditorStore((state) => state.setPostContent);
   React.useEffect(() => {
+
     if (!editor) return;
     const handler = () => {
       setContent(editor.getJSON());
     };
     editor.on("update", handler);
-
-    // Cleanup function to remover eventlisteners and prevent memory leaks
+ 
+    // Cleanup function to remover eventListeners and prevent memory leaks
     return () => {
       editor.off("update", handler);
     };

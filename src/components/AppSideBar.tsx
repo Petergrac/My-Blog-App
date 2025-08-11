@@ -35,7 +35,7 @@ const items = [
   },
   {
     title: "Posts",
-    url: "/posts",
+    url: "/posts/6235",
     icon: ClipboardCheck,
   },
   {

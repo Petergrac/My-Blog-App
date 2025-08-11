@@ -1,12 +1,8 @@
-"use client"
-import BlogPost from "@/components/StaticRenderer"
+import React from 'react'
 
 const AllPosts = () => {
   return (
-    <div>
-        <h1>My Blog Page</h1>
-        <BlogPost />
-    </div>
+    <div>AllPosts</div>
   )
 }
 
