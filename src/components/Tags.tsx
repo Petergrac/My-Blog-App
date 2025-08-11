@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { useEditorStore } from "@/store/editStore";
 
 const FormSchema = z.object({
   Tags: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -38,7 +39,12 @@ export default function TagsForm() {
       Tags: ["seo", "frontend", "cms"],
     },
   });
+  
+  // States & stores
+  const setData = useEditorStore((state) => state.setData);
   const [toggleMode, setToggleMode] = useState(false);
+  
+  // Submit Handler
   function onSubmit(data: z.infer<typeof FormSchema>) {
     toast("You submitted the following values", {
       description: (
@@ -47,16 +53,22 @@ export default function TagsForm() {
         </pre>
       ),
     });
+  setData(data);
   }
 
   return (
     <Collapsible>
       <Form {...form}>
         <div className="mb-4 mt-2">
-          <h1 className="text-base font-medium"><span className="text-muted-foreground">Step 2:</span> Add Tags</h1>
+          <h1 className="text-base font-medium">
+            <span className="text-muted-foreground">Step 2:</span> Add Tags (Make sure you press submit) <span className="text-red-500"> *</span>
+          </h1>
           <CollapsibleTrigger>
-            <FormLabel onClick={()=> setToggleMode(prev=>!prev)} className="text-base mt-4 bg-muted p-1 rounded-sm">
-              Tags {(toggleMode) ? <ChevronUp /> : <ChevronDown />}
+            <FormLabel
+              onClick={() => setToggleMode((prev) => !prev)}
+              className="text-base mt-4 bg-muted p-1 rounded-sm"
+            >
+              Tags {toggleMode ? <ChevronUp /> : <ChevronDown />}
             </FormLabel>
           </CollapsibleTrigger>
         </div>

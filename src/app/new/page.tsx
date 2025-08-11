@@ -1,12 +1,10 @@
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
-import Title from "@/components/Title";
-import { Input } from "@/components/ui/input";
+import BlogEditor from "@/components/BlogEditor";
+
 
 const Tiptap = () => {
   return (
     <div className="pl-4 pt-3">
-      <Title />
-      <SimpleEditor />
+      <BlogEditor />
     </div>
   );
 };
