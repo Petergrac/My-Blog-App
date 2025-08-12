@@ -58,7 +58,7 @@ export default function TagsForm() {
   }
 
   return (
-    <Collapsible>
+    <Collapsible defaultOpen={toggleMode}>
       <Form {...form}>
         <div className="mb-4 mt-2">
           <h1 className="text-base font-medium">
@@ -123,8 +123,7 @@ export default function TagsForm() {
                 </FormItem>
               )}
             />
-
-            <Button type="submit">Submit</Button>
+            <Button type="submit" >Submit</Button>
           </form>
         </CollapsibleContent>
       </Form>

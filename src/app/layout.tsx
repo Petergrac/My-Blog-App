@@ -50,7 +50,7 @@ export default async function RootLayout({
                 <NavBar />
               </div>
               {children}
-              <Toaster richColors position="top-center" />
+              <Toaster richColors position="top-center" duration={700}/>
             </main>
           </SidebarProvider>
         </ThemeProvider>

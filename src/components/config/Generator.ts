@@ -1,3 +1,5 @@
+import { Heading } from "@tiptap/extension-heading";
+import { mergeAttributes } from "@tiptap/core";
 import contentJson from "@/components/tiptap-templates/simple/data/content.json"
 export interface TocItem {
   id: string;
@@ -21,6 +23,53 @@ export interface ProseMirrorNode {
   content?: ProseMirrorNode[];
   text?: string;
 }
+
+// 
+// ===================== 
+//    Adds ID in the HTML 
+// ======================
+//
+export const HeadingWithId = Heading.extend({
+    // Adding id attribute 
+    addAttributes() {
+    return {
+      ...this.parent?.(),
+      id: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("id"),
+        renderHTML: (attributes) => {
+          if (!attributes.id) return {};
+          return { id: attributes.id };
+        },
+      },
+    };
+  },
+
+  renderHTML({ node, HTMLAttributes }) {
+    let id = HTMLAttributes.id;
+
+    // If there's no id, generate one from the heading's textContent
+    if (!id && node.textContent) {
+      id = node.textContent
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+    }
+
+    return [
+      `h${node.attrs.level}`,
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { id }),
+      0,
+    ];
+  },
+});
+// 
+// ===================== 
+//    Generates A Table of Content From The HTML
+// ======================
+//
+
 export function generateTOC(content: ProseMirrorNode): TocItem[] {
   const toc: TocItem[] = [];
 
@@ -53,6 +102,5 @@ const toc = generateTOC({
   type: "doc",
   content: contentJson.content as ProseMirrorNode[]
 });
-console.log(toc)
 export default toc;
 

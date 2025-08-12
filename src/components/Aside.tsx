@@ -1,5 +1,5 @@
 "use client";
-import toc from "./config/GenerateTOC";
+import toc from "./config/Generator";
 import { useEffect, useState } from "react";
 const Aside = () => {
   const [activeId, setActiveId] = useState<string>("");

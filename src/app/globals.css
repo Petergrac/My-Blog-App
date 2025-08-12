@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "../styles/_variables.scss";
 @import "../styles/_keyframe-animations.scss";
+@import "highlight.js/styles/atom-one-dark-reasonable.css";
 
 @custom-variant dark (&:is(.dark *));
 

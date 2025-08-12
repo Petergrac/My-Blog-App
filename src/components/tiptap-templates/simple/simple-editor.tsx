@@ -14,7 +14,6 @@ import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
 
-
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
 import { Spacer } from "@/components/tiptap-ui-primitive/spacer";
@@ -40,7 +39,6 @@ import { HeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-men
 import { ImageUploadButton } from "@/components/tiptap-ui/image-upload-button";
 import { ListDropdownMenu } from "@/components/tiptap-ui/list-dropdown-menu";
 import { BlockquoteButton } from "@/components/tiptap-ui/blockquote-button";
-import { CodeBlockButton } from "@/components/tiptap-ui/code-block-button";
 import {
   ColorHighlightPopover,
   ColorHighlightPopoverContent,
@@ -73,8 +71,13 @@ import "@/components/tiptap-templates/simple/simple-editor.scss";
 
 import content from "@/components/tiptap-templates/simple/data/content.json";
 import { useEditorStore } from "@/store/editStore";
-
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { CodeBlockIcon } from "@/components/tiptap-icons/code-block-icon";
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -85,6 +88,14 @@ const MainToolbarContent = ({
   onLinkClick: () => void;
   isMobile: boolean;
 }) => {
+  const editor = useEditorStore((state)=>state.editor);
+ 
+  // Add Language highlighter
+  function handleCodeBlockLang(language: string) {
+    if (!editor) return;
+    editor.chain().focus().setNode("codeBlock", { language }).run();
+    console.log(editor)
+  }
   return (
     <>
       <Spacer />
@@ -103,7 +114,18 @@ const MainToolbarContent = ({
           portal={isMobile}
         />
         <BlockquoteButton />
-        <CodeBlockButton />
+        <Select onValueChange={(value: string)=>handleCodeBlockLang(value)}>
+          <SelectTrigger 
+          ><CodeBlockIcon />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="javascript">JavaScript</SelectItem>
+            <SelectItem value="typescript">TypeScript</SelectItem>
+            <SelectItem value="python">Python</SelectItem>
+            <SelectItem value="java">Java</SelectItem>
+            <SelectItem value="cpp">C++</SelectItem>
+          </SelectContent>
+        </Select>
       </ToolbarGroup>
 
       <ToolbarSeparator />
@@ -188,7 +210,7 @@ export function SimpleEditor() {
     "main" | "highlighter" | "link"
   >("main");
   const toolbarRef = React.useRef<HTMLDivElement>(null);
-
+  const setEditor = useEditorStore((state)=>state.setEditor)
   const editor = useEditor({
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
@@ -207,7 +229,7 @@ export function SimpleEditor() {
         link: {
           openOnClick: false,
           enableClickSelection: true,
-        }
+        },
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -228,19 +250,20 @@ export function SimpleEditor() {
       }),
     ],
     content,
+    onCreate: ({editor})=>setEditor(editor)
   });
+
 
   // Save the data to the global state
   const setContent = useEditorStore((state) => state.setPostContent);
   React.useEffect(() => {
-
     if (!editor) return;
     const handler = () => {
       console.log(editor.getJSON());
       setContent(editor.getJSON());
     };
     editor.on("update", handler);
- 
+
     // Cleanup function to remover eventListeners and prevent memory leaks
     return () => {
       editor.off("update", handler);
@@ -266,7 +289,7 @@ export function SimpleEditor() {
           style={{
             ...(isMobile
               ? {
-                  bottom: `calc(100% - ${height - rect.y}px)`,
+                  top: `calc(100% - ${height - rect.y}px)`,
                 }
               : {}),
           }}

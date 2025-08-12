@@ -1,6 +1,6 @@
-import { JSONContent } from "@tiptap/core";
+import { Editor, JSONContent } from "@tiptap/react";
 import { create } from "zustand";
-import defaultData from "@/components/tiptap-templates/simple/data/content.json"
+import defaultData from "@/components/data/test.json"
 
 type EditorState = {
   postContent: Node | JSONContent | undefined;
@@ -11,6 +11,8 @@ type EditorState = {
   setData: (data: object | null) => void;
   postState: string | null;
   setPostState: (postState: string | null) => void;
+  editor: Editor | null,
+  setEditor: (editor: Editor)=>void
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -22,4 +24,6 @@ export const useEditorStore = create<EditorState>((set) => ({
   setData: (data) => set({ data }),
   postState: null,
   setPostState: (postState) => set({ postState }),
+  editor: null,
+  setEditor: (editor)=>set({editor})
 }));
