@@ -32,7 +32,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior='smooth' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} w-full ${geistMono.variable} antialiased`}
       >

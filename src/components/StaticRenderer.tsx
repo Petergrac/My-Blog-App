@@ -17,7 +17,9 @@ import { HeadingWithId } from "./config/Generator";
 
 
 export default function BlogPost() {
-  const content = useEditorStore((state) => state.postContent);
+  const finalPost = useEditorStore((state) => state.finalPost)
+  console.log(finalPost)
+  const content = finalPost?.content;
   if (content) {
     const html = renderToHTMLString({
       extensions: [

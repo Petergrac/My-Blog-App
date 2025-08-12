@@ -20,16 +20,25 @@ import {
 } from "./ui/collapsible";
 import { useState } from "react";
 import { ArrowLeftCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { useShallow } from "zustand/shallow";
 
 const BlogEditor = () => {
-  const saveTitle = useEditorStore((state) => state.setTitle);
-  const title = useEditorStore((state) => state.title);
-  const tags = useEditorStore((state) => state.data);
-  const content = useEditorStore((state) => state.postContent);
-  const postState = useEditorStore((state) => state.postState);
+  // All the content
+  const {
+    setTitle: saveTitle,
+    title,
+    data: tags,
+    postContent: content,
+    postState,
+    setFinalPost,
+    setPostState,
+  } = useEditorStore(
+    useShallow((state) => ({
+      ...state,
+    }))
+  );
 
   const [toggleMode, setToggleMode] = useState(false);
-  const setPostState = useEditorStore((state) => state.setPostState);
   const handleSubmit = () => {
     if (!title) {
       return toast.error("Invalid Title");
@@ -45,13 +54,9 @@ const BlogEditor = () => {
     }
     if (title && content && postState && tags) {
       // Create a new post with the saved content.
-      const newPost = JSON.stringify(
-        { title, content, tags, postState },
-        null,
-        2
-      );
-
-      return toast("Saved Successfully", {
+      const finalPost = { title, content, tags, postState };
+      setFinalPost(finalPost);
+      toast("Saved Successfully", {
         description: <pre>The post has been saved in the database</pre>,
       });
     } else {

@@ -259,10 +259,9 @@ export function SimpleEditor() {
   React.useEffect(() => {
     if (!editor) return;
     const handler = () => {
-      console.log(editor.getJSON());
       setContent(editor.getJSON());
     };
-    editor.on("update", handler);
+    editor.on("blur", handler);
 
     // Cleanup function to remover eventListeners and prevent memory leaks
     return () => {
