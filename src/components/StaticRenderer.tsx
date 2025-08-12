@@ -45,7 +45,7 @@ export default function BlogPost() {
       content,
     });
     return (
-      <div className="simple-editor-content mx-5 overflow-y-auto max-h-screen md:max-w-[70vw] px-3">
+      <div className="simple-editor-content mx-5 overflow-y-auto max-h-screen md:max-w-[70vw] px-2">
         <div
           className="tiptap ProseMirror simple-editor"
           dangerouslySetInnerHTML={{ __html: html }}

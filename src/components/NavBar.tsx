@@ -4,7 +4,7 @@ const NavBar = () => {
   return (
     <nav className="flex  mx-auto sticky top-0 z-400 mt-2 w-full md:w-[80vw] justify-between gap-10 py-2 pl-10 pr-4 pb-4">
       <div>
-        <h1 className="text-sm md:font-medium text-cyan-500">
+        <h1 className="text-sm md:font-medium tracking-wider text-indigo-500/90">
           Blog Dashboard
         </h1>
         <p className="text-xs text-muted-foreground">
