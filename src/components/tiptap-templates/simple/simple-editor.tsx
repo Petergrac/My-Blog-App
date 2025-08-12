@@ -14,6 +14,7 @@ import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
 
+
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
 import { Spacer } from "@/components/tiptap-ui-primitive/spacer";
@@ -72,6 +73,8 @@ import "@/components/tiptap-templates/simple/simple-editor.scss";
 
 import content from "@/components/tiptap-templates/simple/data/content.json";
 import { useEditorStore } from "@/store/editStore";
+
+
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -204,7 +207,7 @@ export function SimpleEditor() {
         link: {
           openOnClick: false,
           enableClickSelection: true,
-        },
+        }
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -233,6 +236,7 @@ export function SimpleEditor() {
 
     if (!editor) return;
     const handler = () => {
+      console.log(editor.getJSON());
       setContent(editor.getJSON());
     };
     editor.on("update", handler);

@@ -32,7 +32,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} w-full ${geistMono.variable} antialiased`}
       >
@@ -45,8 +45,8 @@ export default async function RootLayout({
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
             <main className="">
-              <div className="flex items-center">
-                <SidebarTrigger className="mx-4" size="lg" />
+              <div className="flex w-screen items-center sticky top-0 z-40 bg-background">
+                <SidebarTrigger className="mx-4" size="default" />
                 <NavBar />
               </div>
               {children}

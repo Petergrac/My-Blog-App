@@ -1,5 +1,6 @@
 import { JSONContent } from "@tiptap/core";
 import { create } from "zustand";
+import defaultData from "@/components/tiptap-templates/simple/data/content.json"
 
 type EditorState = {
   postContent: Node | JSONContent | undefined;
@@ -13,7 +14,7 @@ type EditorState = {
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
-  postContent: undefined,
+  postContent: defaultData,
   setPostContent: (postContent) => set({ postContent }),
   title: "",
   setTitle: (title) => set({ title }),

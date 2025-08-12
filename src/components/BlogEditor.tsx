@@ -36,12 +36,14 @@ const BlogEditor = () => {
       return toast.error("Your post must be either published or a draft");
     }
     if (title && content && postState && tags) {
+
+      // Create a new post with the saved content.
       const newPost = JSON.stringify(
         { title, content, tags, postState },
         null,
         2
       );
-      console.log(newPost);
+ 
       return toast("Saved Successfully", {
         description: <pre>The post has been saved in the database</pre>,
       });
@@ -53,7 +55,7 @@ const BlogEditor = () => {
   };
 
   return (
-    <div>
+    <div className="mx-auto md:pl-4 min-w-[90vw]">
       <label
         htmlFor="Title"
         className="flex text-base flex-col gap-2 font-medium w-1/2"
@@ -88,6 +90,7 @@ const BlogEditor = () => {
           Time to write something.{" "}
           <span className="text-sky-500">Good Luck!</span>
         </p>
+         <hr className="my-3 border-2" />
         <SimpleEditor />
       </div>
       <div className="border-t-2 mt-3 pt-2 pl-3 pb-4">
@@ -104,6 +107,7 @@ const BlogEditor = () => {
           </SelectContent>
         </Select>
       </div>
+       <hr className="my-3 border-2" />
       <Button className="ml-3 mb-5" onClick={handleSubmit}>
         Publish
       </Button>

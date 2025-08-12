@@ -25,6 +25,7 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { useEditorStore } from "@/store/editStore";
+import { ScrollArea } from "./ui/scroll-area";
 
 const FormSchema = z.object({
   Tags: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -82,7 +83,8 @@ export default function TagsForm() {
                   <FormDescription>
                     Select the tags you want to display in the sidebar.
                   </FormDescription>
-                  {Tags.map((tag) => (
+                  <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+                    {Tags.map((tag) => (
                     <FormField
                       key={tag.id}
                       control={form.control}
@@ -115,6 +117,7 @@ export default function TagsForm() {
                       }}
                     />
                   ))}
+                  </ScrollArea>
 
                   <FormMessage />
                 </FormItem>
