@@ -13,7 +13,7 @@ import { SidebarIcon } from "lucide-react";
 const NavBar = async () => {
   const user = await currentUser();
   return (
-      <nav className="flex shadow-2xl sticky top-0 z-400 w-full md:w-[97vw] justify-between gap-10 py-2 pl-5 pr-4 pb-4">
+      <nav className="flex  shadow-2xl sticky top-0 z-400 w-full justify-between py-2 pl-5 pr-4 pb-4">
         <div className="flex gap-2 items-center">
           <SidebarTrigger>
             <SidebarIcon size={20}/>

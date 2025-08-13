@@ -14,3 +14,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Post {
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  tags        String[]  @default([])
+  coverImage  String?   
+  status      PostStatus @default(DRAFT)
+  shareable   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+  likes       Like[]
+}
+
+model Comment {
+  id         String    @id @default(cuid())
+  content    String
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  postId     String
+  post       Post      @relation(fields: [postId], references: [id])
+
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+
+  parentId   String?   // for replies
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies    Comment[] @relation("CommentReplies")
+
+  likes      Like[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id])
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+}
+
+model User {
+  id        String   @id 
+  role      Role     @default(USER)
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+}
+
+enum Role {
+  USER
+  AUTHOR
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}

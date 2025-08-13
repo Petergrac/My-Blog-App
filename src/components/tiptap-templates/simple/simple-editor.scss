@@ -57,6 +57,9 @@ body,
 .simple-editor-wrapper {
   height: 100vh;
   overflow: auto;
+  margin-bottom: 2rem;
+  border: solid 2px black;
+  border-radius: 8px;
 }
 
 .simple-editor-content {

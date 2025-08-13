@@ -50,7 +50,7 @@ export default async function RootLayout({
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
             <main className="">
-              <div className="flex w-screen items-center sticky top-0 z-40 bg-background">
+              <div className="flex items-center w-screen md:w-[95vw] sticky top-0 z-40 bg-background">
                 <NavBar />
               </div>
               {children}

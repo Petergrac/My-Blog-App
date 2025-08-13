@@ -19,8 +19,9 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { useState } from "react";
-import { ArrowLeftCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useShallow } from "zustand/shallow";
+import { uploadImage } from "@/lib/upload";
 
 const BlogEditor = () => {
   // All the content
@@ -32,12 +33,12 @@ const BlogEditor = () => {
     postState,
     setFinalPost,
     setPostState,
+    setCoverImageUrl,
   } = useEditorStore(
     useShallow((state) => ({
       ...state,
     }))
   );
-
   const [toggleMode, setToggleMode] = useState(false);
   const handleSubmit = () => {
     if (!title) {
@@ -65,10 +66,26 @@ const BlogEditor = () => {
       );
     }
   };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const image = e.target.files;
+    if (image) {
+      try {
+        // Upload logic and return string url
+        const url = await uploadImage(image);
+        setCoverImageUrl(url);
+      } catch (error) {
+        toast.error("Error uploading the image");
+        console.log(error);
+      }
+      toast.success("Image uploaded successfully");
+    } else {
+      toast.error("Please select an image");
+    }
+  };
 
   return (
-    <div className="mx-auto md:pl-4 min-w-[90vw]">
-      <div className="flex justify-between md:justify-around">
+    <div className="mt-5 border-t-3 pt-5">
+      <div className="flex justify-between px-5">
         <Collapsible defaultOpen={toggleMode}>
           <div className="flex gap-2 items-center mb-3">
             <CollapsibleTrigger
@@ -81,16 +98,9 @@ const BlogEditor = () => {
                 {toggleMode ? <ChevronUp /> : <ChevronDown />}
               </Button>
             </CollapsibleTrigger>
-            <p className="md:flex hidden gap-1 text-sm">
-              <ArrowLeftCircle className="hover:-translate-x-0.5 transition-all duration-500" />
-              Add Title, Tags and Cover Image here.
-            </p>
           </div>
           <CollapsibleContent>
-            <label
-              htmlFor="Title"
-              className="flex text-base flex-col gap-2 w-1/2"
-            >
+            <label htmlFor="Title" className="flex text-base flex-col gap-2">
               <div>
                 <span className="text-muted-foreground">Step 1:</span> Add Title
                 <span className="text-red-500"> *</span>
@@ -104,23 +114,24 @@ const BlogEditor = () => {
                 type="text"
               />
             </label>
-            <div>
-              <TagsForm />
+            <TagsForm />
+            <div className="flex gap-2 mb-2">
+              <span className="text-muted-foreground">Step 3:</span>Add a cover
+              Image<span className="text-red-500"> *</span>
             </div>
-            <div>
-              <label htmlFor="image">
-                <div className="flex gap-2 mb-2">
-                  <span className="text-muted-foreground">Step 3:</span>Add a
-                  cover Image<span className="text-red-500"> *</span>
-                </div>
-                <Input
-                  name="image-cover"
-                  type="file"
-                  className="flex w-fit rounded-full "
-                  required
-                />
-              </label>
-            </div>
+            <label htmlFor="image">
+              <Input
+                name="image-cover"
+                type="file"
+                id="image"
+                onChange={handleFileChange}
+                className="hidden z-10 w-fit"
+                required
+              />
+              <p className="py-1 px-3 text-xs bg-sky-600 text-white rounded-sm w-fit">
+                Add
+              </p>
+            </label>
             <div>
               <h1 className="py-2 font-medium tracking-wider px-2">
                 Select Save Mode<span className="text-red-500"> *</span>
@@ -137,14 +148,10 @@ const BlogEditor = () => {
             </div>
           </CollapsibleContent>
         </Collapsible>
-        <div>
-          <Button onClick={handleSubmit}>Save Post</Button>
-        </div>
+        <Button onClick={handleSubmit}>Save Post</Button>
       </div>
-      <div className="pt-2">
-        <hr className="my-3 border-2" />
-        <SimpleEditor />
-      </div>
+      <hr className="my-3 pt-2 border-2" />
+      <SimpleEditor />
     </div>
   );
 };

@@ -15,6 +15,8 @@ type EditorStateType = {
   setEditor: (editor: Editor) => void;
   finalPost: FinalPost | null;
   setFinalPost: (finalPost: FinalPost) => void;
+  coverImageUrl: string | undefined
+  setCoverImageUrl: (coverImageUrl: string | undefined)=>void
 };
 
 interface FinalPost{
@@ -37,4 +39,6 @@ export const useEditorStore = create<EditorStateType>((set) => ({
   setEditor: (editor) => set({ editor }),
   finalPost: null,
   setFinalPost: (finalPost) => set({ finalPost }),
+  coverImageUrl: undefined,
+  setCoverImageUrl: (coverImageUrl)=>set({coverImageUrl})
 }));
