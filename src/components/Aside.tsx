@@ -7,6 +7,7 @@ const Aside = () => {
     const observer = new IntersectionObserver(
       // Callback function
       (entries) => {
+        //Find all the ids of the intersecting entry
         const visible = entries.find((entry) => entry.isIntersecting);
         if (visible?.target.id) {
           setActiveId(visible.target.id);
@@ -14,7 +15,7 @@ const Aside = () => {
       },
       // Options
       {
-        root: null,
+        rootMargin: '-10% 0px -50% 0px',
         threshold: 0,
       }
     );

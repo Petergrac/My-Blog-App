@@ -4,9 +4,13 @@ import "./globals.css";
 import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/provider/ThemeProvider";
 import NavBar from "@/components/NavBar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider} from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSideBar";
 import { Toaster } from "sonner";
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +36,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
+    <ClerkProvider>
     <html lang="en" data-scroll-behavior='smooth' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} w-full ${geistMono.variable} antialiased`}
@@ -46,7 +51,6 @@ export default async function RootLayout({
             <AppSidebar />
             <main className="">
               <div className="flex w-screen items-center sticky top-0 z-40 bg-background">
-                <SidebarTrigger className="mx-4" size="default" />
                 <NavBar />
               </div>
               {children}
@@ -56,5 +60,6 @@ export default async function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

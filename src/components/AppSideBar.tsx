@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import UserAvatar from "./UserAvatar";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 // Menu items.
 const items = [
@@ -54,7 +55,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarGroup className="group-data-[collapsible=icon]">
+        <SidebarGroup>
           <SidebarGroupLabel className="mb-5 mt-2 font-bold text-lg text-sky-500">
             Bl<span className="text-amber-400">oo</span>g
           </SidebarGroupLabel>
@@ -78,7 +79,9 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <UserAvatar />
+       <SignedIn>
+        <UserButton />
+       </SignedIn>
       </SidebarFooter>
     </Sidebar>
   );
