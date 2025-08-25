@@ -130,3 +130,6 @@ h1 {
 p {
   font-family: var(--font-geistSans);
 }
+h2{
+  font-family: var(--font-ojuju);
+}

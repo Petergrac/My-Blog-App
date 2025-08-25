@@ -312,7 +312,7 @@ export const handleImageUpload = async (
     onProgress?.({ progress })
   }
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+  return "/hero/home.jpg"
 }
 
 type ProtocolOptions = {
