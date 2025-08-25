@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useState } from "react";
+import { usePost } from "@/store/EditorStore";
 
 const categories: string[] = [
   "frontend",
@@ -19,18 +20,9 @@ const categories: string[] = [
   "testing",
   "system design",
 ];
-interface postDetailsType {
-  title: string | null;
-  image: File | null;
-  category: string | null;
-}
 
 const NewPost = () => {
-  const [postDetails, setDetails] = useState<postDetailsType>({
-    title: "",
-    image: null,
-    category: "",
-  });
+  const { setTitle, setCategory, setCoverImage } = usePost();
   const [errors, setErrors] = useState({
     titleError: "hidden",
     imageError: "hidden",
@@ -42,11 +34,11 @@ const NewPost = () => {
     if (e.target.name === "title") {
       const titleValue = e.target.value.trim();
       if (!titleValue) setErrors((prev) => ({ ...prev, titleError: "" }));
-      else setDetails((prev) => ({ ...prev, title: e.target.value }));
+      else setTitle(titleValue);
     }
     // Handle Image
     if (!e.target.files) setErrors((prev) => ({ ...prev, imageError: "" }));
-    else setDetails((prev) => ({ ...prev, image: e.target.files![0] }));
+    else setCoverImage(e.target.files[0]);
   };
   return (
     <div className="flex flex-1 gap-4 flex-col border-[1px]  m-10 p-5">
@@ -100,7 +92,7 @@ const NewPost = () => {
             {categories.map((category, i) => (
               <DropdownMenuItem
                 onClick={() => {
-                  setDetails((prev) => ({ ...prev, category }));
+                  setCategory(category)
                 }}
                 key={category + i}
               >

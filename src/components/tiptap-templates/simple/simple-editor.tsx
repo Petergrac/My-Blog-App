@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  EditorContent,
-  EditorContext,
-  JSONContent,
-  useEditor,
-} from "@tiptap/react";
+import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit";
@@ -73,6 +68,7 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 import "@/components/tiptap-templates/simple/simple-editor.scss";
 
 import defaultContent from "@/components/tiptap-templates/simple/data/content";
+import { usePost } from "@/store/EditorStore";
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -184,7 +180,8 @@ export function SimpleEditor() {
     "main" | "highlighter" | "link"
   >("main");
   const toolbarRef = React.useRef<HTMLDivElement>(null);
-  const [editorContent, setContent] = React.useState<JSONContent | null>(null);
+
+  const { setContent } = usePost();
   const editor = useEditor({
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
@@ -223,8 +220,7 @@ export function SimpleEditor() {
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content: defaultContent
-      
+    content: defaultContent,
   });
 
   // Save the content
@@ -233,12 +229,13 @@ export function SimpleEditor() {
     editor.on("update", () => {
       localStorage.setItem("editorContent", JSON.stringify(editor.getJSON()));
       setContent(editor.getJSON());
+      console.log('Update happened')
     });
     return () => {
       editor.off("update", () => setContent(editor.getJSON()));
       console.log("THis cleanup function has been executed");
     };
-  }, [editor]);
+  }, [editor, setContent]);
 
   React.useEffect(() => {
     if (!isMobile && mobileView !== "main") {
