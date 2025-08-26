@@ -1,24 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lora, Ojuju } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import HeroSection from "@/components/HeroSection";
-import Footer from "@/components/Footer";
-import { Toaster } from "sonner";
+
+import { ClerkProvider } from "@clerk/nextjs";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const lora = Lora({
-  subsets: ["latin"],
-  variable: "--font-lora",
-});
-const ojuju = Ojuju({
-  variable: "--font-ojuju",
-  subsets: ["latin"],
-});
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -26,31 +17,23 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Bloog",
-  description: "Read Write and Share all sorts of blogs.",
+  description: "Explore and create stunning blog with fully customizable editor",
 };
 
-export default function RootLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${ojuju.variable} ${lora.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <HeroSection />
-          {children}
-          <Footer />
-          <Toaster position={"top-center"} />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            {children}
+          </body>
+        </html>
+    </ClerkProvider>
   );
 }

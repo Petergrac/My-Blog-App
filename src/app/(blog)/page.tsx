@@ -16,7 +16,7 @@ export default function Home() {
       <Link className="text-xs font-lora p-2 hover:bg-foreground/55" href="/categories/system-design">SYSTEM DESIGN</Link>
      </div>
      {/* FEATURED */}
-     <div className="mt-10 mb-5">
+     <div className="mt-10 mb-5 max-w-[1080px] mx-auto">
        <p className="text-center text-lg pb-5 underline underline-offset-5">Featured Posts</p>
        <div className="flex flex-wrap flex-1 gap-2">
          <FeaturedPost />
@@ -26,7 +26,7 @@ export default function Home() {
        </div>
      </div>
      {/* RECENT POSTS*/}
-     <div className="mt-5 mb-10">
+     <div className="mt-5 mb-10 max-w-[1080px] mx-auto">
       <p className="text-lg text-center underline underline-offset-5">Most Recent</p>
       <div className="flex flex-wrap gap-2 gap-y-5 mt-5">
         <MostRecent />

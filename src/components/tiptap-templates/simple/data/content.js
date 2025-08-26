@@ -105,7 +105,7 @@ const data = {
     {
       type: "codeBlock",
       attrs: {
-        language: null,
+        language:null,
       },
       content: [
         {

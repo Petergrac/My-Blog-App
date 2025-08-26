@@ -112,7 +112,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
-
+html {
+  scroll-behavior: smooth;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -130,6 +132,33 @@ h1 {
 p {
   font-family: var(--font-geistSans);
 }
-h2{
+h2 {
   font-family: var(--font-ojuju);
 }
+::-webkit-scrollbar {
+  width: 0.15rem;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--foreground) transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--chart-2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-level-1 > a.active {
+  @apply font-bold text-blue-500 border-l-4 border-blue-500 pl-2;
+}
+
+.toc-level-2 > a.active {
+  @apply text-green-600;
+}
+
+@import "@clerk/themes/shadcn.css";

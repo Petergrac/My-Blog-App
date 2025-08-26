@@ -66,9 +66,15 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss";
+import "highlight.js/styles/github.css";
 
 import defaultContent from "@/components/tiptap-templates/simple/data/content";
 import { usePost } from "@/store/EditorStore";
+
+import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
+import { createLowlight, common } from "lowlight";
+
+const lowlight = createLowlight(common);
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -201,6 +207,12 @@ export function SimpleEditor() {
           openOnClick: false,
           enableClickSelection: true,
         },
+        codeBlock: false,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: "javascript",
+        languageClassPrefix: "language-",
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -229,7 +241,7 @@ export function SimpleEditor() {
     editor.on("update", () => {
       localStorage.setItem("editorContent", JSON.stringify(editor.getJSON()));
       setContent(editor.getJSON());
-      console.log('Update happened')
+      console.log("Update happened");
     });
     return () => {
       editor.off("update", () => setContent(editor.getJSON()));
@@ -251,7 +263,7 @@ export function SimpleEditor() {
           style={{
             ...(isMobile
               ? {
-                  top: `0`,
+                  bottom: `0`,
                 }
               : {}),
           }}

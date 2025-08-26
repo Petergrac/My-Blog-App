@@ -1,5 +1,4 @@
 "use client";
-import { ImageIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +9,7 @@ import {
 } from "./ui/dropdown-menu";
 import { useState } from "react";
 import { usePost } from "@/store/EditorStore";
+import UploadExample from "./ImageUpload";
 
 const categories: string[] = [
   "frontend",
@@ -22,78 +22,72 @@ const categories: string[] = [
 ];
 
 const NewPost = () => {
-  const { setTitle, setCategory, setCoverImage } = usePost();
+  const { setTitle, setCategory} = usePost();
   const [errors, setErrors] = useState({
     titleError: "hidden",
     imageError: "hidden",
     categoryError: "hidden",
   });
+  const [selectedCategory, setSelectedCategory] = useState("Category");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Handle Title
     if (e.target.name === "title") {
       const titleValue = e.target.value.trim();
-      if (!titleValue) setErrors((prev) => ({ ...prev, titleError: "" }));
-      else setTitle(titleValue);
+      if (!titleValue) {
+        setErrors((prev) => ({ ...prev, titleError: "" }));
+      } else {
+        setTitle(titleValue);
+        setErrors((prev) => ({ ...prev, titleError: "hidden" }));
+      }
     }
-    // Handle Image
-    if (!e.target.files) setErrors((prev) => ({ ...prev, imageError: "" }));
-    else setCoverImage(e.target.files[0]);
   };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setCategory(category);
+    setErrors((prev) => ({ ...prev, categoryError: "hidden" }));
+  };
+
   return (
-    <div className="flex flex-1 gap-4 flex-col border-[1px]  m-10 p-5">
-      {/* TITLE */}
-      <label htmlFor="title" className="flex flex-col">
-        Add a Title:
+    <div className="flex flex-col max-w-2xl mx-auto my-10 p-8 border  rounded-lg shadow-lg space-y-8">
+      <h1 className="text-2xl font-bold text-center">Create a New Post</h1>
+      
+      {/* TITLE SECTION */}
+      <div className="space-y-2">
+        <label htmlFor="title" className="font-medium">Post Title:</label>
         <input
           type="text"
-          onChange={() =>
-            setErrors((prev) => ({ ...prev, titleError: "hidden" }))
-          }
-          onBlur={(e) => handleChange(e)}
           name="title"
-          placeholder="Post Title"
+          onChange={(e) => handleChange(e)}
+          onBlur={(e) => handleChange(e)}
+          placeholder="Enter a compelling title"
           id="title"
-          className="outline-none border-[0.5px] rounded-sm p-2 w-[50vw]"
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
         />
-      </label>
-      <p className={`${errors.titleError} text-rose-500 text-sm`}>
-        Title cannot be empty
-      </p>
-      {/* COVER IMAGE */}
-      Add a Cover Image:
-      <label htmlFor="cover-image" className="w-fit">
-        <ImageIcon className="" />
-        <input
-          type="file"
-          name="cover-image"
-          onChange={(e) => {
-            handleChange(e);
-            setErrors((prev) => ({ ...prev, imageError: "hidden" }));
-          }}
-          placeholder="Post Title"
-          id="cover-image"
-          className="hidden w-fit"
-        />
-      </label>
-      <p className={`${errors.imageError} text-rose-500 text-sm`}>
-        Image field cannot be empty
-      </p>
-      {/* CATEGORY */}
-      <div className="flex-col flex">
-        Choose one Category:
+        <p className={`${errors.titleError} text-rose-500 text-sm mt-1`}>
+          Title cannot be empty
+        </p>
+      </div>
+
+      {/* COVER IMAGE SECTION */}
+      <div className="space-y-2">
+        <UploadExample />
+      </div>
+
+      {/* CATEGORY SECTION */}
+      <div className="space-y-2">
+        <span className="font-medium">Choose a Category:</span>
         <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none border-[0.5px] rounded-sm px-2 w-fit">
-            Category
+          <DropdownMenuTrigger className="w-full p-3 flex justify-between items-center border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+            <span>{selectedCategory}</span>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Choose One</DropdownMenuLabel>
+          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+            <DropdownMenuLabel className="text-black">Available Categories</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {categories.map((category, i) => (
               <DropdownMenuItem
-                onClick={() => {
-                  setCategory(category)
-                }}
+                onClick={() => handleCategorySelect(category)}
                 key={category + i}
               >
                 {category}
@@ -101,6 +95,9 @@ const NewPost = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <p className={`${errors.categoryError} text-rose-500 text-sm mt-1`}>
+          Category cannot be empty
+        </p>
       </div>
     </div>
   );

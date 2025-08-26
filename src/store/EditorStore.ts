@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { JSONContent } from "@tiptap/react";
+import defaultContent from '@/components/tiptap-templates/simple/data/content'
 
 // Post type
 interface Post {
   title: string | null;
   setTitle: (title: string | null) => void;
-  coverImage: File | null;
-  setCoverImage: (coverImage: File | null) => void;
+  coverImage: string | undefined;
+  setCoverImage: (coverImage: string | undefined) => void;
   category: string | null;
   setCategory: (category: string | null) => void;
   status: "Published" | "Draft";
@@ -19,9 +20,9 @@ interface Post {
 export const usePost = create<Post>((set) => ({
   title: "",
   setTitle: (title) => set({ title }),
-  content: null,
+  content: defaultContent,
   setContent: (content) => set({ content }),
-  coverImage: null,
+  coverImage: undefined,
   setCoverImage: (coverImage) => set({ coverImage }),
   category: null,
   setCategory: (category) => set({ category }),

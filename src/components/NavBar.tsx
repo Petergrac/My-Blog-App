@@ -1,4 +1,4 @@
-import { Menu, Search } from "lucide-react";
+import { Menu, SearchIcon } from "lucide-react";
 import { ModeToggle } from "./ThemeToggle";
 import {
   DropdownMenu,
@@ -7,22 +7,39 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
 
 const NavBar = () => {
   return (
-    <nav className="bg-gradient-to-b from-black pb-5 pt-3 flex items-center justify-between md:justify-around flex-1 px-5">
+    <nav className="bg-gradient-to-b from-black pb-5 pt-3 flex absolute items-center justify-between md:justify-around w-full z-20 px-5">
       <h1 className="text-2xl line-clamp-3 font-sans font-bold">
         <span className="text-sky-500">Blo</span>
         <span className="text-yellow-300">og</span>
       </h1>
-      <div className="md:flex gap-2 items-center hidden">
-        <Search />
-        <input
-          type="text"
-          placeholder="Search"
-          className="outline-none bg-transparent py-4"
-        />
-      </div>
+      <Dialog>
+        <DialogTrigger>
+          <SearchIcon className="text-white" />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle className="sr-only">Search any post</DialogTitle>
+          <DialogDescription>
+            Search by Author Name, Category...
+          </DialogDescription>
+          <Input type="text" placeholder="Search" />
+        </DialogContent>
+      </Dialog>
+
+      {/* DESKTOP */}
       <div className="hidden md:flex gap-20 justify-between">
         <div className="flex gap-3 text-gray-200 text-sm">
           <Link href="/">HOME</Link>
@@ -31,7 +48,11 @@ const NavBar = () => {
           <Link href="/contact">CONTACTS</Link>
         </div>
         <ModeToggle />
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
+      {/* MOBILE */}
       <div className="flex gap-2 items-center md:hidden">
         <ModeToggle />
         <DropdownMenu>
@@ -54,6 +75,9 @@ const NavBar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </nav>
   );
