@@ -22,7 +22,7 @@ const categories: string[] = [
 ];
 
 const NewPost = () => {
-  const { setTitle, setCategory} = usePost();
+  const { setTitle, setCategory, setDescription } = usePost();
   const [errors, setErrors] = useState({
     titleError: "hidden",
     imageError: "hidden",
@@ -52,10 +52,12 @@ const NewPost = () => {
   return (
     <div className="flex flex-col max-w-2xl mx-auto my-10 p-8 border  rounded-lg shadow-lg space-y-8">
       <h1 className="text-2xl font-bold text-center">Create a New Post</h1>
-      
+
       {/* TITLE SECTION */}
       <div className="space-y-2">
-        <label htmlFor="title" className="font-medium">Post Title:</label>
+        <label htmlFor="title" className="font-medium">
+          Post Title:
+        </label>
         <input
           type="text"
           name="title"
@@ -74,7 +76,19 @@ const NewPost = () => {
       <div className="space-y-2">
         <UploadExample />
       </div>
-
+      {/* SHORT DESCRIPTION */}
+      <div className="flex items-start gap-2 flex-col justify-center">
+        Add a short description:
+        <textarea
+          className="outline-none border-[2px] rounded-sm p-2"
+          placeholder="Description"
+          minLength={20}
+          maxLength={100}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setDescription(e.target.value)
+          }
+        />
+      </div>
       {/* CATEGORY SECTION */}
       <div className="space-y-2">
         <span className="font-medium">Choose a Category:</span>
@@ -83,7 +97,9 @@ const NewPost = () => {
             <span>{selectedCategory}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-            <DropdownMenuLabel className="text-black">Available Categories</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-black">
+              Available Categories
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             {categories.map((category, i) => (
               <DropdownMenuItem

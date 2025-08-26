@@ -11,20 +11,50 @@ import {
 import { toast } from "sonner";
 
 const SavePost = () => {
-  const { title, content, coverImage, category, setStatus, status } = usePost();
+  const {
+    title,
+    content,
+    coverImage,
+    category,
+    setStatus,
+    status,
+    description,
+  } = usePost();
   const handleSave = () => {
     if (title?.trim() === "") {
       toast.error("Title Cannot be empty");
-    } else if (content?.content === null) {
+      return;
+    } else if (content?.content === undefined) {
       toast.error("Content cannot be empty");
-    } else if (coverImage === null) {
+      return;
+    } else if (coverImage === undefined) {
       toast.error("Cover image is needed");
+      return;
     } else if (category === null) {
       toast.error("Choose atleast one category.");
+      return;
     } else if (status.trim() === "") {
       toast.warning("Post saved as draft");
+      return;
+    } else if (
+      !description ||
+      description.trim() === "" ||
+      description.trim().length < 10
+    ) {
+      toast.error(
+        "Description is needed and must be at least 10 characters long"
+      );
+      return;
     } else {
-      console.log(title, category, coverImage, category, status, content);
+      const finalPost = {
+        title,
+        category,
+        coverImage,
+        state: status.toUpperCase(),
+        content,
+        description,
+      };
+      console.log(finalPost)
       toast.success("Post Published", {
         description: title,
         action: {

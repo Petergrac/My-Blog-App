@@ -1249,6 +1249,7 @@ export namespace Prisma {
     clerkId: string | null
     username: string | null
     email: string | null
+    avatar: string | null
     createdAt: Date | null
   }
 
@@ -1257,6 +1258,7 @@ export namespace Prisma {
     clerkId: string | null
     username: string | null
     email: string | null
+    avatar: string | null
     createdAt: Date | null
   }
 
@@ -1265,6 +1267,7 @@ export namespace Prisma {
     clerkId: number
     username: number
     email: number
+    avatar: number
     createdAt: number
     _all: number
   }
@@ -1275,6 +1278,7 @@ export namespace Prisma {
     clerkId?: true
     username?: true
     email?: true
+    avatar?: true
     createdAt?: true
   }
 
@@ -1283,6 +1287,7 @@ export namespace Prisma {
     clerkId?: true
     username?: true
     email?: true
+    avatar?: true
     createdAt?: true
   }
 
@@ -1291,6 +1296,7 @@ export namespace Prisma {
     clerkId?: true
     username?: true
     email?: true
+    avatar?: true
     createdAt?: true
     _all?: true
   }
@@ -1372,6 +1378,7 @@ export namespace Prisma {
     clerkId: string
     username: string | null
     email: string | null
+    avatar: string | null
     createdAt: Date
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
@@ -1397,6 +1404,7 @@ export namespace Prisma {
     clerkId?: boolean
     username?: boolean
     email?: boolean
+    avatar?: boolean
     createdAt?: boolean
     posts?: boolean | User$postsArgs<ExtArgs>
     comments?: boolean | User$commentsArgs<ExtArgs>
@@ -1409,6 +1417,7 @@ export namespace Prisma {
     clerkId?: boolean
     username?: boolean
     email?: boolean
+    avatar?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -1417,6 +1426,7 @@ export namespace Prisma {
     clerkId?: boolean
     username?: boolean
     email?: boolean
+    avatar?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -1425,10 +1435,11 @@ export namespace Prisma {
     clerkId?: boolean
     username?: boolean
     email?: boolean
+    avatar?: boolean
     createdAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "username" | "email" | "createdAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "username" | "email" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | User$postsArgs<ExtArgs>
     comments?: boolean | User$commentsArgs<ExtArgs>
@@ -1450,6 +1461,7 @@ export namespace Prisma {
       clerkId: string
       username: string | null
       email: string | null
+      avatar: string | null
       createdAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -1881,6 +1893,7 @@ export namespace Prisma {
     readonly clerkId: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
+    readonly avatar: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -2375,6 +2388,8 @@ export namespace Prisma {
     title: string | null
     content: string | null
     category: string | null
+    coverImage: string | null
+    description: string | null
     state: $Enums.PostState | null
     accessKey: string | null
     authorId: string | null
@@ -2387,6 +2402,8 @@ export namespace Prisma {
     title: string | null
     content: string | null
     category: string | null
+    coverImage: string | null
+    description: string | null
     state: $Enums.PostState | null
     accessKey: string | null
     authorId: string | null
@@ -2399,6 +2416,8 @@ export namespace Prisma {
     title: number
     content: number
     category: number
+    coverImage: number
+    description: number
     state: number
     accessKey: number
     authorId: number
@@ -2413,6 +2432,8 @@ export namespace Prisma {
     title?: true
     content?: true
     category?: true
+    coverImage?: true
+    description?: true
     state?: true
     accessKey?: true
     authorId?: true
@@ -2425,6 +2446,8 @@ export namespace Prisma {
     title?: true
     content?: true
     category?: true
+    coverImage?: true
+    description?: true
     state?: true
     accessKey?: true
     authorId?: true
@@ -2437,6 +2460,8 @@ export namespace Prisma {
     title?: true
     content?: true
     category?: true
+    coverImage?: true
+    description?: true
     state?: true
     accessKey?: true
     authorId?: true
@@ -2522,6 +2547,8 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state: $Enums.PostState
     accessKey: string
     authorId: string
@@ -2551,6 +2578,8 @@ export namespace Prisma {
     title?: boolean
     content?: boolean
     category?: boolean
+    coverImage?: boolean
+    description?: boolean
     state?: boolean
     accessKey?: boolean
     authorId?: boolean
@@ -2567,6 +2596,8 @@ export namespace Prisma {
     title?: boolean
     content?: boolean
     category?: boolean
+    coverImage?: boolean
+    description?: boolean
     state?: boolean
     accessKey?: boolean
     authorId?: boolean
@@ -2580,6 +2611,8 @@ export namespace Prisma {
     title?: boolean
     content?: boolean
     category?: boolean
+    coverImage?: boolean
+    description?: boolean
     state?: boolean
     accessKey?: boolean
     authorId?: boolean
@@ -2593,6 +2626,8 @@ export namespace Prisma {
     title?: boolean
     content?: boolean
     category?: boolean
+    coverImage?: boolean
+    description?: boolean
     state?: boolean
     accessKey?: boolean
     authorId?: boolean
@@ -2600,7 +2635,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "category" | "state" | "accessKey" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "category" | "coverImage" | "description" | "state" | "accessKey" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     comments?: boolean | Post$commentsArgs<ExtArgs>
@@ -2626,6 +2661,8 @@ export namespace Prisma {
       title: string
       content: string
       category: string
+      coverImage: string
+      description: string
       state: $Enums.PostState
       accessKey: string
       authorId: string
@@ -3061,6 +3098,8 @@ export namespace Prisma {
     readonly title: FieldRef<"Post", 'String'>
     readonly content: FieldRef<"Post", 'String'>
     readonly category: FieldRef<"Post", 'String'>
+    readonly coverImage: FieldRef<"Post", 'String'>
+    readonly description: FieldRef<"Post", 'String'>
     readonly state: FieldRef<"Post", 'PostState'>
     readonly accessKey: FieldRef<"Post", 'String'>
     readonly authorId: FieldRef<"Post", 'String'>
@@ -5666,6 +5705,7 @@ export namespace Prisma {
     clerkId: 'clerkId',
     username: 'username',
     email: 'email',
+    avatar: 'avatar',
     createdAt: 'createdAt'
   };
 
@@ -5677,6 +5717,8 @@ export namespace Prisma {
     title: 'title',
     content: 'content',
     category: 'category',
+    coverImage: 'coverImage',
+    description: 'description',
     state: 'state',
     accessKey: 'accessKey',
     authorId: 'authorId',
@@ -5804,6 +5846,7 @@ export namespace Prisma {
     clerkId?: StringFilter<"User"> | string
     username?: StringNullableFilter<"User"> | string | null
     email?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     posts?: PostListRelationFilter
     comments?: CommentListRelationFilter
@@ -5815,6 +5858,7 @@ export namespace Prisma {
     clerkId?: SortOrder
     username?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     posts?: PostOrderByRelationAggregateInput
     comments?: CommentOrderByRelationAggregateInput
@@ -5829,6 +5873,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     username?: StringNullableFilter<"User"> | string | null
     email?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     posts?: PostListRelationFilter
     comments?: CommentListRelationFilter
@@ -5840,6 +5885,7 @@ export namespace Prisma {
     clerkId?: SortOrder
     username?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -5854,6 +5900,7 @@ export namespace Prisma {
     clerkId?: StringWithAggregatesFilter<"User"> | string
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
     email?: StringNullableWithAggregatesFilter<"User"> | string | null
+    avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
@@ -5865,6 +5912,8 @@ export namespace Prisma {
     title?: StringFilter<"Post"> | string
     content?: StringFilter<"Post"> | string
     category?: StringFilter<"Post"> | string
+    coverImage?: StringFilter<"Post"> | string
+    description?: StringFilter<"Post"> | string
     state?: EnumPostStateFilter<"Post"> | $Enums.PostState
     accessKey?: StringFilter<"Post"> | string
     authorId?: StringFilter<"Post"> | string
@@ -5880,6 +5929,8 @@ export namespace Prisma {
     title?: SortOrder
     content?: SortOrder
     category?: SortOrder
+    coverImage?: SortOrder
+    description?: SortOrder
     state?: SortOrder
     accessKey?: SortOrder
     authorId?: SortOrder
@@ -5892,27 +5943,31 @@ export namespace Prisma {
 
   export type PostWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    accessKey?: string
     AND?: PostWhereInput | PostWhereInput[]
     OR?: PostWhereInput[]
     NOT?: PostWhereInput | PostWhereInput[]
     title?: StringFilter<"Post"> | string
     content?: StringFilter<"Post"> | string
     category?: StringFilter<"Post"> | string
+    coverImage?: StringFilter<"Post"> | string
+    description?: StringFilter<"Post"> | string
     state?: EnumPostStateFilter<"Post"> | $Enums.PostState
+    accessKey?: StringFilter<"Post"> | string
     authorId?: StringFilter<"Post"> | string
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
     comments?: CommentListRelationFilter
     likes?: LikeListRelationFilter
-  }, "id" | "accessKey">
+  }, "id">
 
   export type PostOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
     category?: SortOrder
+    coverImage?: SortOrder
+    description?: SortOrder
     state?: SortOrder
     accessKey?: SortOrder
     authorId?: SortOrder
@@ -5931,6 +5986,8 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Post"> | string
     content?: StringWithAggregatesFilter<"Post"> | string
     category?: StringWithAggregatesFilter<"Post"> | string
+    coverImage?: StringWithAggregatesFilter<"Post"> | string
+    description?: StringWithAggregatesFilter<"Post"> | string
     state?: EnumPostStateWithAggregatesFilter<"Post"> | $Enums.PostState
     accessKey?: StringWithAggregatesFilter<"Post"> | string
     authorId?: StringWithAggregatesFilter<"Post"> | string
@@ -6055,6 +6112,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
@@ -6066,6 +6124,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
@@ -6077,6 +6136,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
@@ -6088,6 +6148,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
@@ -6099,6 +6160,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
   }
 
@@ -6107,6 +6169,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6115,6 +6178,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6123,8 +6187,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutPostsInput
@@ -6137,8 +6203,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -6151,6 +6219,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6165,6 +6235,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -6179,8 +6251,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -6191,6 +6265,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6202,6 +6278,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -6391,6 +6469,7 @@ export namespace Prisma {
     clerkId?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6399,6 +6478,7 @@ export namespace Prisma {
     clerkId?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6407,6 +6487,7 @@ export namespace Prisma {
     clerkId?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6477,6 +6558,8 @@ export namespace Prisma {
     title?: SortOrder
     content?: SortOrder
     category?: SortOrder
+    coverImage?: SortOrder
+    description?: SortOrder
     state?: SortOrder
     accessKey?: SortOrder
     authorId?: SortOrder
@@ -6489,6 +6572,8 @@ export namespace Prisma {
     title?: SortOrder
     content?: SortOrder
     category?: SortOrder
+    coverImage?: SortOrder
+    description?: SortOrder
     state?: SortOrder
     accessKey?: SortOrder
     authorId?: SortOrder
@@ -6501,6 +6586,8 @@ export namespace Prisma {
     title?: SortOrder
     content?: SortOrder
     category?: SortOrder
+    coverImage?: SortOrder
+    description?: SortOrder
     state?: SortOrder
     accessKey?: SortOrder
     authorId?: SortOrder
@@ -7000,8 +7087,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentCreateNestedManyWithoutPostInput
@@ -7013,8 +7102,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutPostInput
@@ -7101,6 +7192,8 @@ export namespace Prisma {
     title?: StringFilter<"Post"> | string
     content?: StringFilter<"Post"> | string
     category?: StringFilter<"Post"> | string
+    coverImage?: StringFilter<"Post"> | string
+    description?: StringFilter<"Post"> | string
     state?: EnumPostStateFilter<"Post"> | $Enums.PostState
     accessKey?: StringFilter<"Post"> | string
     authorId?: StringFilter<"Post"> | string
@@ -7166,6 +7259,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     comments?: CommentCreateNestedManyWithoutAuthorInput
     likes?: LikeCreateNestedManyWithoutUserInput
@@ -7176,6 +7270,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     likes?: LikeUncheckedCreateNestedManyWithoutUserInput
@@ -7248,6 +7343,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     likes?: LikeUpdateManyWithoutUserNestedInput
@@ -7258,6 +7354,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
@@ -7300,8 +7397,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutPostsInput
@@ -7313,8 +7412,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7331,6 +7432,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostCreateNestedManyWithoutAuthorInput
     likes?: LikeCreateNestedManyWithoutUserInput
@@ -7341,6 +7443,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     likes?: LikeUncheckedCreateNestedManyWithoutUserInput
@@ -7367,6 +7470,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7380,6 +7485,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -7404,6 +7511,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUpdateManyWithoutAuthorNestedInput
     likes?: LikeUpdateManyWithoutUserNestedInput
@@ -7414,6 +7522,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
@@ -7424,8 +7533,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutPostsInput
@@ -7437,8 +7548,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     authorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7455,6 +7568,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
@@ -7465,6 +7579,7 @@ export namespace Prisma {
     clerkId: string
     username?: string | null
     email?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
@@ -7491,6 +7606,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7504,6 +7621,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -7528,6 +7647,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
@@ -7538,6 +7658,7 @@ export namespace Prisma {
     clerkId?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
@@ -7548,8 +7669,10 @@ export namespace Prisma {
     title: string
     content: string
     category: string
+    coverImage: string
+    description: string
     state?: $Enums.PostState
-    accessKey: string
+    accessKey?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7572,6 +7695,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7585,6 +7710,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7598,6 +7725,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     state?: EnumPostStateFieldUpdateOperationsInput | $Enums.PostState
     accessKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
