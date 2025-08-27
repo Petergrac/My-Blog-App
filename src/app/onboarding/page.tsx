@@ -66,7 +66,7 @@ export default function OnboardingComponent() {
                 <DropdownMenuItem onSelect={() => setMembershipType("User")}>
                   <div className="flex flex-col items-start">
                     <span className="font-medium flex gap-2 items-center text-fuchsia-500">
-                      <UserIcon /> User
+                      <UserIcon className="text-gray-500" /> User
                     </span>
                     <span className="text-sm text-gray-500">
                       Access and view content created by authors.
@@ -76,7 +76,7 @@ export default function OnboardingComponent() {
                 <DropdownMenuItem onSelect={() => setMembershipType("Author")}>
                   <div className="flex flex-col items-start">
                     <span className="font-medium text-cyan-500 flex items-center gap-2">
-                      <Book /> Author
+                      <Book className="text-gray" /> Author
                     </span>
                     <span className="text-sm text-gray-500">
                       Create, publish, and manage your own content.

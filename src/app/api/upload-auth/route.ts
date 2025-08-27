@@ -8,8 +8,8 @@ export async function GET() {
   const user = await currentUser();
 
   if (
-    user?.publicMetadata.membershipType !== "Author" &&
-    user?.publicMetadata.membershipType !== "Admin"
+    user?.publicMetadata.role !== "Author" &&
+    user?.publicMetadata.role !== "Admin"
   )
     return Response.json({ message: "You must be an author or admin" });
 

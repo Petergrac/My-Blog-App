@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
+import { newPost } from "@/actions/PostActions";
 
 const SavePost = () => {
   const {
@@ -20,8 +21,8 @@ const SavePost = () => {
     status,
     description,
   } = usePost();
-  const handleSave = () => {
-    if (title?.trim() === "") {
+  const handleSave = async () => {
+    if (title?.trim() === "" || title === null) {
       toast.error("Title Cannot be empty");
       return;
     } else if (content?.content === undefined) {
@@ -33,7 +34,7 @@ const SavePost = () => {
     } else if (category === null) {
       toast.error("Choose atleast one category.");
       return;
-    } else if (status.trim() === "") {
+    } else if (status === "DRAFT") {
       toast.warning("Post saved as draft");
       return;
     } else if (
@@ -46,22 +47,28 @@ const SavePost = () => {
       );
       return;
     } else {
+      const newContent = JSON.stringify(content);
       const finalPost = {
         title,
         category,
         coverImage,
-        state: status.toUpperCase(),
-        content,
+        state: status,
+        content: newContent,
         description,
       };
-      console.log(finalPost)
-      toast.success("Post Published", {
-        description: title,
-        action: {
-          label: "X",
-          onClick: () => console.log("Post Updated"),
-        },
-      });
+      try {
+        await newPost(finalPost);
+        toast.success("Post Published", {
+          description: title,
+          action: {
+            label: "X",
+            onClick: () => console.log("Post Updated"),
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        toast.error("Internal server error, Post could not be saved")
+      }
     }
   };
   return (
@@ -83,10 +90,10 @@ const SavePost = () => {
               <span className="text-lime-300">Draft</span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setStatus("Draft")}>
+            <DropdownMenuItem onClick={() => setStatus("DRAFT")}>
               Draft
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatus("Published")}>
+            <DropdownMenuItem onClick={() => setStatus("PUBLISHED")}>
               Published
             </DropdownMenuItem>
           </DropdownMenuContent>

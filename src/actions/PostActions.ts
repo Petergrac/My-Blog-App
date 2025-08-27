@@ -1,14 +1,13 @@
 "use server";
-import { Post } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 /**
  * ================= CREATE A POST ============
  * @param finalPost - The post data to be saved.
  */
-interface finaPost extends Post {
+interface finaPost {
   title: string;
   category: string;
   coverImage: string;
@@ -18,14 +17,23 @@ interface finaPost extends Post {
 }
 
 export async function newPost(finalPost: finaPost) {
-  const user = await currentUser();
+  const { userId } = await auth();
 
-  if (!user) {
-    return {
-      message: "You need authorization to create a post.",
-    };
+  if (!userId) {
+    return auth.protect();
   }
 
+  // Get user id
+  const authorId = await prisma.user.findUnique({
+    where: {
+      clerkId: userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (!authorId) throw new Error("You must be an author in order to post");
+  // Post the data
   try {
     const createdPost = await prisma.post.create({
       data: {
@@ -35,12 +43,9 @@ export async function newPost(finalPost: finaPost) {
         description: finalPost.description,
         state: finalPost.state,
         coverImage: finalPost.coverImage,
-        // Assuming you have a relation from Post to User
-        authorId: user.id,
+        authorId: authorId.id,
       },
     });
-
-    // Revalidate the path to show the new post immediately
     revalidatePath(`/blog/${createdPost.id}`);
     return {
       message: "Post created successfully!",
@@ -48,8 +53,6 @@ export async function newPost(finalPost: finaPost) {
     };
   } catch (error) {
     console.error("Error creating post:", error);
-    return {
-      error: "Failed to create post. Please try again.",
-    };
+    throw error;
   }
 }

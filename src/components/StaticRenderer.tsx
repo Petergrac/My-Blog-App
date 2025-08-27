@@ -52,11 +52,11 @@ const StaticRenderer = async ({content}: EditorProps) => {
 
 
   return (
-    <div className="flex flex-row-reverse overflow-hidden h-screen">
+    <div className="flex flex-row-reverse overflow-hidden min-h-screen md:h-screen">
       <TableOfContent toc={toc} />
       {/* Main content area */}
       <div
-        className="tiptap ProseMirror shadow-lg p-3 overflow-y-auto"
+        className="tiptap ProseMirror shadow-lg p-3 md:overflow-y-auto"
         dangerouslySetInnerHTML={{ __html: finaltHTML }}
       />
     </div>

@@ -19,6 +19,8 @@ model User {
   clerkId   String    @unique // from Clerk
   username  String?
   email     String?
+  country   String?
+  bio       String?
   avatar    String?
   posts     Post[]
   comments  Comment[]

@@ -39,6 +39,7 @@ const UploadExample = () => {
       const response = await fetch("/api/upload-auth/");
       if (!response.ok) {
         // If the server response is not successful, extract the error text for debugging.
+        toast.error('You must be an author in order to upload images');
         const errorText = await response.text();
         throw new Error(
           `Request failed with status ${response.status}: ${errorText}`
@@ -81,7 +82,6 @@ const UploadExample = () => {
     let authParams;
     try {
       authParams = await authenticator();
-      console.log(authParams);
     } catch (authError) {
       console.error("Failed to authenticate for upload:", authError);
       return;
@@ -112,9 +112,7 @@ const UploadExample = () => {
       setTimeout(() => {
         setProgress(0);
       }, 2000);
-      console.log("Upload response:", uploadResponse);
       setState("");
-      setProgress(0);
     } catch (error) {
       // Handle specific error types provided by the ImageKit SDK.
       if (error instanceof ImageKitAbortError) {

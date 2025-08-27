@@ -12,8 +12,8 @@ interface Post {
   setDescription: (description: string | null) => void;
   category: string | null;
   setCategory: (category: string | null) => void;
-  status: "Published" | "Draft";
-  setStatus: (status: "Published" | "Draft") => void;
+  status: "PUBLISHED" | "DRAFT";
+  setStatus: (status: "PUBLISHED" | "DRAFT") => void;
   content: JSONContent | null;
   setContent: (content: JSONContent | null) => void;
 }
@@ -30,6 +30,6 @@ export const usePost = create<Post>((set) => ({
   setDescription: (description) => set({ description }),
   category: null,
   setCategory: (category) => set({ category }),
-  status: "Draft",
+  status: "DRAFT",
   setStatus: (status) => set({ status }),
 }));
