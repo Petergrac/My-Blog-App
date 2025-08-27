@@ -5,7 +5,7 @@ const isOboardingRoute = createRouteMatcher(["/onboarding"]);
 
 const isProtectedRoute = createRouteMatcher(["/new(.*)", "/comment(.*)"]);
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, sessionClaims, redirectToSignIn } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   // If the route is onboarding
   if (userId && isOboardingRoute(req)) {

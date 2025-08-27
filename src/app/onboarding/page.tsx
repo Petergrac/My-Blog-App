@@ -88,6 +88,7 @@ export default function OnboardingComponent() {
             <input type="hidden" name="membershipType" value={membershipType} />
           </div>
           {error && <p className="text-red-600 text-center">{error}</p>}
+          
           <Button type="submit" className="w-full">
             Complete Onboarding
           </Button>

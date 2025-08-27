@@ -15,8 +15,7 @@ export const completeOnboarding = async (formData: FormData) => {
     const res = await client.users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true,
-        membershipType: formData.get("membershipType"),
-        imageUrl: formData.get('imageURl')
+        role: formData.get("membershipType"),
       },
     });
     return { message: res.publicMetadata }

@@ -2,7 +2,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { getUploadAuthParams } from "@imagekit/next/server";
 
-type membershipType = "Author" | "Admin";
 
 export async function GET() {
   // Your application logic to authenticate the user

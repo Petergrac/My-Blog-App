@@ -7,13 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
@@ -47,10 +45,22 @@ const NavBar = () => {
           <Link href="/about">ABOUT</Link>
           <Link href="/contact">CONTACTS</Link>
         </div>
-        <ModeToggle />
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        <div className="flex sm-2 md:gap-5">
+          <ModeToggle />
+          <SignedIn>
+            <UserButton
+              userProfileUrl="/user-profile"
+              userProfileMode="navigation"
+            />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton>
+              <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+        </div>
       </div>
       {/* MOBILE */}
       <div className="flex gap-2 items-center md:hidden">
@@ -76,8 +86,18 @@ const NavBar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         <SignedIn>
-          <UserButton />
+          <UserButton
+            userProfileUrl="/user-profile"
+            userProfileMode="navigation"
+          />
         </SignedIn>
+        <SignedOut>
+          <SignInButton>
+            <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
+              Sign In
+            </button>
+          </SignInButton>
+        </SignedOut>
       </div>
     </nav>
   );

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lora, Ojuju } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import HeroSection from "@/components/HeroSection";
 import Footer from "@/components/Footer";
-import { Toaster } from "sonner";
+
 
 
 const geistSans = Geist({
@@ -39,17 +38,10 @@ export default function RootLayout({
           <main
             className={`${geistSans.variable} ${ojuju.variable} ${lora.variable} ${geistMono.variable} antialiased`}
           >
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
               <HeroSection />
               {children}
               <Footer />
-              <Toaster richColors={true} position={"top-center"} />
-            </ThemeProvider>
+              
           </main>
   );
 }
