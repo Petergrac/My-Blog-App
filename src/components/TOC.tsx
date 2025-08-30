@@ -50,13 +50,12 @@ const ActiveToc: React.FC<ActiveTocProps> = ({ toc }) => {
       headingsRef.current.forEach(heading => observer.unobserve(heading));
     };
   }, [toc]);
-
   return (
-    <nav className="w-1/4 p-4 border-r hidden md:block sticky top-0 z-50 overflow-y-auto h-screen">
+    <nav className=" p-4 h-screen lg:block hidden">
       <h3 className="font-bold mb-2">Table of Contents</h3>
       <ul className="space-y-1">
-        {toc.map((item) => (
-          <li key={item.id} className={`toc-level-${item.level}`}>
+        {toc.map((item,i) => (
+          <li key={i} className={`toc-level-${item.level}`}>
             <a href={`#${item.id}`}>{item.text}</a>
           </li>
         ))}

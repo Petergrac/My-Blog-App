@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
  * ================= CREATE A POST ============
  * @param finalPost - The post data to be saved.
  */
-interface finaPost {
+interface finalPost {
   title: string;
   category: string;
   coverImage: string;
@@ -16,7 +16,7 @@ interface finaPost {
   description: string;
 }
 
-export async function newPost(finalPost: finaPost) {
+export async function newPost(finalPost: finalPost) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -53,6 +53,27 @@ export async function newPost(finalPost: finaPost) {
     };
   } catch (error) {
     console.error("Error creating post:", error);
+    throw error;
+  }
+}
+
+/**
+ * =============  PATCH A POST ==============
+ *
+ */
+export async function patchPost(updatedPost: finalPost, id: string) {
+  try {
+    await prisma.post.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...updatedPost,
+      },
+    });
+    revalidatePath(`/blog/${id}`);
+  } catch (error) {
+    console.log(error);
     throw error;
   }
 }

@@ -1,10 +1,11 @@
-import StaticRenderer from "@/components/StaticRenderer";
+import StaticRenderer, { initialTOC } from "@/components/StaticRenderer";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { JSONContent } from "@tiptap/react";
 import { Metadata } from "next";
 import { getPost } from "@/lib/postQueries";
 import { notFound } from "next/navigation";
+import ActiveToc from "@/components/TOC";
 
 // FETCH ALL STATIC POSTS
 export async function generateStaticParams() {
@@ -37,7 +38,7 @@ export async function generateMetadata({
 }
 
 // Revalidate Post
-export const revalidate = 3600;
+export const revalidate = 60;
 
 interface PostType {
   type: string;
@@ -56,8 +57,9 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   const PostContent = JSON.parse(post.content) as PostType;
+  const toc = initialTOC;
   return (
-    <div className="py-10 mx-auto md:max-w-[90vw] lg:max-w-[70vw]">
+    <div className="py-10 mx-auto md:max-w-[90vw] lg:max-w-[90vw]">
       {/* TITLE */}
       <div className="pb-5 border-b-[1px] shadow-md">
         <h1 className="sm:text-4xl underline underline-offset-4 text-2xl text-center">
@@ -76,7 +78,11 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </div>
       {/* CONTENT */}
-      <StaticRenderer content={PostContent} />
+     
+       <div className="flex gap-4">
+         <StaticRenderer content={PostContent} />
+         {toc && <ActiveToc toc={toc} />}
+       </div>
       {/* ABOUT THE AUTHOR */}
       <div className="border-t-3 py-4">
         {/* AVATAR */}

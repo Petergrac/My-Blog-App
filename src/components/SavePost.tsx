@@ -10,6 +10,8 @@ import {
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
 import { newPost } from "@/actions/PostActions";
+import { useRouter } from "next/navigation";
+import { Post } from "@/generated/prisma";
 
 const SavePost = () => {
   const {
@@ -21,6 +23,7 @@ const SavePost = () => {
     status,
     description,
   } = usePost();
+  const router = useRouter();
   const handleSave = async () => {
     if (title?.trim() === "" || title === null) {
       toast.error("Title Cannot be empty");
@@ -33,9 +36,6 @@ const SavePost = () => {
       return;
     } else if (category === null) {
       toast.error("Choose atleast one category.");
-      return;
-    } else if (status === "DRAFT") {
-      toast.warning("Post saved as draft");
       return;
     } else if (
       !description ||
@@ -57,17 +57,17 @@ const SavePost = () => {
         description,
       };
       try {
-        await newPost(finalPost);
-        toast.success("Post Published", {
-          description: title,
-          action: {
-            label: "X",
-            onClick: () => console.log("Post Updated"),
-          },
-        });
+        const createdPost = (await newPost(finalPost)) as unknown as Post;
+        if (status === "DRAFT") {
+          toast.warning("Post saved as DRAFT,");
+          router.push(`/blog/author/`);
+        } else {
+          toast.success("Post Published");
+          router.push(`/blog/${createdPost.id}`);
+        }
       } catch (error) {
         console.log(error);
-        toast.error("Internal server error, Post could not be saved")
+        toast.error("Internal server error, Post could not be saved");
       }
     }
   };

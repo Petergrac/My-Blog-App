@@ -41,7 +41,6 @@ export default function RootLayout({
               <HeroSection />
               {children}
               <Footer />
-              
           </main>
   );
 }

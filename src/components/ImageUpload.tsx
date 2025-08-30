@@ -9,11 +9,19 @@ import {
   upload,
 } from "@imagekit/next";
 import { ImageIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { SetStateAction, useRef, useState } from "react";
 import { toast } from "sonner";
 
 // UploadExample component demonstrates file uploading using ImageKit's Next.js SDK.
-const UploadExample = () => {
+const UploadExample = ({
+  update,
+  setImageUrl,
+  getImageUrl,
+}: {
+  update?: boolean;
+  setImageUrl?: (value: SetStateAction<string>) => void;
+  getImageUrl?: (url: string) => void;
+}) => {
   const { setCoverImage } = usePost();
   // State to keep track of the current upload progress (percentage)
   const [progress, setProgress] = useState(0);
@@ -39,7 +47,7 @@ const UploadExample = () => {
       const response = await fetch("/api/upload-auth/");
       if (!response.ok) {
         // If the server response is not successful, extract the error text for debugging.
-        toast.error('You must be an author in order to upload images');
+        toast.error("You must be an author in order to upload images");
         const errorText = await response.text();
         throw new Error(
           `Request failed with status ${response.status}: ${errorText}`
@@ -108,6 +116,9 @@ const UploadExample = () => {
       });
       const url = uploadResponse.url;
       setCoverImage(url);
+      // Handle cover image update
+      if (url && getImageUrl) getImageUrl(url);
+      
       toast.success("Cover Image uploaded successfully!");
       setTimeout(() => {
         setProgress(0);
@@ -129,35 +140,75 @@ const UploadExample = () => {
       }
     }
   };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      if (url) {
+        if (setImageUrl) {
+          setImageUrl(url);
+        }
+      }
+    }
+  };
   return (
-    <div>
-      {/* File input element using React ref */}
-      <div className="border-[1px] border-foreground flex justify-between gap-2 items-center rounded-sm">
-        <label htmlFor="image" className="flex items-center gap-2">
-          <ImageIcon className="text-foreground w-10 h-10" />
-          <p className="text-foreground/70 font-bold text-xs">
-            Choose an image to upload
+    <>
+      {!update ? (
+        <div>
+          {/* File input element using React ref */}
+          <div className="border-[1px] border-foreground flex justify-between gap-2 items-center rounded-sm">
+            <label htmlFor="image" className="flex items-center gap-2">
+              <ImageIcon className="text-foreground w-10 h-10" />
+              <p className="text-foreground/70 font-bold text-xs">
+                Choose an image to upload
+              </p>
+              <input
+                className="hidden"
+                id="image"
+                type="file"
+                ref={fileInputRef}
+              />
+            </label>
+            {/* Button to trigger the upload process */}
+            <button
+              type="button"
+              onClick={handleCoverUpload}
+              className="bg-foreground/80 text-background py-2 px-1 rounded-sm"
+            >
+              Upload file
+            </button>
+          </div>
+          <p className={`text-sky-500 text-sm ${imageState}`}>
+            Image Uploaded successfully!
           </p>
-          <input className="hidden" id="image" type="file" ref={fileInputRef} />
-        </label>
-        {/* Button to trigger the upload process */}
-        <button
-          type="button"
-          onClick={handleCoverUpload}
-          className="bg-foreground/80 text-background py-2 px-1 rounded-sm"
-        >
-          Upload file
-        </button>
-      </div>
-      <p className={`text-sky-500 text-sm ${imageState}`}>
-        Image Uploaded successfully!
-      </p>
-      {/* Display the current upload progress */}
-      <div className="flex items-center gap-2">
-        <p className="text-sm">Progress:</p>{" "}
-        <progress value={progress} max={100} className="h-1 text-fuchsia-400" />
-      </div>
-    </div>
+          {/* Display the current upload progress */}
+          <div className="flex items-center gap-2">
+            <p className="text-sm">Progress:</p>{" "}
+            <progress
+              value={progress}
+              max={100}
+              className="h-1 text-fuchsia-400"
+            />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <input
+            className="hidden"
+            id="image"
+            type="file"
+            
+            onChange={(e) => handleImageChange(e)}
+            ref={fileInputRef}
+          />
+          <div
+            className="disabled:bg-gray-400 text-center bg-amber-700 p-1 w-fit rounded-sm text-xs"
+            onClick={handleCoverUpload}
+          >
+            Upload
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

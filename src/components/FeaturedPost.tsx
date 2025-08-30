@@ -15,7 +15,7 @@ export interface FeaturedPostType {
 }
 const FeaturedPost = ({ post }: { post: FeaturedPostType }) => {
   return (
-    <Link href={`/blog/${post.id}`} className="border-[1px] p-[1px] relative aspect-video text-gray-200 px-4 w-80 flex flex-col anim rounded-sm bg-black/60 justify-around object-center h-60 mx-auto overflow-hidden">
+    <Link href={`/blog/${post.id}`} className="border-[1px] p-[1px] relative aspect-video text-gray-200 px-4 w-100 flex flex-col anim rounded-sm bg-black/60 justify-around object-center mx-auto overflow-hidden">
       <Image src={post.coverImage}alt="" className="absolute -z-10" fill />
       {/* BADGE */}
       <p className="bg-fuchsia-700  w-fit px-1 text-xs">

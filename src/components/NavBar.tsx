@@ -17,9 +17,13 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 
-const NavBar = () => {
+const NavBar = ({ isTrue }: { isTrue: boolean }) => {
   return (
-    <nav className="bg-gradient-to-b from-black pb-5 pt-3 flex absolute items-center justify-between md:justify-around w-full z-20 px-5">
+    <nav
+      className={`bg-gradient-to-b from-black pb-5 pt-3 flex ${
+        isTrue && "absolute"
+      } items-center justify-between md:justify-around w-full z-20 px-5`}
+    >
       <h1 className="text-2xl line-clamp-3 font-sans font-bold">
         <span className="text-sky-500">Blo</span>
         <span className="text-yellow-300">og</span>

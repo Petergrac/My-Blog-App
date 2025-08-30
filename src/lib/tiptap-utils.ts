@@ -339,7 +339,6 @@ export const handleImageUpload = async (
   let authParams;
   try {
     authParams = await authenticator();
-    console.log(authParams);
   } catch (authError) {
     console.error("Failed to authenticate for upload:", authError);
     throw new Error("Failed to authenticate.");

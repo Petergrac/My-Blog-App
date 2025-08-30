@@ -91,7 +91,7 @@ const NewPost = () => {
       </div>
       {/* CATEGORY SECTION */}
       <div className="space-y-2">
-        <span className="font-medium">Choose a Category:</span>
+        <span className="font-medium text-gray-500">Choose a Category:</span>
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full p-3 flex justify-between items-center border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
             <span>{selectedCategory}</span>

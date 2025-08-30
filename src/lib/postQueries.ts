@@ -10,10 +10,12 @@ export async function getPost(id: string) {
     const post = await prisma.post.findUnique({
       where: {
         id: id,
+        state: "PUBLISHED",
       },
       include: {
         author: {
           select: {
+            clerkId: true,
             username: true,
             avatar: true,
             bio: true,
@@ -31,6 +33,7 @@ export async function getPost(id: string) {
 export async function getLatestPost() {
   try {
     const latestPosts = await prisma.post.findMany({
+      where: { state: "PUBLISHED" },
       orderBy: {
         createdAt: "desc",
       },

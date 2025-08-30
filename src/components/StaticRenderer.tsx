@@ -1,7 +1,8 @@
 import React from "react";
 import StarterKit from "@tiptap/starter-kit";
 import { renderToHTMLString } from "@tiptap/static-renderer";
-import {  JSONContent } from "@tiptap/core";
+import { JSONContent } from "@tiptap/core";
+
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import TextAlign from "@tiptap/extension-text-align";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
@@ -11,18 +12,17 @@ import Subscript from "@tiptap/extension-subscript";
 import Highlight from "@tiptap/extension-highlight";
 import Image from "@tiptap/extension-image";
 import { Selection } from "@tiptap/extensions";
-import 'highlight.js/styles/github.css'
+import "highlight.js/styles/atom-one-dark.css";
 import "@/styles/renderer.scss";
 import { highlightCodeBlocks } from "@/lib/highlight";
 import { processContent } from "@/lib/postProcessor";
-import TableOfContent from "./TOC";
-
+import { TableOfContentsItem } from "@/lib/postProcessor";
 
 interface EditorProps {
   content: JSONContent;
 }
-
-const StaticRenderer = async ({content}: EditorProps) => {
+let initialTOC: TableOfContentsItem[] | null = null;
+const StaticRenderer = async ({ content }: EditorProps) => {
   const html = renderToHTMLString({
     extensions: [
       StarterKit.configure({
@@ -48,19 +48,14 @@ const StaticRenderer = async ({content}: EditorProps) => {
   // Highlight the code
   const highlightHTML = await highlightCodeBlocks(html);
   // Optimize image and create the toc
-  const{html: finaltHTML, toc} = processContent(highlightHTML);
-
-
+  const { html: finaltHTML, toc } = processContent(highlightHTML);
+  initialTOC = toc;
   return (
-    <div className="flex flex-row-reverse overflow-hidden min-h-screen md:h-screen">
-      <TableOfContent toc={toc} />
-      {/* Main content area */}
-      <div
-        className="tiptap ProseMirror shadow-lg p-3 md:overflow-y-auto"
-        dangerouslySetInnerHTML={{ __html: finaltHTML }}
-      />
-    </div>
+    <div
+      className="tiptap ProseMirror mx-5 h-screen shadow-lg p-3 overflow-y-auto"
+      dangerouslySetInnerHTML={{ __html: finaltHTML }}
+    />
   );
 };
-
+export { initialTOC };
 export default StaticRenderer;

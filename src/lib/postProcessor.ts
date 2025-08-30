@@ -22,8 +22,9 @@ export function processContent(htmlString: string): ProcessedContent {
   $('img').each((i, el) => {
     const src = $(el).attr('src');
     if (src && src.includes('ik.imagekit.io')) {
-      const optimizedUrl = src.replace('ik.imagekit.io/', 'ik.imagekit.io/tr:w-800,q-80/');
+       const optimizedUrl = `${src}?tr=w-${400},q-${80}`;
       $(el).attr('src', optimizedUrl);
+          $(el).attr('style', 'margin-left: auto; margin-right: auto; display: block;'); 
       $(el).attr('loading', 'lazy');
     }
   });

@@ -1,7 +1,6 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (evt.type === "user.created") {
       const userInfo = evt.data;
       try {
-        await prisma.user.create({
+       await prisma.user.create({
           data: {
             clerkId: userInfo.id,
             username: userInfo.username
@@ -27,7 +26,7 @@ export async function POST(req: NextRequest) {
             avatar: userInfo.image_url,
           },
         });
-
+         
         return new Response("Webhook received", { status: 200 });
       } catch (error) {
         console.log(error);
@@ -41,7 +40,6 @@ export async function POST(req: NextRequest) {
      */
     if (evt.type === "user.updated") {
       const userInfo = evt.data;
-      console.log(userInfo);
       try {
         await prisma.user.update({
           where: {
@@ -72,19 +70,16 @@ export async function POST(req: NextRequest) {
      * ========== REMOVE USER PROFILE =================
      */
     if (evt.type === "user.deleted") {
+      console.log('This part is reached');
       const userInfo = evt.data;
-      const { userId } = await auth();
-      if (userId !== userInfo.id) {
-        return new Response("You need access to delete this user", {
-          status: 400,
-        });
-      }
       try {
-        await prisma.user.delete({
+        console.log('This block has been executed')
+        const user = await prisma.user.delete({
           where: {
             clerkId: userInfo.id,
           },
         });
+         console.log('user deleted', user);
         return new Response("Webhook received", { status: 200 });
       } catch (error) {
         console.log(error);

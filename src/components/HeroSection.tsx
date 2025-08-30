@@ -72,11 +72,22 @@ const HeroSection = () => {
       }
     }
   });
+  if(path.startsWith('/blog/edit/')){
+    image = undefined
+  }
   return (
-    <div className="relative aspect-video  w-full min-h-[40vh] max-h-[60vh]">
+    <div
+      className={` w-full ${
+        image && "min-h-[40vh] max-h-[60vh] relative aspect-video "
+      }`}
+    >
       {image && <Image src={image} alt="" fill />}
-      <NavBar />
-      <div className="w-full h-full flex flex-col items-center justify-center absolute top-1/2 bg-black/75 left-1/2 -translate-1/2">
+      <NavBar isTrue={!!image} />
+      <div
+        className={`w-full h-full flex flex-col items-center justify-center ${
+          image ? "absolute top-1/2 bg-black/75 left-1/2 -translate-1/2":'hidden'
+        }`}
+      >
         <h1 className="text-center text-2xl sm:text-4xl md:text-6xl text-gray-200">
           {shortDesc}
         </h1>
