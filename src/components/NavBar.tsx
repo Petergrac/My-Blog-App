@@ -45,7 +45,6 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
       <div className="hidden md:flex gap-20 justify-between">
         <div className="flex gap-3 text-gray-200 text-sm">
           <Link href="/">HOME</Link>
-          <Link href="/categories">CATEGORIES</Link>
           <Link href="/about">ABOUT</Link>
           <Link href="/contact">CONTACTS</Link>
         </div>
@@ -83,9 +82,6 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href="/about">ABOUT</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href="/categories">CATEGORIES</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -12,7 +12,6 @@ const Footer = () => {
           <Link href="/">HOME</Link>
           <Link href="/about">ABOUT</Link>
           <Link href="/contact">CONTACTS</Link>
-          <Link href="/categories">CATEGORIES</Link>
         </div>
       </div>
     </div>
