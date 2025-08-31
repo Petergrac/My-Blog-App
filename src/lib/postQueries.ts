@@ -47,6 +47,7 @@ export async function getLatestPost() {
         author: {
           select: {
             username: true,
+            bio: true,
             avatar: true,
           },
         },

@@ -1,5 +1,6 @@
 import FeaturedPost from "@/components/FeaturedPost";
 import MostRecent from "@/components/MostRecent";
+import PostNotFound from "@/components/PostNotFound";
 import { getLatestPost } from "@/lib/postQueries";
 import Link from "next/link";
 
@@ -7,7 +8,7 @@ export default async function Home() {
   // Fetch the latest posts;
   const posts = await getLatestPost();
   if (!posts) {
-    // Do something about it
+    return <PostNotFound />;
   }
   return (
     <div>

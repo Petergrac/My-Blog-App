@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import SavePost from "@/components/SavePost";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { auth } from "@clerk/nextjs/server";
 import UpdatePost from "@/components/UpdatePost";

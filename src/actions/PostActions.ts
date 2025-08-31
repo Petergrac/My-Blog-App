@@ -15,7 +15,14 @@ interface finalPost {
   content: string;
   description: string;
 }
-
+interface editPost{
+  title?: string;
+  category?: string;
+  coverImage?: string;
+  state?: "PUBLISHED" | "DRAFT";
+  content?: string;
+  description?: string;
+}
 export async function newPost(finalPost: finalPost) {
   const { userId } = await auth();
 
@@ -61,7 +68,7 @@ export async function newPost(finalPost: finalPost) {
  * =============  PATCH A POST ==============
  *
  */
-export async function patchPost(updatedPost: finalPost, id: string) {
+export async function patchPost(updatedPost: editPost, id: string) {
   try {
     await prisma.post.update({
       where: {
@@ -72,6 +79,20 @@ export async function patchPost(updatedPost: finalPost, id: string) {
       },
     });
     revalidatePath(`/blog/${id}`);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+export async function deletePost(id: string) {
+  try {
+    const deletedPost = await prisma.post.delete({
+      where:{
+        id: id
+      }
+    });
+    revalidatePath('/blog')
+    return !!deletedPost;
   } catch (error) {
     console.log(error);
     throw error;

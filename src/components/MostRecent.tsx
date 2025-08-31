@@ -1,26 +1,70 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FeaturedPostType } from "./FeaturedPost";
+import {
+  MessageCircle,
+  MoreVertical,
+  Pencil,
+  Printer,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { PostType } from "./BlogAuthor";
+import { deletePost, patchPost } from "@/actions/PostActions";
+import { toast } from "sonner";
 
-const MostRecent = ({ post }: { post: FeaturedPostType }) => {
+const MostRecent = ({
+  post,
+  isAuthor,
+}: {
+  post: FeaturedPostType & PostType;
+  isAuthor?: boolean;
+}) => {
+  // Save the post changes.
+  const handlePostChange = async (type: string) => {
+    if (type === "draft") {
+      try {
+        await patchPost({ state: "PUBLISHED" }, post.id);
+        toast.success("Post successfully published");
+      } catch (error) {
+        console.log(error);
+        toast.error("Could not publish the post");
+      }
+    } else if (type === "delete") {
+      try {
+        await deletePost(post.id);
+        toast.success("Post successfully deleted");
+      } catch (error) {
+        console.log(error);
+        toast.error("Post could not be deleted!");
+      }
+    }
+  };
   return (
-    <Link
-      href={`/blog/${post.id}`}
-      className="anim mx-auto border-[1px] flex flex-col justify-around rounded-sm  overflow-hidden  w-52 px-2 shadow-md"
+    <div
+      className={`anim border-[1px] flex flex-col justify-around rounded-sm  overflow-hidden  w-52 px-2 shadow-md ${
+        !isAuthor && "mx-auto"
+      }`}
     >
       {/* BADGE */}
-      <div className="relative">
+      <Link href={`/blog/${post.id}`} className="relative">
         <p className="absolute top-2 left-1 text-gray-200 bg-fuchsia-600 px-1 text-xs">
           {post.category}
         </p>
         <Image
           src={post.coverImage}
-          className="hover:scale-120 duration-500"
+          className="hover:scale-120 duration-500 max-h-50 overflow-hidden"
           alt="home"
           width={200}
           height={100}
         />
-      </div>
+      </Link>
       {/* TITLE & CONTENT */}
       <div className="flex flex-col justify-between pb-2 border-b-[1px]">
         {/* TITLE */}
@@ -29,7 +73,7 @@ const MostRecent = ({ post }: { post: FeaturedPostType }) => {
         <p className="text-xs overflow-hidden h-5 ">{post.description}</p>
       </div>
       {/* AUTHOR AND DATE */}
-      <div className="flex justify-between py-3 items-center">
+      <div className="flex justify-between py-3 flex-wrap gap-3 items-center">
         {/* AUTHOR */}
         <div className="flex gap-2 items-center">
           <Image
@@ -50,7 +94,47 @@ const MostRecent = ({ post }: { post: FeaturedPostType }) => {
           })}
         </p>
       </div>
-    </Link>
+      {isAuthor && (
+        <div className="flex justify-between items-center pb-4">
+          {/* COMMENTS & LIKES */}
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1 items-center hover:text-pink-500 ">
+              <MessageCircle size={20} className="" />
+              <span className="text-xs">{post._count && post._count.comments || 0}</span>
+            </div>
+            <div className="flex gap-1 items-center hover:text-cyan-500 ">
+              <ThumbsUp size={20} />
+              <span className="text-xs">{post._count && post._count.likes || 0}</span>
+            </div>
+          </div>
+          {/* POST STATE */}
+          <div className="">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <MoreVertical size={20} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {post.state === "DRAFT" && (
+                  <DropdownMenuItem onClick={() => handlePostChange("draft")}>
+                    <Printer /> Publish
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem>
+                  <Pencil /> <Link href={`/blog/edit/${post.id}`}>Edit</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handlePostChange("delete")}
+                  className="text-red-500"
+                >
+                  <Trash2 color="red" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
