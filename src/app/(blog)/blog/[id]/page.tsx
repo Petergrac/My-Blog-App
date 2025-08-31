@@ -61,7 +61,6 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   if (!post || !post.content) {
     return <div className="">Post not found</div>;
   }
-
   const { userId } = await auth();
   // Check if the user has liked the post
   let hasLiked = [];
@@ -82,7 +81,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       (user) => user.userId === currentUser?.id && user.postId === id
     );
   }
-
+  const postComments = post.comments;
   // Get content
   const PostContent = JSON.parse(post.content) as PostType;
 
@@ -138,7 +137,10 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
         </p>
       </div>
       {/* COMMENTS */}
-      <Comments />
+      <div className="">
+        <h1 className="text-2xl text-center py-5 w-full border-b-2 underline">Comments</h1>
+      </div>
+      <Comments userId={currentId} postId={id} comments={postComments} />
     </div>
   );
 };
