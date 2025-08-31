@@ -6,10 +6,16 @@ import { Metadata } from "next";
 import { getPost } from "@/lib/postQueries";
 import { notFound } from "next/navigation";
 import ActiveToc from "@/components/TOC";
+import Comments from "@/components/Comments";
+import LikePost from "@/components/LikePost";
+import { auth } from "@clerk/nextjs/server";
 
 // FETCH ALL STATIC POSTS
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({
+    where: {
+      state: "PUBLISHED",
+    },
     select: {
       id: true,
     },
@@ -56,7 +62,30 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     return <div className="">Post not found</div>;
   }
 
+  const { userId } = await auth();
+  // Check if the user has liked the post
+  let hasLiked = [];
+  let currentId: string | null = null;
+  if (userId) {
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if(currentUser){
+      currentId = currentUser.id;
+    }
+    hasLiked = post.likes.filter(
+      (user) => user.userId === currentUser?.id && user.postId === id
+    );
+  }
+
+  // Get content
   const PostContent = JSON.parse(post.content) as PostType;
+
   const toc = initialTOC;
   return (
     <div className="py-10 mx-auto md:max-w-[90vw] lg:max-w-[90vw]">
@@ -78,11 +107,19 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </div>
       {/* CONTENT */}
-     
-       <div className="flex gap-4">
-         <StaticRenderer content={PostContent} />
-         {toc && <ActiveToc toc={toc} />}
-       </div>
+
+      <div className="flex gap-4">
+        <StaticRenderer content={PostContent} />
+        {toc && <ActiveToc toc={toc} />}
+      </div>
+      {/* Likes */}
+      <div className="">
+        <LikePost
+          data={{currentId, id}}
+          hasLiked={hasLiked.length > 0}
+          likes={post.likes.length}
+        />
+      </div>
       {/* ABOUT THE AUTHOR */}
       <div className="border-t-3 py-4">
         {/* AVATAR */}
@@ -100,6 +137,8 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
           {post.author.bio || "No bio provided"}
         </p>
       </div>
+      {/* COMMENTS */}
+      <Comments />
     </div>
   );
 };

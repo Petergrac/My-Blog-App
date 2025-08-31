@@ -18,6 +18,23 @@ interface Post {
   setContent: (content: JSONContent | null) => void;
 }
 
+interface User{
+  id: string | null;
+  setId: (id: string |null)=>void;
+  username: string | null;
+  setUsername: (username: string | null)=>void;
+  avatar: string | null;
+  setAvatar: (avatar: string | null)=>void;
+}
+
+export const useCurrentUser = create<User>((set)=>({
+  id: null,
+  setId:(id)=>set({id}),
+  username: null,
+  setUsername: (username)=>set({username}),
+  avatar: null,
+  setAvatar: (avatar)=>set({avatar})
+}))
 // The post store
 export const usePost = create<Post>((set) => ({
   title: "",
