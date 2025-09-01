@@ -5,12 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate --no-engine && next build",
+    "build": "prisma generate --no-engine prisma && next build",
+    "postinstall": "prisma migrate deploy",
     "start": "next start",
     "lint": "next lint"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.4",

@@ -25,14 +25,13 @@ export default clerkMiddleware(async (auth, req) => {
   // Restrict author routes
   if (isAuthorRoute(req)) {
     const hasAuthorPermission =
-      sessionClaims?.role === "Admin" ||
-      sessionClaims?.role === "Author";
+      sessionClaims?.role === "Admin" || sessionClaims?.role === "Author";
 
     if (!hasAuthorPermission) {
       const redirectUrl = new URL("/unauthorized", req.url);
       redirectUrl.searchParams.set(
         "error",
-        "You need to be an Author to access this page.So navigate to your profile and change your role to author"
+        "You are not authorized to access this route"
       );
       return NextResponse.redirect(redirectUrl);
     }
