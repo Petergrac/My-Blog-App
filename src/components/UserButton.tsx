@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function CustomUserButton() {
-  const { user } = useUser();
   const router = useRouter();
 
   return (

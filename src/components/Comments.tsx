@@ -46,6 +46,7 @@ const Comments = ({
         await deleteComment(commentId, postId);
         toast.success("Comment deleted!");
       } catch (error) {
+          console.log(error)
         toast.error("Comment could not be deleted");
       }
     }

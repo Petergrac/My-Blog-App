@@ -30,6 +30,7 @@ const CommentInput = ({
         setValue("");
         defaultContent = value;
       } catch (error) {
+        console.log(error);
         toast.error("Comment could not be saved");
       }
     }
@@ -42,6 +43,7 @@ const CommentInput = ({
           setValue("");
           defaultContent = value;
         } catch (error) {
+          console.log(error);
           toast.error("Comment could not be updated");
         }
       }

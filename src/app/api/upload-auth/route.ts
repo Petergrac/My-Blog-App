@@ -13,8 +13,6 @@ export async function GET() {
   )
     return Response.json({ message: "You must be an author or admin" });
 
-  console.log("This function is reached");
-
   const { token, expire, signature } = getUploadAuthParams({
     privateKey: process.env.IMAGEKIT_PRIVATE_KEY as string, // Never expose this on client side
     publicKey: process.env.IMAGEKIT_PUBLIC_KEY as string,

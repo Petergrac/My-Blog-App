@@ -70,16 +70,15 @@ export async function POST(req: NextRequest) {
      * ========== REMOVE USER PROFILE =================
      */
     if (evt.type === "user.deleted") {
-      console.log('This part is reached');
       const userInfo = evt.data;
       try {
         console.log('This block has been executed')
-        const user = await prisma.user.delete({
+         await prisma.user.delete({
           where: {
             clerkId: userInfo.id,
           },
         });
-         console.log('user deleted', user);
+    
         return new Response("Webhook received", { status: 200 });
       } catch (error) {
         console.log(error);
