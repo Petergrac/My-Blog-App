@@ -10,6 +10,7 @@ export default async function Home() {
   if (!posts) {
     return <PostNotFound />;
   }
+  const filteredPost = posts.filter(post=>post.category === 'testing')
   return (
     <div>
       {/* CATEGORIES */}
@@ -62,8 +63,8 @@ export default async function Home() {
         <p className="text-center text-lg pb-5 underline underline-offset-5">
           Featured Posts
         </p>
-        <div className="flex flex-wrap flex-1 gap-2 m-2 md:m-10">
-          {posts.map((post) => (
+        <div className="flex flex-wrap flex-1 gap-5 md:m-5 m-2">
+          {filteredPost.map((post) => (
             <FeaturedPost post={post} key={post.id} />
           ))}
         </div>

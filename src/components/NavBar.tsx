@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import ProgressiveSearch from "./SearchBar";
 
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
   return (
@@ -37,7 +38,7 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
           <DialogDescription>
             Search by Author Name, Category...
           </DialogDescription>
-          <Input type="text" placeholder="Search" />
+          <ProgressiveSearch />
         </DialogContent>
       </Dialog>
 

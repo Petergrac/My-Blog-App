@@ -59,7 +59,7 @@ const MostRecent = ({
         </p>
         <Image
           src={post.coverImage}
-          className="hover:scale-120 duration-500 max-h-50 overflow-hidden"
+          className="hover:scale-120 duration-500 h-30 overflow-hidden"
           alt="home"
           width={200}
           height={100}

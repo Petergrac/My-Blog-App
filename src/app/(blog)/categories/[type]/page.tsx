@@ -38,7 +38,6 @@ const CategoriesPage = async ({
     return <PostNotFound />;
   };
 
-  console.log(posts)
   return (
     <div className="mb-10">
       {/* HERO SECTION */}

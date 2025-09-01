@@ -250,11 +250,9 @@ export function SimpleEditor({
     editor.on("update", () => {
       localStorage.setItem("editorContent", JSON.stringify(editor.getJSON()));
       setContent(editor.getJSON());
-      console.log("Update happened");
     });
     return () => {
       editor.off("update", () => setContent(editor.getJSON()));
-      console.log("THis cleanup function has been executed");
     };
   }, [editor, setContent]);
 
