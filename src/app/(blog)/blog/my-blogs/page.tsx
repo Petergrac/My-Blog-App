@@ -45,16 +45,20 @@ const AuthorBlogs = async () => {
       },
     },
   });
-  if (!posts) {
+  if (!posts || posts.length === 0) {
     return (
-      <div className="flex w-full h-[70vh] text-center justify-center">
-        You don&apos;t have any posts! Click
-        <Link href={`/new`} className="font-bold text-green-500">
-          Here{" "}
+      <div className="w-full h-[70vh] text-center flex flex-col justify-center">
+        <p className="text-2xl font-bold">You don&apos;t have any posts!</p>
+        <Link
+          href={`/new`}
+          className="font-bold text-green-500 "
+        >
+          Click Here{" "}
         </Link>
-        to create a new post, provided you are an author.
+        {"   "}to create a new post and you need to be an{" "}
+        <span className="text-sky-700">Author</span>
         <p>
-          If you are not an author click on the account icon on top right and
+          If you are not an Author click on the account icon on top right and
           navigate to manage account <br /> And you can change your membership
           there.
         </p>

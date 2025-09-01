@@ -7,7 +7,13 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import {
   Dialog,
   DialogContent,
@@ -15,10 +21,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Input } from "./ui/input";
 import ProgressiveSearch from "./SearchBar";
 
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
+  const { user } = useUser();
+  const role = user?.publicMetadata.role as string;
   return (
     <nav
       className={`bg-gradient-to-b from-black pb-5 pt-3 flex ${
@@ -48,6 +55,12 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
           <Link href="/">HOME</Link>
           <Link href="/about">ABOUT</Link>
           <Link href="/contact">CONTACTS</Link>
+          {(role === "Author" || role === "Admin") && (
+            <Link href="/new">NEW POST</Link>
+          )}
+          {(role === "Author" || role === "Admin") && (
+            <Link href="/blog/my-blogs">MY POSTS</Link>
+          )}
         </div>
         <div className="flex sm-2 md:gap-5">
           <ModeToggle />
@@ -84,6 +97,17 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             <DropdownMenuItem>
               <Link href="/about">ABOUT</Link>
             </DropdownMenuItem>
+            {(role === "Author" || role === "Admin") && (
+              <DropdownMenuItem>
+                <Link href="/new">NEW POST</Link>{" "}
+              </DropdownMenuItem>
+            )}
+
+            {(role === "Author" || role === "Admin") && (
+              <DropdownMenuItem>
+                <Link href="/blog/my-blogs">MY POSTS</Link>{" "}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <SignedIn>

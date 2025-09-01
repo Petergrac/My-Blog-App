@@ -35,16 +35,19 @@ const Comments = ({
   userId: string | null;
   postId: string;
 }) => {
-  const [change, setChange] = useState<null | { id: string; type: "edit" | "delete" }>(null);
+  const [change, setChange] = useState<null | {
+    id: string;
+    type: "edit" | "delete";
+  }>(null);
 
   const commentActions = async (type: "edit" | "delete", commentId: string) => {
-    if(type === 'delete'){
-       try {
-         await deleteComment(commentId, postId)
-         toast.success('Comment deleted!')
-       } catch (error) {
-        toast.error('Comment could not be deleted')
-       }
+    if (type === "delete") {
+      try {
+        await deleteComment(commentId, postId);
+        toast.success("Comment deleted!");
+      } catch (error) {
+        toast.error("Comment could not be deleted");
+      }
     }
     setChange({ id: commentId, type });
   };
@@ -57,7 +60,9 @@ const Comments = ({
       <div className="space-y-6 mt-8">
         {comments.map((comment) => (
           <div key={comment.id} className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
+            <div className={`${
+                  userId && userId === comment.author.id && "flex-row-reverse"
+                } flex items-center gap-4`}>
               {/* Avatar */}
               <div className="w-10 h-10 relative rounded-full overflow-hidden">
                 <Image
@@ -69,8 +74,10 @@ const Comments = ({
               </div>
 
               {/* Comment body */}
-              <div className="flex-1 bg-muted px-4 py-3 rounded-md">
-                <div className="flex justify-between items-center mb-1">
+              <div
+                className={`flex-1 bg-muted px-4 py-3 rounded-md`}
+              >
+                <div className={` flex justify-between items-center mb-1`}>
                   <span className="font-semibold text-sm text-foreground">
                     {comment.author.username}
                   </span>
@@ -110,11 +117,11 @@ const Comments = ({
             </div>
 
             {/* Inline Comment Input for edit/delete */}
-            {change && change.id === comment.id && (
+            {change && change.id === comment.id && change.type === "edit" && (
               <div className="ml-14">
                 <CommentInput
                   data={{ userId, postId, commentId: comment.id }}
-                  mode={change.type}
+                  mode={"edit"}
                   defaultContent={comment.content}
                   onCancel={() => setChange(null)}
                 />

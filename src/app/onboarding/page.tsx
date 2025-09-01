@@ -34,9 +34,14 @@ export default function OnboardingComponent() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-4xl py-8 font-bold underline decoration-muted-foreground">
+        Onboarding
+      </h1>
       <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">Welcome to Our Community!</h1>
+          <h1 className="text-3xl font-bold mb-2 text-black/85">
+            Welcome to Our Community!
+          </h1>
           <p className="text-gray-600">
             Let&apos;s get you set up. Please choose a membership type to
             continue.
@@ -53,7 +58,7 @@ export default function OnboardingComponent() {
           <div className="flex flex-col items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="secondary" className="w-full">
                   {membershipType
                     ? `Selected: ${membershipType}`
                     : "Choose Membership Type"}
@@ -88,7 +93,7 @@ export default function OnboardingComponent() {
             <input type="hidden" name="membershipType" value={membershipType} />
           </div>
           {error && <p className="text-red-600 text-center">{error}</p>}
-          
+
           <Button type="submit" className="w-full">
             Complete Onboarding
           </Button>

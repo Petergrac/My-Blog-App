@@ -28,6 +28,7 @@ const CommentInput = ({
         await createComment(userId, postId, value);
         toast.success("Comment saved");
         setValue("");
+        defaultContent = value;
       } catch (error) {
         toast.error("Comment could not be saved");
       }
@@ -39,6 +40,7 @@ const CommentInput = ({
           if (onCancel) onCancel();
           toast.success("Comment updated");
           setValue("");
+          defaultContent = value;
         } catch (error) {
           toast.error("Comment could not be updated");
         }
@@ -57,10 +59,15 @@ const CommentInput = ({
       )}
       <Textarea
         placeholder="Comment here"
-        className={mode === "delete" ? "hidden" : ""}
-        defaultValue={mode === "edit" ? defaultContent : value}
+        defaultValue={defaultContent || value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleComment}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault(); // prevents newline insertion
+            handleComment();
+          }
+        }}
       />
     </div>
   );
