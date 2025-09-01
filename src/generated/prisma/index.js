@@ -208,7 +208,7 @@ const config = {
   },
   "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String    @id @default(uuid())\n  clerkId   String    @unique // from Clerk\n  username  String?\n  email     String?\n  country   String?\n  bio       String?\n  avatar    String?\n  posts     Post[]\n  comments  Comment[]\n  likes     Like[]\n  createdAt DateTime  @default(now())\n}\n\nmodel Post {\n  id          String    @id @default(uuid())\n  title       String\n  content     String\n  category    String\n  coverImage  String\n  description String\n  state       PostState @default(DRAFT)\n  accessKey   String    @default(uuid())\n  author      User      @relation(fields: [authorId], references: [id])\n  authorId    String\n  comments    Comment[]\n  likes       Like[]\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n}\n\nmodel Comment {\n  id        String   @id @default(uuid())\n  content   String\n  post      Post     @relation(fields: [postId], references: [id])\n  postId    String\n  author    User     @relation(fields: [authorId], references: [id])\n  authorId  String\n  createdAt DateTime @default(now())\n}\n\nmodel Like {\n  id        String   @id @default(uuid())\n  post      Post     @relation(fields: [postId], references: [id])\n  postId    String\n  user      User     @relation(fields: [userId], references: [id])\n  userId    String\n  createdAt DateTime @default(now())\n\n  @@unique([postId, userId]) // 1 like per user per post\n}\n\nenum PostState {\n  DRAFT\n  PUBLISHED\n}\n",
   "inlineSchemaHash": "025544b964a996e4c0099e6dfd73aaa41a7ba22503c12bb71e4b49e86fa63928",
-  "copyEngine": true
+  "copyEngine": false
 }
 
 const fs = require('fs')
@@ -245,9 +245,3 @@ const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
-// file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
-// file annotations for bundling tools to include these files
-path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "src/generated/prisma/schema.prisma")

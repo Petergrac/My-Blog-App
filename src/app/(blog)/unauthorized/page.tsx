@@ -1,29 +1,21 @@
-"use client";
+import Unauthorized from "@/components/UnauthorizedContent";
+import { LoaderIcon } from "lucide-react";
+import { Suspense } from "react";
 
-import { useSearchParams } from "next/navigation";
-
-const Unauthorized = () => {
-  const searchParams = useSearchParams();
-  const errorMessage = searchParams.get("error");
+const UnauthorizedPage = () => {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center w-full">
-      {errorMessage ? (
-        <p className="text-2xl font-bold text-center">{errorMessage}</p>
-      ) : (
-        <p className="text-center font-bold text-base">
-          Seems like you are trying to access someone else data.
-          <br />
-          Make sure you have the correct permission to perform a read or write
-          of any article.
-          <br />
-          <span className="text-foreground/55">
-            {" "}
-            Use the navbar to navigate back to homepage.
-          </span>
-        </p>
-      )}
+    <div>
+      <Suspense
+        fallback={
+          <div className="w-full h-[70vh] flex items-center justify-center">
+            <LoaderIcon className="animate-spin" size={49} />
+          </div>
+        }
+      >
+        <Unauthorized />
+      </Suspense>
     </div>
   );
 };
 
-export default Unauthorized;
+export default UnauthorizedPage;

@@ -3,6 +3,20 @@ import PostNotFound from "@/components/PostNotFound";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 
+// Static generation for SSG
+export async function generateStaticParams() {
+  const categories = await prisma.post.findMany({
+    distinct: ['category'],
+    select: {
+      category: true,
+    },
+  });
+
+  return categories.map(cat => ({
+    type: cat.category,
+  }));
+}
+
 
 const CategoriesPage = async ({
   params,
