@@ -274,7 +274,7 @@ export function SimpleEditor({
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(setIsEditorFocused(false));
-        }, 4000);
+        }, 20000);
       });
     });
     return () => {
@@ -285,7 +285,7 @@ export function SimpleEditor({
   return (
     <div className="simple-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
-        {isEditorFocused && (
+        {(!isMobile || isEditorFocused) && (
           <Toolbar
             ref={toolbarRef}
             style={{
