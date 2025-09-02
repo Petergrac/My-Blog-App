@@ -314,7 +314,7 @@ export function SimpleEditor({
         <EditorContent
           editor={editor}
           role="presentation"
-          className="simple-editor-content"
+          className="simple-editor-content border-1 rounded-2xl"
         />
       </EditorContext.Provider>
     </div>
