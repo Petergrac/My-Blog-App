@@ -57,13 +57,18 @@ const SavePost = () => {
         description,
       };
       try {
-        const createdPost = (await newPost(finalPost)) as unknown as Post;
-        if (status === "DRAFT") {
-          toast.warning("Post saved as DRAFT,");
-          router.push(`/blog/author/`);
+        const result = await newPost(finalPost);
+        if ("data" in result) {
+          const { data: createdPost } = result;
+          if (status === "DRAFT") {
+            toast.warning("Post saved as DRAFT,");
+            router.push(`/blog/my-blogs/`);
+          } else {
+            toast.success("Post Published");
+            router.push(`/blog/${createdPost.id}`);
+          }
         } else {
-          toast.success("Post Published");
-          router.push(`/blog/${createdPost.id}`);
+          toast.error("Authentication failed, only Authors Allowed");
         }
       } catch (error) {
         console.log(error);

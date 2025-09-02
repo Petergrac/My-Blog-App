@@ -1,7 +1,6 @@
-"use server"
+"use server";
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
-
 
 /**
  *  ================ Get a single post ===========
@@ -52,6 +51,7 @@ export async function getPost(id: string) {
         },
       },
     });
+    
     return post;
   } catch (err) {
     throw err;
@@ -96,11 +96,9 @@ export async function getLatestPost() {
 
 export async function postLikes(
   userId: string,
-   postId: string,
+  postId: string,
   likeStatus: boolean
 ) {
-  console.log("This funct has been executed");
-
   try {
     if (likeStatus) {
       await prisma.like.delete({

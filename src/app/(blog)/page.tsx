@@ -6,7 +6,6 @@ import Link from "next/link";
 export default async function Home() {
   // Fetch the latest posts;
   const posts = await getLatestPost();
-  console.log(posts);
   if (posts.length === 0) {
     return (
       <div className="w-full h-[70vh] flex flex-col items-center justify-center text-center px-4 space-y-4">

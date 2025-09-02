@@ -16,12 +16,11 @@ import "highlight.js/styles/atom-one-dark.css";
 import "@/styles/renderer.scss";
 import { highlightCodeBlocks } from "@/lib/highlight";
 import { processContent } from "@/lib/postProcessor";
-import { TableOfContentsItem } from "@/lib/postProcessor";
+import ActiveToc from "./TOC";
 
 interface EditorProps {
   content: JSONContent;
 }
-let initialTOC: TableOfContentsItem[] | null = null;
 const StaticRenderer = async ({ content }: EditorProps) => {
   const html = renderToHTMLString({
     extensions: [
@@ -49,13 +48,14 @@ const StaticRenderer = async ({ content }: EditorProps) => {
   const highlightHTML = await highlightCodeBlocks(html);
   // Optimize image and create the toc
   const { html: finaltHTML, toc } = processContent(highlightHTML);
-  initialTOC = toc;
   return (
-    <div
-      className="tiptap ProseMirror mx-5 h-screen shadow-lg p-3 overflow-y-auto"
-      dangerouslySetInnerHTML={{ __html: finaltHTML }}
-    />
+    <div className="flex gap-5">
+      <ActiveToc toc={toc} />
+      <div
+        className="tiptap ProseMirror mx-5 h-screen shadow-lg p-3 overflow-y-auto"
+        dangerouslySetInnerHTML={{ __html: finaltHTML }}
+      />
+    </div>
   );
 };
-export { initialTOC };
 export default StaticRenderer;

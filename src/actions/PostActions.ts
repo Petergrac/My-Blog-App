@@ -53,6 +53,7 @@ export async function newPost(finalPost: finalPost) {
         authorId: authorId.id,
       },
     });
+    revalidatePath('/');
     revalidatePath(`/blog/${createdPost.id}`);
     return {
       message: "Post created successfully!",

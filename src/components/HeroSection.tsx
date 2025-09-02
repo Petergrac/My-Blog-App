@@ -35,7 +35,7 @@ const HeroSection = () => {
       shortDesc: "Get in touch with us",
       description:
         "Have a question or a comment? Reach out to us through our contact page. We'd love to hear from you!",
-      image: "/hero/contact.jpg",
+      image: "/hero/contacts.jpg",
     },
     {
       path: "/categories",

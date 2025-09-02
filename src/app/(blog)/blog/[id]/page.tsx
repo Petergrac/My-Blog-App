@@ -1,47 +1,14 @@
-import StaticRenderer, { initialTOC } from "@/components/StaticRenderer";
+import StaticRenderer from "@/components/StaticRenderer";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { JSONContent } from "@tiptap/react";
 import { Metadata } from "next";
 import { getPost } from "@/lib/postQueries";
 import { notFound } from "next/navigation";
-import ActiveToc from "@/components/TOC";
 import Comments from "@/components/Comments";
 import LikePost from "@/components/LikePost";
 import { auth } from "@clerk/nextjs/server";
 
-// FETCH ALL STATIC POSTS
-export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: {
-      state: "PUBLISHED",
-    },
-    select: {
-      id: true,
-    },
-  });
-  return posts.map((post) => ({
-    id: post.id,
-  }));
-}
-
-// Generating the metadata
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-  const { id } = await params;
-  const post = await getPost(id);
-  if (!post) {
-    notFound();
-  }
-  // Generate the metadata from the post
-  return {
-    title: post.title,
-    description: post.description,
-  };
-}
 
 // Revalidate Post
 export const revalidate = 60;
@@ -59,7 +26,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const post = await getPost(id);
 
   if (!post || !post.content) {
-    return <div className="">Post not found</div>;
+    notFound();
   }
   const { userId } = await auth();
   // Check if the user has liked the post
@@ -84,8 +51,6 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const postComments = post.comments;
   // Get content
   const PostContent = JSON.parse(post.content) as PostType;
-
-  const toc = initialTOC;
   return (
     <div className="py-10 mx-auto md:max-w-[90vw] lg:max-w-[90vw]">
       {/* TITLE */}
@@ -106,11 +71,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
       </div>
       {/* CONTENT */}
-
-      <div className="flex gap-4">
         <StaticRenderer content={PostContent} />
-        {toc && <ActiveToc toc={toc} />}
-      </div>
       {/* Likes */}
       <div className="">
         <LikePost
@@ -145,3 +106,22 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
 };
 export default PostPage;
+
+
+// Generating the metadata
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getPost(id);
+  if (!post) {
+    notFound();
+  }
+  // Generate the metadata from the post
+  return {
+    title: post.title,
+    description: post.description,
+  };
+}
