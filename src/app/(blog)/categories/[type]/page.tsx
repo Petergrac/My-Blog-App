@@ -1,22 +1,24 @@
+import CagegoryLinks from "@/components/CagegoryLinks";
 import MostRecent from "@/components/MostRecent";
 import PostNotFound from "@/components/PostNotFound";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 
+export const revalidate = 60;
+
 // Static generation for SSG
 export async function generateStaticParams() {
   const categories = await prisma.post.findMany({
-    distinct: ['category'],
+    distinct: ["category"],
     select: {
       category: true,
     },
   });
 
-  return categories.map(cat => ({
+  return categories.map((cat) => ({
     type: cat.category,
   }));
 }
-
 
 const CategoriesPage = async ({
   params,
@@ -49,8 +51,13 @@ const CategoriesPage = async ({
     },
   });
   if (!posts || posts.length === 0) {
-    return <PostNotFound />;
-  };
+    return (
+      <div className="mt-10">
+        <CagegoryLinks />
+        <PostNotFound />;
+      </div>
+    );
+  }
 
   return (
     <div className="mb-10">
@@ -62,9 +69,11 @@ const CategoriesPage = async ({
         </h1>
       </div>
       {/* POSTS BY CATEGORY CLICKED */}
-      <h1 className="sm:text-4xl text-2xl text-center py-10 underline">{type.toUpperCase()}</h1>
+      <h1 className="sm:text-4xl text-2xl text-center py-10 underline">
+        {type.toUpperCase()}
+      </h1>
       <div className="flex gap-5 flex-wrap sm:mx-auto mx-5">
-        {posts.map(post=>(
+        {posts.map((post) => (
           <MostRecent key={post.id} post={post} />
         ))}
       </div>

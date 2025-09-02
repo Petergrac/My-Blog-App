@@ -58,34 +58,6 @@ export async function getPost(id: string) {
   }
 }
 
-export async function getLatestPost() {
-  try {
-    const latestPosts = await prisma.post.findMany({
-      where: { state: "PUBLISHED" },
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        coverImage: true,
-        category: true,
-        createdAt: true,
-        author: {
-          select: {
-            username: true,
-            bio: true,
-            avatar: true,
-          },
-        },
-      },
-    });
-    return latestPosts;
-  } catch (error) {
-    throw error;
-  }
-}
 
 /**
  *  ==================== LIKE & DISLIKE A POST ================

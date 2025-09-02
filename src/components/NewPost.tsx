@@ -62,7 +62,7 @@ const NewPost = () => {
           type="text"
           name="title"
           onChange={(e) => handleChange(e)}
-          onBlur={(e) => handleChange(e)}
+          // onBlur={(e) => handleChange(e)}
           placeholder="Enter a compelling title"
           id="title"
           className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -97,7 +97,7 @@ const NewPost = () => {
             <span>{selectedCategory}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-            <DropdownMenuLabel className="text-black">
+            <DropdownMenuLabel >
               Available Categories
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

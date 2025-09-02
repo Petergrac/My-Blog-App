@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  AnyExtension,
   EditorContent,
   EditorContext,
   JSONContent,
@@ -78,6 +79,7 @@ import { usePost } from "@/store/EditorStore";
 
 import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
 import { createLowlight, common } from "lowlight";
+import { resolve } from "path";
 
 const lowlight = createLowlight(common);
 
@@ -190,6 +192,8 @@ export function SimpleEditor({
 }: {
   updateContent?: JSONContent;
 }) {
+  // Add a state variable
+  const [isEditorFocused, setIsEditorFocused] = React.useState(false);
   const isMobile = useIsMobile();
   const [mobileView, setMobileView] = React.useState<
     "main" | "highlighter" | "link"
@@ -232,7 +236,7 @@ export function SimpleEditor({
       Typography,
       Superscript,
       Subscript,
-      Selection,
+      !isMobile ? Selection : null,
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,
@@ -240,7 +244,7 @@ export function SimpleEditor({
         upload: handleImageUpload,
         onError: (error) => console.error("Upload failed:", error),
       }),
-    ],
+    ].filter(Boolean) as AnyExtension[],
     content: updateContent || defaultContent,
   });
 
@@ -262,32 +266,50 @@ export function SimpleEditor({
     }
   }, [isMobile, mobileView]);
 
+  // Use useEffect to manage focus state
+  React.useEffect(() => {
+    if (!editor) return;
+    editor.on("focus", () => setIsEditorFocused(true));
+    editor.on("blur", () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(setIsEditorFocused(false));
+        }, 4000);
+      });
+    });
+    return () => {
+      editor.off("focus", () => setIsEditorFocused(true));
+      editor.off("blur", () => setIsEditorFocused(false));
+    };
+  }, [editor]);
   return (
     <div className="simple-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
-        <Toolbar
-          ref={toolbarRef}
-          style={{
-            ...(isMobile
-              ? {
-                  bottom: `0`,
-                }
-              : {}),
-          }}
-        >
-          {mobileView === "main" ? (
-            <MainToolbarContent
-              onHighlighterClick={() => setMobileView("highlighter")}
-              onLinkClick={() => setMobileView("link")}
-              isMobile={isMobile}
-            />
-          ) : (
-            <MobileToolbarContent
-              type={mobileView === "highlighter" ? "highlighter" : "link"}
-              onBack={() => setMobileView("main")}
-            />
-          )}
-        </Toolbar>
+        {isEditorFocused && (
+          <Toolbar
+            ref={toolbarRef}
+            style={{
+              ...(isMobile
+                ? {
+                    bottom: `5`,
+                  }
+                : {}),
+            }}
+          >
+            {mobileView === "main" ? (
+              <MainToolbarContent
+                onHighlighterClick={() => setMobileView("highlighter")}
+                onLinkClick={() => setMobileView("link")}
+                isMobile={isMobile}
+              />
+            ) : (
+              <MobileToolbarContent
+                type={mobileView === "highlighter" ? "highlighter" : "link"}
+                onBack={() => setMobileView("main")}
+              />
+            )}
+          </Toolbar>
+        )}
 
         <EditorContent
           editor={editor}

@@ -7,12 +7,12 @@ export default function Editor() {
     <div className="flex flex-col">
       {/* POST TITLE e.t.c */}
       <NewPost />
+      {/* SAVE BUTTON */}
+      <SavePost />
       <h2 className="text-center py-4 text-2xl underline ">
         Explore Cool Extensions on our Editor.
       </h2>
       <SimpleEditor />
-      {/* SAVE BUTTON */}
-      <SavePost />
     </div>
   );
 }
