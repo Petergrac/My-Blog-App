@@ -30,7 +30,7 @@ export function processContent(htmlString: string): ProcessedContent {
   });
 
   // 2. Generate Table of Contents
-  $('h2, h3, h4').each((i, el) => {
+  $('h1, h2').each((i, el) => {
     const tagName = el.tagName;
     const headingText = $(el).text();
     const headingId = $(el).attr('id') || slug(headingText);

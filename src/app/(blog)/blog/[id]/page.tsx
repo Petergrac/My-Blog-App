@@ -52,9 +52,9 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   // Get content
   const PostContent = JSON.parse(post.content) as PostType;
   return (
-    <div className="py-10 mx-auto md:max-w-[90vw] lg:max-w-[90vw]">
+    <div className="py-5 mx-auto md:max-w-[90vw] lg:max-w-[90vw]">
       {/* TITLE */}
-      <div className="pb-5 border-b-[1px] shadow-md">
+      <div className=" border-b-[1px] shadow-md">
         <h1 className="sm:text-4xl underline underline-offset-4 text-2xl text-center">
           {post?.title}
         </h1>

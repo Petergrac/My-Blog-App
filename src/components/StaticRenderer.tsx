@@ -50,7 +50,7 @@ const StaticRenderer = async ({ content }: EditorProps) => {
   const { html: finaltHTML, toc } = processContent(highlightHTML);
   return (
     <div className="flex gap-5">
-      <ActiveToc toc={toc} />
+        <ActiveToc toc={toc} />
       <div
         className="tiptap ProseMirror mx-5 h-screen shadow-lg p-3 overflow-y-auto"
         dangerouslySetInnerHTML={{ __html: finaltHTML }}

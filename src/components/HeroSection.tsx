@@ -52,7 +52,7 @@ const HeroSection = () => {
       image: "/hero/tiptap.jpg",
     },
     {
-      path: `/blog/*`,
+      path: `/nothing/`,
       shortDesc: "Dive into a single post",
       description:
         "Experience the full content of a blog post, complete with rich media, interactive elements, and detailed information.",
