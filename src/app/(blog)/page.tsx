@@ -48,7 +48,7 @@ export default async function Home() {
         </p>
         <div className="">
           {filteredPost.length > 0 ? (
-            <div className="flex flex-wrap flex-1 gap-5 md:m-5 m-2">
+            <div className="grids gap-4 md:m-5 m-2">
               {filteredPost.map((post) => (
                 <FeaturedPost post={post} key={post.id} />
               ))}
@@ -69,7 +69,7 @@ export default async function Home() {
         </p>
         <div className="">
           {posts.length > 0 ? (
-            <div className="flex flex-wrap gap-2 gap-y-5 mt-5">
+            <div className="mostGrids gap-2 gap-y-5 mt-5">
               {posts.map((post) => (
                 <MostRecent key={post.id} post={post} />
               ))}

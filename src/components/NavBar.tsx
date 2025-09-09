@@ -11,6 +11,7 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
+  SignUpButton,
   UserButton,
   useUser,
 } from "@clerk/nextjs";
@@ -32,10 +33,10 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
         isTrue && "absolute"
       } items-center justify-between md:justify-around w-full z-20 px-5`}
     >
-      <h1 className="text-2xl line-clamp-3 font-sans font-bold">
+      <Link href='/' className="text-2xl line-clamp-3 font-sans font-bold">
         <span className="text-sky-500">Blo</span>
         <span className="text-yellow-300">og</span>
-      </h1>
+      </Link>
       <Dialog>
         <DialogTrigger>
           <SearchIcon className="text-white" />
@@ -76,6 +77,7 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
                 Sign In
               </button>
             </SignInButton>
+            <SignUpButton>Sign Up</SignUpButton>
           </SignedOut>
         </div>
       </div>

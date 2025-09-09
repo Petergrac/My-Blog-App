@@ -129,9 +129,6 @@ html {
 h1 {
   font-family: var(--font-lora);
 }
-p {
-  font-family: var(--font-geistSans);
-}
 h2 {
   font-family: var(--font-ojuju);
 }
@@ -161,3 +158,12 @@ h2 {
   @apply border-l-4 border-fuchsia-500 pl-2 font-bold flex-grow text-fuchsia-600;
 }
 @import "@clerk/themes/shadcn.css";
+
+.grids{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+.mostGrids{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr))
+}

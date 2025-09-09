@@ -169,7 +169,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/nemesis/Web Dev Projects/Full Stack Projects/Blog App/src/generated/prisma",
+      "value": "/media/nemesis/F8E47943E4790562/Web Dev Projects/Full Stack Projects/Blog App/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -183,7 +183,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/nemesis/Web Dev Projects/Full Stack Projects/Blog App/prisma/schema.prisma",
+    "sourceFilePath": "/media/nemesis/F8E47943E4790562/Web Dev Projects/Full Stack Projects/Blog App/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
