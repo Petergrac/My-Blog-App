@@ -89,8 +89,6 @@ const Bio = () => {
     toast.info("Updating your profile...", { id: "profile-update" });
 
     // Call the server action to save the data
-    console.log(bio);
-    console.log(country);
     const response = await saveUserData({ bio, country, id: currentUserId });
 
     if (response?.message) {
