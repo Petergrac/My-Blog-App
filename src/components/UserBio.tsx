@@ -1,9 +1,8 @@
-// src/app/user-profile/user-data/Bio.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Textarea } from "@/components/ui/textarea"; // Assuming you use Shadcn UI
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -13,7 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { saveUserData } from "@/lib/_roleUpdate"; // Your server action for saving data
+import { saveUserData } from "@/lib/_roleUpdate";
+import { redirect } from "next/navigation";
 
 // Sample list of countries
 const countries = [
@@ -45,14 +45,38 @@ const countries = [
   "Philippines",
 ];
 
+// user data type
+interface userDataType {
+  id: string;
+  bio: string | null;
+  country: string | null;
+}
+
 const Bio = () => {
   const { user, isLoaded } = useUser();
-  const [bio, setBio] = useState(
-    (user?.publicMetadata.bio as string) || ""
-  );
-  const [country, setCountry] = useState(
-    (user?.publicMetadata.country as string) || ""
-  );
+  const userId = user?.id;
+  if (!userId) redirect("/");
+  const [bio, setBio] = useState("");
+  const [country, setCountry] = useState("");
+  const [currentUserId, setId] = useState("");
+  // Get user data from the database
+  useEffect(() => {
+    (async () => {
+      // Fetch user data
+      try {
+        const res = await fetch(`/api/userdata?userId=${userId}`);
+        const userData = (await res.json()) as userDataType;
+        if (userData) {
+          setBio(userData.bio || "");
+          setCountry(userData.country || "");
+          setId(userData.id || "");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Could not fetch user data");
+      }
+    })();
+  }, [userId]);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // If user data is not loaded yet, display a loading state
@@ -65,7 +89,9 @@ const Bio = () => {
     toast.info("Updating your profile...", { id: "profile-update" });
 
     // Call the server action to save the data
-    const response = await saveUserData({ bio, country });
+    console.log(bio);
+    console.log(country);
+    const response = await saveUserData({ bio, country, id: currentUserId });
 
     if (response?.message) {
       // Reload user to get the updated metadata from Clerk
@@ -79,7 +105,6 @@ const Bio = () => {
 
     setIsUpdating(false);
   };
-
   return (
     <div className="p-6 md:p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto transform transition-all duration-300 hover:shadow-lg">
       <h1 className="text-2xl font-bold mb-4">Personal Information</h1>
@@ -93,7 +118,11 @@ const Bio = () => {
           <label className="font-semibold text-sm">Country</label>
           <Select onValueChange={setCountry} value={country}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select your country" />
+              {country ? (
+                <SelectValue placeholder={country} />
+              ) : (
+                <SelectValue placeholder="Select your country" />
+              )}
             </SelectTrigger>
             <SelectContent className="h-1/2">
               {countries.sort().map((c) => (
@@ -116,11 +145,7 @@ const Bio = () => {
           />
         </div>
 
-        <Button
-          onClick={handleSave}
-          disabled={isUpdating}
-          className="w-full"
-        >
+        <Button onClick={handleSave} disabled={isUpdating} className="w-full">
           {isUpdating ? "Saving..." : "Save Changes"}
         </Button>
       </div>

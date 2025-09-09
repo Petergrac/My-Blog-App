@@ -29,37 +29,27 @@ export default changeRole;
 export const saveUserData = async ({
   bio,
   country,
+  id,
 }: {
   bio: string;
   country: string;
+  id: string | "";
 }) => {
   const { userId } = await auth();
   // Check for user in clerk
   if (!userId) return { error: "This user is not available on the database" };
   // Add data to the database
   try {
-    if (country.trim().length > 2) {
-      await prisma.user.update({
-        where: {
-          clerkId: userId,
-        },
-        data: {
-          country,
-        },
-      });
-      return { message: "Country field updated!" };
-    }
-    if (bio.trim().length > 5) {
-      await prisma.user.update({
-        where: {
-          clerkId: userId,
-        },
-        data: {
-          bio,
-        },
-      });
-      return { message: "Bio field updated!" };
-    }
+    await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        country,
+        bio,
+      },
+    });
+    return {message: "User data updated successfully!"}
   } catch (err) {
     console.log(err);
     return { error: "Could not update the user" };

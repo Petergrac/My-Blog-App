@@ -11,7 +11,6 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
-  SignUpButton,
   UserButton,
   useUser,
 } from "@clerk/nextjs";
@@ -77,7 +76,6 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
                 Sign In
               </button>
             </SignInButton>
-            <SignUpButton>Sign Up</SignUpButton>
           </SignedOut>
         </div>
       </div>
