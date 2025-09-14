@@ -72,7 +72,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       {/* CONTENT */}
       <StaticRenderer content={PostContent} />
       {/* Likes */}
-      <div className="">
+      <div className="pr-5">
         <LikePost
           data={{ currentId, id }}
           hasLiked={hasLiked.length > 0}

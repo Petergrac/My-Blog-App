@@ -11,6 +11,7 @@ export default async function Home() {
     orderBy: {
       createdAt: "desc",
     },
+    take: 10,
     select: {
       id: true,
       title: true,
