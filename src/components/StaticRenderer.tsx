@@ -49,10 +49,10 @@ const StaticRenderer = async ({ content }: EditorProps) => {
   // Optimize image and create the toc
   const { html: finaltHTML, toc } = processContent(highlightHTML);
   return (
-    <div className="flex gap-5">
+    <div className="flex gap-5 outline-4">
         <ActiveToc toc={toc} />
       <div
-        className="tiptap ProseMirror sm:mx-5 sen mx-0 min-h-screen shadow-lg p-3 text-lg "
+        className="tiptap ProseMirror sm:mx-5 sen w-screen min-h-screen shadow-lg p-3 text-lg "
         dangerouslySetInnerHTML={{ __html: finaltHTML }}
       />
     </div>
