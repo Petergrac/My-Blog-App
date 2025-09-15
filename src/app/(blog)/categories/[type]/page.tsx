@@ -60,7 +60,7 @@ const CategoriesPage = async ({
   }
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 min-h-[75vh]">
       {/* HERO SECTION */}
       <div className="relative aspect-[5/1] w-full">
         <Image src="/categories.jpg" alt="" fill className="object-cover" />
@@ -69,10 +69,10 @@ const CategoriesPage = async ({
         </h1>
       </div>
       {/* POSTS BY CATEGORY CLICKED */}
-      <h1 className="sm:text-4xl text-2xl text-center py-10 underline">
+      <h1 className="sm:text-4xl  text-2xl text-center py-10 underline">
         {type.toUpperCase()}
       </h1>
-      <div className="flex gap-5 flex-wrap sm:mx-auto mx-5">
+      <div className="flex overflow-x-auto gap-5 sm:mx-auto mx-5">
         {posts.map((post) => (
           <MostRecent key={post.id} post={post} />
         ))}

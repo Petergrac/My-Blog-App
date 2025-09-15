@@ -51,7 +51,7 @@ const ActiveToc: React.FC<ActiveTocProps> = ({ toc }) => {
     };
   }, [toc]);
   return (
-    <nav className=" p-4 h-screen lg:block lg:min-w-80 hidden outline">
+    <nav className=" p-4 h-screen lg:block lg:min-w-80 hidden border-r-2 sticky top-0">
       <h3 className="font-bold mb-2">Table of Contents</h3>
       <ul className="space-y-1">
         {toc.map((item,i) => (

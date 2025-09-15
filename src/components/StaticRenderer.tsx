@@ -52,7 +52,7 @@ const StaticRenderer = async ({ content }: EditorProps) => {
     <div className="flex gap-5">
         <ActiveToc toc={toc} />
       <div
-        className="tiptap ProseMirror mx-5 sen h-screen shadow-lg p-3 text-lg overflow-y-auto"
+        className="tiptap ProseMirror sm:mx-5 sen mx-0 min-h-screen shadow-lg p-3 text-lg "
         dangerouslySetInnerHTML={{ __html: finaltHTML }}
       />
     </div>

@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { FeaturedPostType } from "./FeaturedPost";
@@ -46,9 +47,10 @@ const MostRecent = ({
       }
     }
   };
+
   return (
     <div
-      className={`anim border-[1px] flex flex-col justify-around rounded-sm  overflow-hidden  w-52 px-2 shadow-md ${
+      className={`anim border-[1px] flex flex-col justify-around rounded-sm  overflow-hidden  min-w-52 max-w-53 px-2 shadow-md ${
         !isAuthor && "mx-auto"
       }`}
     >
@@ -70,7 +72,11 @@ const MostRecent = ({
         {/* TITLE */}
         <h1 className="font-lora text-sm font-semibold py-3">{post.title}</h1>
         {/* CONTENT */}
-        <p className="text-xs overflow-hidden h-5 ">{post.description}</p>
+        <div className="">
+          <p className={`h-5 text-xs overflow-hidden`}>
+            {post.description}
+          </p>
+        </div>
       </div>
       {/* AUTHOR AND DATE */}
       <div className="flex justify-between py-3 flex-wrap gap-3 items-center">
@@ -100,11 +106,15 @@ const MostRecent = ({
           <div className="flex items-center gap-3">
             <div className="flex gap-1 items-center hover:text-pink-500 ">
               <MessageCircle size={20} className="" />
-              <span className="text-xs">{post._count && post._count.comments || 0}</span>
+              <span className="text-xs">
+                {(post._count && post._count.comments) || 0}
+              </span>
             </div>
             <div className="flex gap-1 items-center hover:text-cyan-500 ">
               <ThumbsUp size={20} />
-              <span className="text-xs">{post._count && post._count.likes || 0}</span>
+              <span className="text-xs">
+                {(post._count && post._count.likes) || 0}
+              </span>
             </div>
           </div>
           {/* POST STATE */}

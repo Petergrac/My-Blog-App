@@ -49,7 +49,7 @@ export default async function Home() {
         </p>
         <div className="">
           {filteredPost.length > 0 ? (
-            <div className="grids gap-4 md:m-5 m-2">
+            <div className="flex overflow-x-auto md:m-5 m-2">
               {filteredPost.map((post) => (
                 <FeaturedPost post={post} key={post.id} />
               ))}
@@ -68,21 +68,19 @@ export default async function Home() {
         <p className="text-lg text-center underline underline-offset-5">
           Most Recent
         </p>
-        <div className="">
-          {posts.length > 0 ? (
-            <div className="mostGrids gap-2 gap-y-5 mt-5">
-              {posts.map((post) => (
-                <MostRecent key={post.id} post={post} />
-              ))}
-            </div>
-          ) : (
-            <div className="py-10 flex justify-center items-center">
-              <p className="text-2xl text-muted-foreground font-bold text-center">
-                No Posts Posted, Be the first to post something!
-              </p>
-            </div>
-          )}
-        </div>
+        {posts.length > 0 ? (
+          <div className="flex overflow-x-auto gap-2 gap-y-5 mt-5">
+            {posts.map((post) => (
+              <MostRecent key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="py-10 flex justify-center items-center">
+            <p className="text-2xl text-muted-foreground font-bold text-center">
+              No Posts Posted, Be the first to post something!
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -442,11 +442,14 @@
      ===================== */
 .tiptap.ProseMirror {
   a {
-    color: #beef00;
+    color: #0fc6e3;
     text-decoration: underline;
   }
+  a .dark{
+    color: #00efef;
+  }
   a:hover {
-    color: yellow;
+    color: rgb(3, 111, 199);
   }
 }
 
@@ -605,6 +608,7 @@
   // Code blocks
   pre {
     overflow-x: auto;
+    width: 100%;
     background-color: var(--tt-codeblock-bg);
     border: 1px solid var(--tt-codeblock-border);
     margin-top: 1.5em;
