@@ -1,8 +1,8 @@
 import { MessageCircle, PenBox, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 
-import { Badge } from "./ui/badge";
-import { Card, CardContent } from "./ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 const AuthorHeader = ({
   postCount,
@@ -69,7 +69,7 @@ const AuthorHeader = ({
             <div className="bg-muted/20 p-5 text-center">
               <MessageCircle className="mx-auto size-5 text-emerald-500" />
               <p className="mt-3 text-2xl font-semibold">{totalComments}</p>
-              <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <p className="text-xs uppercase tracking-[0.24em] md:tracking-tight text-muted-foreground">
                 Comments
               </p>
             </div>

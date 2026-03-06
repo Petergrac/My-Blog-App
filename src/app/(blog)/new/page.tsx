@@ -1,5 +1,5 @@
-import NewPost from "@/components/NewPost";
-import SavePost from "@/components/SavePost";
+import NewPost from "@/components/editor/NewPost";
+import SavePost from "@/components/editor/SavePost";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { Badge } from "@/components/ui/badge";
 import {

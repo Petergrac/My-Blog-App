@@ -1,30 +1,10 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { requireCurrentDatabaseUser } from "@/lib/current-user";
 import { revalidatePath } from "next/cache";
 
 async function requireCurrentUser() {
-  const { userId } = await auth();
-
-  if (!userId) {
-    await auth.protect();
-    throw new Error("Unauthorized");
-  }
-
-  const currentUser = await prisma.user.findUnique({
-    where: {
-      clerkId: userId,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  if (!currentUser) {
-    throw new Error("You need a valid account to comment.");
-  }
-
-  return currentUser;
+  return requireCurrentDatabaseUser();
 }
 
 export async function createComment(postId: string, content: string) {

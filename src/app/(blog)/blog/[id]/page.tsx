@@ -1,7 +1,7 @@
-import Comments from "@/components/Comments";
-import LikePost from "@/components/LikePost";
-import MostRecent from "@/components/MostRecent";
-import StaticRenderer from "@/components/StaticRenderer";
+import Comments from "@/components/blog/Comments";
+import LikePost from "@/components/blog/LikePost";
+import MostRecent from "@/components/blog/MostRecent";
+import StaticRenderer from "@/components/blog/StaticRenderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCategoryHref, getCategoryLabel } from "@/lib/categories";
+import { getCurrentDatabaseUser } from "@/lib/current-user";
 import prisma from "@/lib/prisma";
 import { getPost } from "@/lib/postQueries";
-import { auth } from "@clerk/nextjs/server";
 import {
   CalendarDays,
   MessageCircle,
@@ -50,21 +50,8 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     notFound();
   }
 
-  const { userId } = await auth();
-  let currentId: string | null = null;
-
-  if (userId) {
-    const currentUser = await prisma.user.findUnique({
-      where: {
-        clerkId: userId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    currentId = currentUser?.id ?? null;
-  }
+  const currentUser = await getCurrentDatabaseUser();
+  const currentId = currentUser?.id ?? null;
 
   const hasLiked = post.likes.some(
     (like) => like.userId === currentId && like.postId === id,
@@ -177,19 +164,62 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
           </div>
 
-          <div className="relative order-1 min-h-[22rem] lg:order-2 lg:min-h-full">
+          <div className="relative order-1 min-h-88 lg:order-2 lg:min-h-full">
             <Image
               alt={post.title}
               className="object-cover"
               fill
               src={post.coverImage}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent" />
           </div>
         </CardContent>
       </Card>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="space-y-6">
+        <Card className="border-border/70 bg-card/95 shadow-sm lg:sticky lg:top-24">
+          <CardHeader className="border-b border-border/60 bg-muted/20">
+            <Badge className="w-fit" variant="outline">
+              Reading details
+            </Badge>
+            <CardTitle className="text-2xl">Article snapshot</CardTitle>
+            <CardDescription>
+              Quick context before you keep reading.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6 text-sm">
+            <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-muted/20 p-4">
+              <UserRound className="mt-0.5 size-4 shrink-0 text-sky-500" />
+              <div>
+                <p className="font-medium text-foreground">
+                  {post.author.username || "Anonymous author"}
+                </p>
+                <p className="mt-1 leading-6 text-muted-foreground">
+                  {post.author.bio || "No bio provided yet."}
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                  Category
+                </p>
+                <p className="mt-2 font-medium">
+                  {getCategoryLabel(post.category)}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                  Engagement
+                </p>
+                <p className="mt-2 font-medium">
+                  {post.likes.length} likes and {postComments.length} comments
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-6 lg:grid-cols w-full">
         <div className="space-y-6">
           <StaticRenderer content={postContent} />
 
@@ -263,51 +293,6 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
 
           <Comments comments={postComments} postId={id} userId={currentId} />
-        </div>
-
-        <div className="space-y-6">
-          <Card className="border-border/70 bg-card/95 shadow-sm lg:sticky lg:top-24">
-            <CardHeader className="border-b border-border/60 bg-muted/20">
-              <Badge className="w-fit" variant="outline">
-                Reading details
-              </Badge>
-              <CardTitle className="text-2xl">Article snapshot</CardTitle>
-              <CardDescription>
-                Quick context before you keep reading.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-6 text-sm">
-              <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-muted/20 p-4">
-                <UserRound className="mt-0.5 size-4 shrink-0 text-sky-500" />
-                <div>
-                  <p className="font-medium text-foreground">
-                    {post.author.username || "Anonymous author"}
-                  </p>
-                  <p className="mt-1 leading-6 text-muted-foreground">
-                    {post.author.bio || "No bio provided yet."}
-                  </p>
-                </div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                    Category
-                  </p>
-                  <p className="mt-2 font-medium">
-                    {getCategoryLabel(post.category)}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                    Engagement
-                  </p>
-                  <p className="mt-2 font-medium">
-                    {post.likes.length} likes and {postComments.length} comments
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 

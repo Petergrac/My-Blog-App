@@ -9,22 +9,22 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import CommentInput from "./CommentInput";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import CommentInput from "@/components/blog/CommentInput";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 type Comment = {
   id: string;
@@ -121,7 +121,7 @@ const Comments = ({
                       />
                     </div>
                     <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex justify-between gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <p className="font-medium">
                             {comment.author.username || "Anonymous reader"}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getCategoryHref, postCategories } from "@/lib/categories";
 
-const CagegoryLinks = () => {
+const CategoryLinks = () => {
   return (
     <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3 border-b border-border/70 px-4 py-5">
       {postCategories.map((category) => (
@@ -20,4 +20,4 @@ const CagegoryLinks = () => {
   );
 };
 
-export default CagegoryLinks;
+export default CategoryLinks;

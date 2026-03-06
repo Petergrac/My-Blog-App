@@ -10,12 +10,12 @@ import Superscript from "@tiptap/extension-superscript";
 import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
 import { Selection } from "@tiptap/extensions";
-import "highlight.js/styles/atom-one-dark.css";
 
 import { highlightCodeBlocks } from "@/lib/highlight";
 import { processContent } from "@/lib/postProcessor";
-import "@/styles/renderer.scss";
-import ActiveToc from "./TOC";
+import ActiveToc from "@/components/blog/TOC";
+import "../../styles/renderer.scss";
+import "highlight.js/styles/atom-one-dark.css";
 
 type JSONContent = {
   type?: string;
@@ -65,7 +65,7 @@ const StaticRenderer = async ({ content }: EditorProps) => {
         <div className="xl:hidden">
           <ActiveToc toc={toc} variant="mobile" />
         </div>
-        <article className="article-renderer rounded-[2rem] border border-border/70 bg-card/95 shadow-sm">
+        <article className="article-renderer rounded-4xl border border-border/70 bg-card/95 shadow-sm">
           <div
             className="article-prose tiptap ProseMirror sen p-5 md:p-8 xl:p-10"
             dangerouslySetInnerHTML={{ __html: finalHTML }}

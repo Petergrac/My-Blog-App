@@ -1,7 +1,7 @@
 "use client";
 
-import Bio from "@/components/UserBio";
-import UserRole from "@/components/UserRole";
+import Bio from "@/components/user/UserBio";
+import UserRole from "@/components/user/UserRole";
 import { UserProfile } from "@clerk/nextjs";
 import { ArrowLeft, Briefcase, Info } from "lucide-react";
 import Link from "next/link";

@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import MostRecent from "./MostRecent";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import MostRecent from "@/components/blog/MostRecent";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 
 export type PostType = {
   title: string;

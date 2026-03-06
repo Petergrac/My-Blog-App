@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import UpdatePost from "@/components/UpdatePost";
+import UpdatePost from "@/components/editor/UpdatePost";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 

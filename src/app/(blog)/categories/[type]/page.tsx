@@ -1,6 +1,6 @@
-import CagegoryLinks from "@/components/CagegoryLinks";
-import MostRecent from "@/components/MostRecent";
-import PostNotFound from "@/components/PostNotFound";
+import CagegoryLinks from "@/components/blog/CagegoryLinks";
+import MostRecent from "@/components/blog/MostRecent";
+import PostNotFound from "@/components/blog/PostNotFound";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

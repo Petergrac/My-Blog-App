@@ -2,24 +2,24 @@
 
 import { Menu, SearchIcon } from "lucide-react";
 import Link from "next/link";
-
-import { clerkModalAppearance } from "@/lib/clerk";
-import { ModeToggle } from "./ThemeToggle";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+
+import ProgressiveSearch from "@/components/layout/SearchBar";
+import { ModeToggle } from "@/components/layout/ThemeToggle";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import ProgressiveSearch from "./SearchBar";
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { clerkModalAppearance } from "@/lib/clerk";
 
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
   const { user, isSignedIn } = useUser();

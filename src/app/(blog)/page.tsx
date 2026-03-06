@@ -10,8 +10,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import CagegoryLinks from "@/components/CagegoryLinks";
-import NoPosts from "@/components/NoPosts";
+import CategoryLinks from "@/components/blog/CagegoryLinks";
+import NoPosts from "@/components/blog/NoPosts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -163,7 +163,7 @@ export default async function Home() {
   if (publishedPosts.length === 0) {
     return (
       <div className="pb-16">
-        <CagegoryLinks />
+        <CategoryLinks />
         <NoPosts />
       </div>
     );
@@ -188,7 +188,7 @@ export default async function Home() {
   return (
     <div className="pb-16">
       <section className="relative overflow-hidden border-b border-border/60">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_38%),radial-gradient(circle_at_75%_20%,_rgba(250,204,21,0.14),_transparent_26%),linear-gradient(180deg,_rgba(15,23,42,0.04),_transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.18),transparent_38%),radial-gradient(circle_at_75%_20%,rgba(250,204,21,0.14),transparent_26%),linear-gradient(180deg,rgba(15,23,42,0.04),transparent)]" />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
           <div className="space-y-7">
             <Badge
@@ -236,16 +236,16 @@ export default async function Home() {
 
           <Link
             href={`/blog/${heroPost.id}`}
-            className="group relative overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-2xl"
+            className="group relative overflow-hidden rounded-4xl border border-border/70 bg-card shadow-2xl"
           >
-            <div className="relative aspect-[4/5] overflow-hidden">
+            <div className="relative aspect-4/5 overflow-hidden">
               <Image
                 src={heroPost.coverImage}
                 alt={heroPost.title}
                 fill
                 className="object-cover transition duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
             </div>
             <div className="absolute inset-x-0 bottom-0 p-6 text-white">
               <Badge className="mb-4 bg-white/12 text-white" variant="outline">
@@ -269,7 +269,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <CagegoryLinks />
+      <CategoryLinks />
 
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

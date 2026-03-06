@@ -10,19 +10,17 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { patchPost } from "@/actions/PostActions";
-import { postCategories, postCategoryValues } from "@/lib/categories";
-import { usePost } from "@/store/EditorStore";
-import UploadExample from "./ImageUpload";
-import { SimpleEditor } from "./tiptap-templates/simple/simple-editor";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import UploadExample from "@/components/editor/ImageUpload";
+import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -30,16 +28,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Textarea } from "./ui/textarea";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { postCategories, postCategoryValues } from "@/lib/categories";
+import { usePost } from "@/store/EditorStore";
 
 export interface PostDetailsType {
   title: string;

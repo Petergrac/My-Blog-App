@@ -1,4 +1,4 @@
-import Unauthorized from "@/components/UnauthorizedContent";
+import Unauthorized from "@/components/layout/UnauthorizedContent";
 import { LoaderIcon } from "lucide-react";
 import { Suspense } from "react";
 

@@ -1,5 +1,5 @@
-import AuthorHeader from "@/components/AuthorHeader";
-import BlogAuthor from "@/components/BlogAuthor";
+import AuthorHeader from "@/components/blog/AuthorHeader";
+import BlogAuthor from "@/components/blog/BlogAuthor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

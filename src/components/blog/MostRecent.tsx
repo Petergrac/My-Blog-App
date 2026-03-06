@@ -9,22 +9,22 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-import { FeaturedPostType } from "./FeaturedPost";
-import { PostType } from "./BlogAuthor";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { FeaturedPostType } from "@/components/blog/FeaturedPost";
+import { PostType } from "@/components/blog/BlogAuthor";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "./ui/card";
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 const MostRecent = ({
   post,
@@ -64,7 +64,7 @@ const MostRecent = ({
   return (
     <Card className="h-full overflow-hidden border-border/70 bg-card/95 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
       <Link className="relative block overflow-hidden" href={`/blog/${post.id}`}>
-        <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="relative aspect-16/10 overflow-hidden">
           <Image
             alt={post.title}
             className="object-cover transition-transform duration-500 hover:scale-105"
@@ -116,11 +116,12 @@ const MostRecent = ({
 
       <CardContent className="pt-5">
         <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/20 p-3">
-          <div className="relative size-10 overflow-hidden rounded-full border border-border/70">
+          <div className="relative  aspect-square overflow-hidden rounded-full border border-border/70">
             <Image
               alt={post.author.username || "Author avatar"}
-              className="object-cover"
-              fill
+              className="object-center outline-3"
+              width={70}
+              height={70}
               src={post.author.avatar || "/noAvatar.jpeg"}
             />
           </div>

@@ -5,8 +5,8 @@ import { HeartHandshake, ThumbsUpIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 const LikePost = ({
   hasLiked,
   likes,
@@ -30,8 +30,9 @@ const LikePost = ({
     }
 
     const previousLikeState = likeState;
+    const previousLikeCount = like;
     const nextLikeState = !previousLikeState;
-    const nextLikeCount = like + (nextLikeState ? 1 : -1);
+    const nextLikeCount = previousLikeCount + (nextLikeState ? 1 : -1);
 
     setLikeState(nextLikeState);
     setLike(nextLikeCount);
@@ -43,7 +44,7 @@ const LikePost = ({
       } catch (error) {
         console.log(error);
         setLikeState(previousLikeState);
-        setLike(like);
+        setLike(previousLikeCount);
         toast.error("Could not update your reaction.");
       }
     });

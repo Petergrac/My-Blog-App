@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
-import NavBar from "./NavBar";
+import NavBar from "@/components/layout/NavBar";
 import Image from "next/image";
 
 const HeroSection = () => {
