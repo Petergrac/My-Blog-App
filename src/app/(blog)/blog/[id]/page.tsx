@@ -15,7 +15,13 @@ import { getCategoryHref, getCategoryLabel } from "@/lib/categories";
 import prisma from "@/lib/prisma";
 import { getPost } from "@/lib/postQueries";
 import { auth } from "@clerk/nextjs/server";
-import { CalendarDays, MessageCircle, MoveRight, ThumbsUp, UserRound } from "lucide-react";
+import {
+  CalendarDays,
+  MessageCircle,
+  MoveRight,
+  ThumbsUp,
+  UserRound,
+} from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -61,7 +67,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   const hasLiked = post.likes.some(
-    (like) => like.userId === currentId && like.postId === id
+    (like) => like.userId === currentId && like.postId === id,
   );
   const postComments = post.comments;
   const postContent = JSON.parse(post.content) as JSONContent;
@@ -137,7 +143,8 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="rounded-full border border-border/70 bg-muted/20 px-4 py-2">
                 <span className="flex items-center gap-2">
                   <MessageCircle className="size-4 text-emerald-500" />
-                  {postComments.length} comment{postComments.length === 1 ? "" : "s"}
+                  {postComments.length} comment
+                  {postComments.length === 1 ? "" : "s"}
                 </span>
               </div>
               <div className="rounded-full border border-border/70 bg-muted/20 px-4 py-2">
