@@ -1,49 +1,21 @@
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { getCategoryHref, postCategories } from "@/lib/categories";
+
 const CagegoryLinks = () => {
   return (
-    <div className="flex flex-wrap gap-2 gap-y-5 pt-1 justify-center border-b-[1px] pb-3 md:pb-5">
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/frontend"
-      >
-        FRONTEND
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/backend"
-      >
-        BACKEND
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/devops"
-      >
-        DEVOPS
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/data-structures"
-      >
-        DATA STRUCTURES
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/data-science"
-      >
-        DATA SCIENCE
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/testing"
-      >
-        TESTING
-      </Link>
-      <Link
-        className="text-xs font-lora p-2 hover:bg-foreground/55"
-        href="/categories/system-design"
-      >
-        SYSTEM DESIGN
-      </Link>
+    <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3 border-b border-border/70 px-4 py-5">
+      {postCategories.map((category) => (
+        <Button
+          key={category.value}
+          asChild
+          className="rounded-full border-border/70 bg-background/70 text-xs font-medium text-foreground shadow-none backdrop-blur hover:bg-accent"
+          variant="outline"
+        >
+          <Link href={getCategoryHref(category.value)}>{category.label}</Link>
+        </Button>
+      ))}
     </div>
   );
 };

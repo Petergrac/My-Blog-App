@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
+import { auth } from "@clerk/nextjs/server";
 
 /**
  *  ================ Get a single post ===========
@@ -66,18 +67,34 @@ export async function getPost(id: string) {
  * @param likeStatus
  */
 
-export async function postLikes(
-  userId: string,
-  postId: string,
-  likeStatus: boolean
-) {
+export async function postLikes(postId: string, likeStatus: boolean) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      await auth.protect();
+      return;
+    }
+
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!currentUser) {
+      throw new Error("Only registered users can like posts.");
+    }
+
     if (likeStatus) {
       await prisma.like.delete({
         where: {
           postId_userId: {
             postId,
-            userId,
+            userId: currentUser.id,
           },
         },
       });
@@ -85,7 +102,7 @@ export async function postLikes(
       await prisma.like.create({
         data: {
           postId,
-          userId,
+          userId: currentUser.id,
         },
       });
     }

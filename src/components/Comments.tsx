@@ -1,18 +1,30 @@
 "use client";
 
+import { deleteComment } from "@/actions/CommentActions";
 import { formatDistanceToNow } from "date-fns";
+import { MessageSquare, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+
 import CommentInput from "./CommentInput";
-import { MoreVertical, Pencil, Trash } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useState } from "react";
-import { deleteComment } from "@/actions/CommentActions";
-import { toast } from "sonner";
 
 type Comment = {
   id: string;
@@ -35,103 +47,161 @@ const Comments = ({
   userId: string | null;
   postId: string;
 }) => {
-  const [change, setChange] = useState<null | {
-    id: string;
-    type: "edit" | "delete";
-  }>(null);
+  const [change, setChange] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const commentActions = async (type: "edit" | "delete", commentId: string) => {
-    if (type === "delete") {
+  const handleDelete = async (commentId: string) => {
+    startTransition(async () => {
       try {
         await deleteComment(commentId, postId);
-        toast.success("Comment deleted!");
+        setChange(null);
+        toast.success("Comment deleted.");
+        router.refresh();
       } catch (error) {
-          console.log(error)
-        toast.error("Comment could not be deleted");
+        console.log(error);
+        toast.error("Comment could not be deleted.");
       }
-    }
-    setChange({ id: commentId, type });
+    });
   };
 
   return (
-    <div>
-      {/* Always show input at the top if user is logged in */}
-      {userId && <CommentInput data={{ userId, postId }} />}
-
-      <div className="space-y-6 mt-8">
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex flex-col gap-2">
-            <div className={`${
-                  userId && userId === comment.author.id && "flex-row-reverse"
-                } flex items-center gap-4`}>
-              {/* Avatar */}
-              <div className="w-10 h-10 relative rounded-full overflow-hidden">
-                <Image
-                  src={comment.author.avatar || "/noAvatar.jpg"}
-                  alt={comment.author.username || ""}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Comment body */}
-              <div
-                className={`flex-1 bg-muted px-4 py-3 rounded-md`}
-              >
-                <div className={` flex justify-between items-center mb-1`}>
-                  <span className="font-semibold text-sm text-foreground">
-                    {comment.author.username}
-                  </span>
-                  <div className="flex flex-col items-end gap-4">
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </span>
-                    {userId && userId === comment.author.id && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild className="outline-none">
-                          <MoreVertical size={15} />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem
-                            onClick={() => commentActions("edit", comment.id)}
-                            className="text-sm"
-                          >
-                            <Pencil size={14} className="mr-2" /> Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => commentActions("delete", comment.id)}
-                            className="text-rose-500 text-sm"
-                          >
-                            <Trash size={14} className="mr-2" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
-                </div>
-                <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-                  {comment.content}
-                </p>
-              </div>
+    <section className="space-y-6">
+      <Card className="border-border/70 bg-card/95 shadow-sm">
+        <CardHeader className="border-b border-border/60 bg-muted/20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <Badge className="w-fit" variant="outline">
+                Discussion
+              </Badge>
+              <CardTitle className="text-2xl">Comments</CardTitle>
+              <CardDescription>
+                {comments.length === 0
+                  ? "Start the conversation around this story."
+                  : `${comments.length} comment${comments.length === 1 ? "" : "s"} so far.`}
+              </CardDescription>
             </div>
-
-            {/* Inline Comment Input for edit/delete */}
-            {change && change.id === comment.id && change.type === "edit" && (
-              <div className="ml-14">
-                <CommentInput
-                  data={{ userId, postId, commentId: comment.id }}
-                  mode={"edit"}
-                  defaultContent={comment.content}
-                  onCancel={() => setChange(null)}
-                />
-              </div>
-            )}
           </div>
-        ))}
-      </div>
-    </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {userId ? (
+            <CommentInput data={{ userId, postId }} />
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-6 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Join the discussion</p>
+              <p className="mt-2">
+                You need to sign in before you can post or edit comments.
+              </p>
+              <Button asChild className="mt-4" variant="outline">
+                <Link href="/sign-in">Sign in to comment</Link>
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {comments.length > 0 ? (
+        <div className="space-y-4">
+          {comments.map((comment) => {
+            const isOwner = userId === comment.author.id;
+
+            return (
+              <Card
+                className="border-border/70 bg-card/95 shadow-sm"
+                key={comment.id}
+              >
+                <CardContent className="space-y-4 p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="relative size-11 shrink-0 overflow-hidden rounded-full border border-border/60">
+                      <Image
+                        alt={comment.author.username || "Comment author"}
+                        className="object-cover"
+                        fill
+                        src={comment.author.avatar || "/noAvatar.jpg"}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="font-medium">
+                            {comment.author.username || "Anonymous reader"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDistanceToNow(new Date(comment.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </p>
+                        </div>
+                        {isOwner && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" type="button" variant="ghost">
+                                <MoreVertical />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setChange((current) =>
+                                    current === comment.id ? null : comment.id
+                                  )
+                                }
+                              >
+                                <Pencil />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                disabled={isPending}
+                                onClick={() => handleDelete(comment.id)}
+                                variant="destructive"
+                              >
+                                <Trash2 />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+
+                      <p className="whitespace-pre-line text-sm leading-7 text-foreground/90">
+                        {comment.content}
+                      </p>
+                    </div>
+                  </div>
+
+                  {change === comment.id && (
+                    <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+                      <CommentInput
+                        data={{ userId, postId, commentId: comment.id }}
+                        defaultContent={comment.content}
+                        key={comment.id}
+                        mode="edit"
+                        onCancel={() => setChange(null)}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        <Card className="border-border/70 bg-card/95 shadow-sm">
+          <CardContent className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+            <div className="rounded-full bg-muted p-3">
+              <MessageSquare className="size-5 text-muted-foreground" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium">No comments yet</p>
+              <p className="max-w-md text-sm text-muted-foreground">
+                Be the first reader to add context, ask a question, or highlight
+                a useful takeaway from this post.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </section>
   );
 };
 

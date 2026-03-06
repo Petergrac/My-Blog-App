@@ -1,9 +1,8 @@
 import prisma from "@/lib/prisma";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { auth } from "@clerk/nextjs/server";
 import UpdatePost from "@/components/UpdatePost";
 import { redirect } from "next/navigation";
-
+import { Badge } from "@/components/ui/badge";
 
 const UpdateBlog = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -37,15 +36,23 @@ const UpdateBlog = async ({ params }: { params: Promise<{ id: string }> }) => {
     state: post.state,
   };
   
-  const postContent = JSON.parse(postDetails.content)
   return (
-    <div className="flex flex-col">
-      {/*EDIT POST TITLE e.t.c */}
+    <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+      <div className="mb-10 flex max-w-4xl flex-col gap-4">
+        <Badge className="w-fit" variant="outline">
+          Edit mode
+        </Badge>
+        <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
+          Refine the story without losing the flow.
+        </h1>
+        <p className="text-base leading-7 text-muted-foreground">
+          The edit flow now follows the same rhythm as creation: setup at the
+          top, full-width writing in the middle, publish controls at the
+          bottom.
+        </p>
+      </div>
+
       <UpdatePost postDetails={postDetails} id={id} />
-      <h2 className="text-center py-4 text-2xl underline ">
-        Edit your post content.
-      </h2>
-      <SimpleEditor updateContent={postContent}  />
     </div>
   );
 };

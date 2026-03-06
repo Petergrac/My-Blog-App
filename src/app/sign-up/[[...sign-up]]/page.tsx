@@ -1,214 +1,339 @@
 "use client";
 
-import * as Clerk from "@clerk/elements/common";
-import * as SignUp from "@clerk/elements/sign-up";
-import Link from "next/link";
+import type { FormEvent } from "react";
+import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSignUp } from "@clerk/nextjs";
+
+import {
+  AuthDivider,
+  AuthErrors,
+  AuthFooterLink,
+  AuthNotice,
+  AuthShell,
+  AuthSubmitButton,
+  GitHubIcon,
+  GoogleIcon,
+  SocialAuthButton,
+} from "@/components/auth/auth-ui";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { getClerkErrorMessages } from "@/lib/clerk";
+
+type SignUpView = "start" | "verify_email";
+
+const OAUTH_CALLBACK_URL = "/sso-callback";
+const AUTH_COMPLETE_URL = "/";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const { errors: signUpErrors, fetchStatus, signUp } = useSignUp();
+
+  const [view, setView] = useState<SignUpView>("start");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
+
+  const errors =
+    localErrors.length > 0
+      ? localErrors
+      : (signUpErrors.global ?? []).map(
+          (issue) => issue.longMessage || issue.message,
+        );
+
+  const clearFeedback = () => {
+    setLocalErrors([]);
+    setNotice(null);
+  };
+
+  const handleFailure = (error: unknown) => {
+    setLocalErrors(getClerkErrorMessages(error));
+    setNotice(null);
+  };
+
+  const finalizeSignUp = async () => {
+    const { error } = await signUp.finalize({
+      navigate: async ({ decorateUrl }: { decorateUrl: (url: string) => string }) => {
+        const destination = decorateUrl(AUTH_COMPLETE_URL);
+
+        if (destination.startsWith("http")) {
+          window.location.assign(destination);
+          return;
+        }
+
+        router.replace(destination);
+      },
+    });
+
+    if (error) {
+      handleFailure(error);
+    }
+  };
+
+  const prepareEmailVerification = async () => {
+    const { error } = await signUp.verifications.sendEmailCode();
+
+    if (error) {
+      handleFailure(error);
+      return;
+    }
+
+    setNotice(
+      `We sent a verification code to ${signUp.emailAddress ?? emailAddress}.`,
+    );
+    setVerificationCode("");
+    setView("verify_email");
+  };
+
+  const handleOAuthSignUp = async (strategy: "oauth_google" | "oauth_github") => {
+    clearFeedback();
+    setPendingAction(strategy);
+
+    const { error } = await signUp.sso({
+      strategy,
+      redirectCallbackUrl: OAUTH_CALLBACK_URL,
+      redirectUrl: AUTH_COMPLETE_URL,
+    });
+
+    if (error) {
+      handleFailure(error);
+      setPendingAction(null);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    clearFeedback();
+    setPendingAction("sign-up");
+
+    const { error } = await signUp.password({
+      emailAddress,
+      firstName,
+      lastName,
+      password,
+      username,
+    });
+
+    if (error) {
+      handleFailure(error);
+      setPendingAction(null);
+      return;
+    }
+
+    if (signUp.status === "complete") {
+      await finalizeSignUp();
+      setPendingAction(null);
+      return;
+    }
+
+    await prepareEmailVerification();
+    setPendingAction(null);
+  };
+
+  const handleVerificationSubmit = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    clearFeedback();
+    setPendingAction("verify-email");
+
+    const { error } = await signUp.verifications.verifyEmailCode({
+      code: verificationCode,
+    });
+
+    if (error) {
+      handleFailure(error);
+      setPendingAction(null);
+      return;
+    }
+
+    if (signUp.status !== "complete") {
+      setLocalErrors([
+        "Your sign-up still has pending requirements. Please retry the verification flow.",
+      ]);
+      setPendingAction(null);
+      return;
+    }
+
+    await finalizeSignUp();
+    setPendingAction(null);
+  };
+
+  const handleResendVerification = async () => {
+    clearFeedback();
+    setPendingAction("resend-email");
+    await prepareEmailVerification();
+    setPendingAction(null);
+  };
+
+  const isBusy = fetchStatus === "fetching" || pendingAction !== null;
+
   return (
-    <div className="flex w-full flex-col items-center justify-center h-screen">
-      <SignUp.Root>
-        <SignUp.Step name="start">
-          <h1 className="text-center mb-4 font-bold text-2xl">
-            Create a <span className="text-sky-500">Blo</span>
-            <span className="text-yellow-300">og</span> account
-          </h1>
-          <Clerk.Connection
-            name="google"
-            className="p-2 w-72 rounded-full bg-gray-900 text-gray-300 anim flex items-center gap-2 justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="24"
-              height="24"
-              viewBox="0 0 48 48"
+    <AuthShell
+      title={
+        <>
+          Create a <span className="text-sky-500">Blo</span>
+          <span className="text-yellow-300">og</span> account
+        </>
+      }
+      subtitle="A custom sign-up flow running on Clerk Core 3."
+    >
+      <AuthErrors errors={errors} />
+      {notice ? <AuthNotice>{notice}</AuthNotice> : null}
+
+      {view === "start" ? (
+        <>
+          <div className="space-y-3">
+            <SocialAuthButton
+              disabled={isBusy}
+              icon={<GoogleIcon />}
+              loading={pendingAction === "oauth_google"}
+              onClick={() => void handleOAuthSignUp("oauth_google")}
+              type="button"
             >
-              <path
-                fill="#FFC107"
-                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-              ></path>
-              <path
-                fill="#FF3D00"
-                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-              ></path>
-              <path
-                fill="#4CAF50"
-                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-              ></path>
-              <path
-                fill="#1976D2"
-                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-              ></path>
-            </svg>
-            <Clerk.Loading scope="provider:google">
-              {(isLoading) =>
-                isLoading ? "Signing you in..." : "Continue with Google"
-              }
-            </Clerk.Loading>
-          </Clerk.Connection>
-          <Clerk.Connection
-            name="github"
-            className="p-2 anim my-5 w-72 rounded-full bg-gray-900 text-gray-300 flex items-center gap-2 justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="24"
-              height="24"
-              viewBox="0 0 50 50"
+              {pendingAction === "oauth_google"
+                ? "Redirecting..."
+                : "Continue with Google"}
+            </SocialAuthButton>
+            <SocialAuthButton
+              disabled={isBusy}
+              icon={<GitHubIcon />}
+              loading={pendingAction === "oauth_github"}
+              onClick={() => void handleOAuthSignUp("oauth_github")}
+              type="button"
             >
-              <path d="M17.791,46.836C18.502,46.53,19,45.823,19,45v-5.4c0-0.197,0.016-0.402,0.041-0.61C19.027,38.994,19.014,38.997,19,39 c0,0-3,0-3.6,0c-1.5,0-2.8-0.6-3.4-1.8c-0.7-1.3-1-3.5-2.8-4.7C8.9,32.3,9.1,32,9.7,32c0.6,0.1,1.9,0.9,2.7,2c0.9,1.1,1.8,2,3.4,2 c2.487,0,3.82-0.125,4.622-0.555C21.356,34.056,22.649,33,24,33v-0.025c-5.668-0.182-9.289-2.066-10.975-4.975 c-3.665,0.042-6.856,0.405-8.677,0.707c-0.058-0.327-0.108-0.656-0.151-0.987c1.797-0.296,4.843-0.647,8.345-0.714 c-0.112-0.276-0.209-0.559-0.291-0.849c-3.511-0.178-6.541-0.039-8.187,0.097c-0.02-0.332-0.047-0.663-0.051-0.999 c1.649-0.135,4.597-0.27,8.018-0.111c-0.079-0.5-0.13-1.011-0.13-1.543c0-1.7,0.6-3.5,1.7-5c-0.5-1.7-1.2-5.3,0.2-6.6 c2.7,0,4.6,1.3,5.5,2.1C21,13.4,22.9,13,25,13s4,0.4,5.6,1.1c0.9-0.8,2.8-2.1,5.5-2.1c1.5,1.4,0.7,5,0.2,6.6c1.1,1.5,1.7,3.2,1.6,5 c0,0.484-0.045,0.951-0.11,1.409c3.499-0.172,6.527-0.034,8.204,0.102c-0.002,0.337-0.033,0.666-0.051,0.999 c-1.671-0.138-4.775-0.28-8.359-0.089c-0.089,0.336-0.197,0.663-0.325,0.98c3.546,0.046,6.665,0.389,8.548,0.689 c-0.043,0.332-0.093,0.661-0.151,0.987c-1.912-0.306-5.171-0.664-8.879-0.682C35.112,30.873,31.557,32.75,26,32.969V33 c2.6,0,5,3.9,5,6.6V45c0,0.823,0.498,1.53,1.209,1.836C41.37,43.804,48,35.164,48,25C48,12.318,37.683,2,25,2S2,12.318,2,25 C2,35.164,8.63,43.804,17.791,46.836z"></path>
-            </svg>
-            <Clerk.Loading scope="provider:github">
-              {(isLoading) =>
-                isLoading ? "Signin you in..." : "Continue with GitHub"
-              }
-            </Clerk.Loading>
-          </Clerk.Connection>
-          <div className="flex w-72 justify-center items-center gap-1">
-            <hr className="border-1 grow" />
-            <p className="text-center mb-2">or</p>
-            <hr className="grow" />
+              {pendingAction === "oauth_github"
+                ? "Redirecting..."
+                : "Continue with GitHub"}
+            </SocialAuthButton>
           </div>
-          {/* FIRST NAME */}
-          <div className="flex gap-4 mt-2">
-            <Clerk.Field name="firstName" className="flex flex-col gap-1 my-2">
-              <Clerk.Label className="font-bold text-sm">
-                First Name
-              </Clerk.Label>
-              <Clerk.Input
-                type="text"
-                title="First name required"
-                required
-                className="p-2 bg-gray-900 w-33 rounded-md outline-none focus:border border-sky-400 placeholder:text-gray-500"
-                placeholder="First name"
+
+          <AuthDivider />
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="first-name">First name</Label>
+                <Input
+                  id="first-name"
+                  onChange={(event) => setFirstName(event.target.value)}
+                  placeholder="First name"
+                  value={firstName}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last-name">Last name</Label>
+                <Input
+                  id="last-name"
+                  onChange={(event) => setLastName(event.target.value)}
+                  placeholder="Last name"
+                  value={lastName}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="Enter your username"
+                value={username}
               />
-              <Clerk.FieldError className="text-red-500 text-xs" />
-            </Clerk.Field>
-            <Clerk.Field name="lastName" className="flex flex-col gap-1 my-2">
-              <Clerk.Label className="font-bold text-sm">Last Name</Clerk.Label>
-              <Clerk.Input
-                type="text"
-                title="Last name required"
-                required
-                className="p-2 bg-gray-900 w-33 rounded-md outline-none focus:border border-sky-400 placeholder:text-gray-500"
-                placeholder="Last name"
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                onChange={(event) => setEmailAddress(event.target.value)}
+                placeholder="Enter your email"
+                type="email"
+                value={emailAddress}
               />
-              <Clerk.FieldError className="text-red-500 text-xs" />
-            </Clerk.Field>
-          </div>
-          <Clerk.Field name="username" className="flex flex-col gap-1 my-2">
-            <Clerk.Label className="font-bold text-sm">Username</Clerk.Label>
-            <Clerk.Input
-              type="text"
-              required
-              title="Username required"
-              className="p-2 bg-gray-900 w-72 rounded-md outline-none focus:border border-sky-400 placeholder:text-gray-500"
-              placeholder="Enter your username"
-            />
-            <Clerk.FieldError className="text-red-500 text-xs" />
-          </Clerk.Field>
+            </div>
 
-          <Clerk.Field name="emailAddress" className="flex flex-col gap-1 my-2">
-            <Clerk.Label className="font-bold text-sm">Email</Clerk.Label>
-            <Clerk.Input
-              type="email"
-              title="Email required"
-              required
-              className="p-2 bg-gray-900 w-72 rounded-md outline-none focus:border border-sky-400 placeholder:text-gray-500"
-              placeholder="Enter your email"
-            />
-            <Clerk.FieldError className="text-red-500 text-xs" />
-          </Clerk.Field>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Create a password"
+                type="password"
+                value={password}
+              />
+            </div>
 
-          <Clerk.Field name="password" className="flex flex-col gap-1 my-2">
-            <Clerk.Label className="font-bold text-sm">Password</Clerk.Label>
-            <Clerk.Input
-              type="password"
-              title="Password required"
-              required
-              className="p-2 bg-gray-900 w-72 rounded-md outline-none focus:border border-sky-400 placeholder:text-gray-500"
-              placeholder="Create a password"
-            />
-            <Clerk.FieldError className="text-red-500 text-xs  w-72" />
-          </Clerk.Field>
+            <AuthSubmitButton
+              loading={pendingAction === "sign-up"}
+              type="submit"
+            >
+              Submit
+            </AuthSubmitButton>
+          </form>
 
-          <SignUp.Captcha />
+          <p className="text-xs text-muted-foreground">
+            By signing up, you agree to the Terms of Service, Privacy Policy,
+            and Cookie Use requirements configured for this app.
+          </p>
+          <AuthFooterLink
+            action="Sign in"
+            href="/sign-in"
+            label="Already have an account?"
+          />
+        </>
+      ) : null}
 
-          <SignUp.Action
-            className="bg-sky-500 w-fill text-center py-1 my-2 rounded-full anim hover:bg-sky-400 w-70"
-            submit
+      {view === "verify_email" ? (
+        <form className="space-y-4" onSubmit={handleVerificationSubmit}>
+          <button
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            onClick={() => {
+              clearFeedback();
+              setView("start");
+            }}
+            type="button"
           >
-            <Clerk.Loading>
-              {(isLoading) => (isLoading ? "Submitting..." : "Submit")}
-            </Clerk.Loading>
-          </SignUp.Action>
-         <div className="flex w-72 justify-center items-center gap-1">
-            <hr className="border-1 grow" />
-            <p className="text-center mb-2">or</p>
-            <hr className="grow" />
-          </div> 
-          <div className="flex flex-col gap-2">
-            <Link
-              href="/sign-in"
-              className="text-center text-sm rounded-full bg-sky-500 w-70 py-1 font-bold"
-            >
-              Sign In
-            </Link>
-            <p className="w-72 text-textGray text-xs">
-              By Signing up, you agree to the
-              <span className="text-sky-500 hover:underline cursor-pointer">
-                Terms of Service
-              </span>
-              {" "}and{" "}
-              <span className="text-sky-500 hover:underline cursor-pointer">
-                Privacy Policy
-              </span>
-              , including
-              <span className="text-sky-500 hover:underline cursor-pointer">
-                {" "}Cookie Use
-              </span>
-              .
-            </p>
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </button>
+          <div className="space-y-2">
+            <Label htmlFor="verification-code">Verification code</Label>
+            <Input
+              autoComplete="one-time-code"
+              id="verification-code"
+              inputMode="numeric"
+              onChange={(event) => setVerificationCode(event.target.value)}
+              placeholder="Enter the code"
+              value={verificationCode}
+            />
           </div>
-        </SignUp.Step>
-        {/* VERIFICATIONS */}
-        <SignUp.Step name="verifications">
-          <SignUp.Strategy name="email_code">
-            <h1 className="text-center text-lg font-bold my-4">
-              Check your email.
-            </h1>
-            <Clerk.Field name="code" className="flex flex-col gap-1 my-2">
-              <Clerk.Input
-                type="otp"
-                required
-                passwordManagerOffset={40}
-                render={({ value, status }) => (
-                  <span
-                    data-status={status}
-                    className="p-3 m-2 rounded-sm border-1"
-                  >
-                    {value || " "}
-                  </span>
-                )}
-                autoSubmit
-              />
-              <Clerk.FieldError className="text-red-500 text-xs mt-3 text-center" />
-            </Clerk.Field>
-            <SignUp.Action
-              className="bg-sky-500 w-fill text-center py-1 my-2 rounded-full anim hover:bg-sky-400 w-70"
-              submit
+          <div className="space-y-3">
+            <AuthSubmitButton
+              loading={pendingAction === "verify-email"}
+              type="submit"
             >
-              <Clerk.Loading>
-                {(isLoading) => (isLoading ? "Verifying..." : "Verify")}
-              </Clerk.Loading>
-            </SignUp.Action>
-          </SignUp.Strategy>
-        </SignUp.Step>
-      </SignUp.Root>
-    </div>
+              Verify email
+            </AuthSubmitButton>
+            <button
+              className="text-sm text-sky-500 transition-colors hover:text-sky-400"
+              onClick={() => void handleResendVerification()}
+              type="button"
+            >
+              Send a new code
+            </button>
+          </div>
+        </form>
+      ) : null}
+    </AuthShell>
   );
 }

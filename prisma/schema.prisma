@@ -5,13 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 
@@ -27,6 +26,10 @@ model User {
   comments  Comment[]
   likes     Like[]
   createdAt DateTime @default(now())
+
+  @@index([username])
+  @@index([email])
+  @@index([createdAt])
 }
 
 model Post {
@@ -38,33 +41,45 @@ model Post {
   description String
   state       PostState  @default(DRAFT)
   accessKey   String     @default(uuid())
-  author      User       @relation(fields: [authorId], references: [id])
+  author      User       @relation(fields: [authorId], references: [id],onDelete: Cascade)
   authorId    String
   comments    Comment[]
   likes       Like[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
+  @@index([state, createdAt(sort: Desc)])
+  @@index([state, updatedAt(sort: Desc)])
+  @@index([category, state, createdAt(sort: Desc)])
+  @@index([authorId, state, updatedAt(sort: Desc)])
+  @@index([authorId, createdAt(sort: Desc)])
+  @@index([accessKey])
 }
 
 model Comment {
   id        String   @id @default(uuid())
   content   String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id],onDelete: Cascade)
   postId    String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   createdAt DateTime @default(now())
+
+  @@index([postId, createdAt(sort: Desc)])
+  @@index([authorId, createdAt(sort: Desc)])
 }
 
 model Like {
   id        String   @id @default(uuid())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id],onDelete: Cascade)
   postId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    String
   createdAt DateTime @default(now())
 
   @@unique([postId, userId]) // 1 like per user per post
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([postId, createdAt(sort: Desc)])
 }
 
 enum PostState {

@@ -6,9 +6,22 @@ import Image from "next/image";
 const HeroSection = () => {
   const path = usePathname();
 
-  let image;
-  let description;
-  let shortDesc: string | undefined = undefined;
+  if (
+    path === "/" ||
+    path === "/new" ||
+    path.startsWith("/blog/") ||
+    path.startsWith("/categories")
+  ) {
+    return (
+      <div className="w-full">
+        <NavBar isTrue={false} />
+      </div>
+    );
+  }
+
+  let image: string | undefined;
+  let description: string | undefined;
+  let shortDesc: string | undefined;
 
   const hero: {
     path: string;
@@ -16,13 +29,6 @@ const HeroSection = () => {
     description?: string;
     shortDesc: string;
   }[] = [
-    {
-      path: "/",
-      shortDesc: "Explore the newest posts here.",
-      description:
-        "Welcome! We offer a full-featured editor with complete customization, allowing you to easily create and publish your work.",
-      image: "/hero/home.jpg",
-    },
     {
       path: "/about",
       shortDesc: "Learn about our journey",
@@ -45,14 +51,7 @@ const HeroSection = () => {
       image: "/hero/categories.jpg",
     },
     {
-      path: "/new",
-      shortDesc: "Start creating your own content.",
-      description:
-        "Use our powerful and rich editor to easily create and publish any type of blog post, from articles to photo essays.",
-      image: "/hero/tiptap.jpg",
-    },
-    {
-      path: `/nothing/`,
+      path: "/blog",
       shortDesc: "Dive into a single post",
       description:
         "Experience the full content of a blog post, complete with rich media, interactive elements, and detailed information.",
@@ -62,7 +61,8 @@ const HeroSection = () => {
   // Check for the path and style
   hero.forEach((route) => {
     if (
-      (route.path === "/blog/*" && path.startsWith("/blog/")) ||
+      (route.path === "/blog" && path.startsWith("/blog/")) ||
+      (route.path === "/categories" && path.startsWith("/categories")) ||
       path === route.path
     ) {
       image = route.image;
@@ -72,9 +72,7 @@ const HeroSection = () => {
       }
     }
   });
-  if(path.startsWith('/blog/edit/')){
-    image = undefined
-  }
+
   return (
     <div
       className={` w-full ${

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -13,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { saveUserData } from "@/lib/_roleUpdate";
-import { redirect } from "next/navigation";
 
 // Sample list of countries
 const countries = [
@@ -53,14 +53,25 @@ interface userDataType {
 }
 
 const Bio = () => {
+  const router = useRouter();
   const { user, isLoaded } = useUser();
   const userId = user?.id;
-  if (!userId) redirect("/");
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
   const [currentUserId, setId] = useState("");
+
+  useEffect(() => {
+    if (isLoaded && !userId) {
+      router.replace("/");
+    }
+  }, [isLoaded, router, userId]);
+
   // Get user data from the database
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
     (async () => {
       // Fetch user data
       try {
@@ -80,7 +91,7 @@ const Bio = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   // If user data is not loaded yet, display a loading state
-  if (!isLoaded) {
+  if (!isLoaded || !userId) {
     return <div>Loading...</div>;
   }
 
@@ -104,7 +115,7 @@ const Bio = () => {
     setIsUpdating(false);
   };
   return (
-    <div className="p-6 md:p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto transform transition-all duration-300 hover:shadow-lg">
+    <div className="p-6 md:p-8  rounded-lg shadow-md max-w-lg mx-auto transform transition-all duration-300 hover:shadow-lg">
       <h1 className="text-2xl font-bold mb-4">Personal Information</h1>
       <p className="text-gray-600 mb-6">
         Tell us a bit about yourself and where you&apos;re from.

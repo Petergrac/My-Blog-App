@@ -1,8 +1,13 @@
 "use client";
-import { useState } from "react";
-import { Textarea } from "./ui/textarea";
-import { toast } from "sonner";
+
 import { createComment, patchComment } from "@/actions/CommentActions";
+import { Loader2, MessageSquarePlus, PencilLine, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 
 const CommentInput = ({
   data,
@@ -12,65 +17,93 @@ const CommentInput = ({
 }: {
   defaultContent?: string;
   onCancel?: () => void;
-  mode?: "edit" | "delete";
+  mode?: "edit";
   data: { userId: string | null; postId: string; commentId?: string };
 }) => {
   const { userId, postId, commentId } = data;
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultContent ?? "");
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  if (mode === "delete" && commentId) {
-    return;
-  }
-  // Create a new comment
   const handleComment = async () => {
-    if (value.length > 2 && userId && mode !== "edit" && mode !== "delete") {
-      try {
-        await createComment(userId, postId, value);
-        toast.success("Comment saved");
-        setValue("");
-        defaultContent = value;
-      } catch (error) {
-        console.log(error);
-        toast.error("Comment could not be saved");
-      }
+    const trimmedValue = value.trim();
+
+    if (trimmedValue.length < 3) {
+      toast.error("Comment needs at least 3 characters.");
+      return;
     }
-    if (mode && mode === "edit") {
-      if (value.length > 2 && userId && commentId) {
+
+    if (!userId) {
+      toast.error("You need to sign in before commenting.");
+      return;
+    }
+
+    startTransition(async () => {
+      if (mode === "edit") {
+        if (!commentId) {
+          toast.error("Comment could not be updated.");
+          return;
+        }
+
         try {
-          await patchComment(commentId, value);
-          if (onCancel) onCancel();
-          toast.success("Comment updated");
-          setValue("");
-          defaultContent = value;
+          await patchComment(commentId, postId, trimmedValue);
+          onCancel?.();
+          toast.success("Comment updated.");
+          router.refresh();
         } catch (error) {
           console.log(error);
-          toast.error("Comment could not be updated");
+          toast.error("Comment could not be updated.");
         }
+        return;
       }
-    }
+
+      try {
+        await createComment(postId, trimmedValue);
+        toast.success("Comment saved.");
+        setValue("");
+        router.refresh();
+      } catch (error) {
+        console.log(error);
+        toast.error("Comment could not be saved.");
+      }
+    });
   };
+
   return (
-    <div className="ml-13 mt-5">
-      {onCancel && mode === "edit" && (
-        <button
-          className="flex justify-end pr-5 hover:text-red-500 w-full mr-5"
-          onClick={onCancel}
-        >
-          x
-        </button>
-      )}
+    <div className="space-y-3">
       <Textarea
-        placeholder="Comment here"
-        defaultValue={defaultContent || value}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={handleComment}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault(); // prevents newline insertion
-            handleComment();
-          }
-        }}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder={
+          mode === "edit"
+            ? "Refine your comment."
+            : "Add a thoughtful response to the article."
+        }
+        rows={mode === "edit" ? 4 : 5}
+        value={value}
       />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-muted-foreground">
+          Write clearly, then submit when you are ready.
+        </p>
+        <div className="flex gap-2">
+          {onCancel && mode === "edit" && (
+            <Button onClick={onCancel} type="button" variant="ghost">
+              <X />
+              Cancel
+            </Button>
+          )}
+          <Button disabled={isPending} onClick={handleComment} type="button">
+            {isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : mode === "edit" ? (
+              <PencilLine />
+            ) : (
+              <MessageSquarePlus />
+            )}
+            {mode === "edit" ? "Save comment" : "Post comment"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

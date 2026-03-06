@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider } from "@/components/clerk-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
@@ -28,11 +28,11 @@ export default async function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable}  ${geistMono.variable} antialiased`}
-        >
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable}  ${geistMono.variable} antialiased`}
+      >
+        <ClerkProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -42,8 +42,8 @@ export default async function AppLayout({
             {children}
             <Toaster richColors={true} position={"top-center"} />
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

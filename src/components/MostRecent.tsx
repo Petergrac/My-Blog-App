@@ -1,24 +1,30 @@
+"use client";
 
+import { deletePost, patchPost } from "@/actions/PostActions";
+import { getCategoryHref, getCategoryLabel } from "@/lib/categories";
+import { CalendarDays, MessageCircle, MoreVertical, Pencil, Rocket, ThumbsUp, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { toast } from "sonner";
+
 import { FeaturedPostType } from "./FeaturedPost";
+import { PostType } from "./BlogAuthor";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import {
-  MessageCircle,
-  MoreVertical,
-  Pencil,
-  Printer,
-  ThumbsUp,
-  Trash2,
-} from "lucide-react";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "./ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { PostType } from "./BlogAuthor";
-import { deletePost, patchPost } from "@/actions/PostActions";
-import { toast } from "sonner";
 
 const MostRecent = ({
   post,
@@ -27,124 +33,153 @@ const MostRecent = ({
   post: FeaturedPostType & PostType;
   isAuthor?: boolean;
 }) => {
-  // Save the post changes.
-  const handlePostChange = async (type: string) => {
-    if (type === "draft") {
-      try {
-        await patchPost({ state: "PUBLISHED" }, post.id);
-        toast.success("Post successfully published");
-      } catch (error) {
-        console.log(error);
-        toast.error("Could not publish the post");
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handlePostChange = async (type: "publish" | "delete") => {
+    startTransition(async () => {
+      if (type === "publish") {
+        try {
+          await patchPost({ state: "PUBLISHED" }, post.id);
+          toast.success("Post successfully published.");
+          router.refresh();
+        } catch (error) {
+          console.log(error);
+          toast.error("Could not publish the post.");
+        }
+        return;
       }
-    } else if (type === "delete") {
+
       try {
         await deletePost(post.id);
-        toast.success("Post successfully deleted");
+        toast.success("Post successfully deleted.");
+        router.refresh();
       } catch (error) {
         console.log(error);
-        toast.error("Post could not be deleted!");
+        toast.error("Post could not be deleted.");
       }
-    }
+    });
   };
 
   return (
-    <div
-      className={`anim border-[1px] flex flex-col justify-around rounded-sm  overflow-hidden  min-w-52 max-w-53 px-2 shadow-md ${
-        !isAuthor && "mx-auto"
-      }`}
-    >
-      {/* BADGE */}
-      <Link href={`/blog/${post.id}`} className="relative">
-        <p className="absolute top-2 left-1 text-gray-200 bg-fuchsia-600 px-1 text-xs">
-          {post.category}
-        </p>
-        <Image
-          src={post.coverImage}
-          className="hover:scale-120 duration-500 h-30 overflow-hidden"
-          alt="home"
-          width={200}
-          height={100}
-        />
+    <Card className="h-full overflow-hidden border-border/70 bg-card/95 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+      <Link className="relative block overflow-hidden" href={`/blog/${post.id}`}>
+        <div className="relative aspect-[16/10] overflow-hidden">
+          <Image
+            alt={post.title}
+            className="object-cover transition-transform duration-500 hover:scale-105"
+            fill
+            src={post.coverImage}
+          />
+        </div>
+        <div className="absolute left-4 top-4 flex items-center gap-2">
+          <Badge className="bg-background/90 text-foreground hover:bg-background/90">
+            {getCategoryLabel(post.category)}
+          </Badge>
+          {isAuthor && post.state && (
+            <Badge variant={post.state === "PUBLISHED" ? "secondary" : "outline"}>
+              {post.state === "PUBLISHED" ? "Live" : "Draft"}
+            </Badge>
+          )}
+        </div>
       </Link>
-      {/* TITLE & CONTENT */}
-      <div className="flex flex-col justify-between pb-2 border-b-[1px]">
-        {/* TITLE */}
-        <h1 className="font-lora text-sm font-semibold py-3">{post.title}</h1>
-        {/* CONTENT */}
-        <div className="">
-          <p className={`h-5 text-xs overflow-hidden`}>
+
+      <CardHeader className="space-y-4 pb-0">
+        <div className="flex items-center justify-between gap-3">
+          <Link href={getCategoryHref(post.category)}>
+            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              {getCategoryLabel(post.category)}
+            </p>
+          </Link>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <CalendarDays className="size-3.5" />
+            <span>
+              {post.createdAt.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Link href={`/blog/${post.id}`}>
+            <h3 className="text-xl font-semibold leading-tight tracking-tight">
+              {post.title}
+            </h3>
+          </Link>
+          <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
             {post.description}
           </p>
         </div>
-      </div>
-      {/* AUTHOR AND DATE */}
-      <div className="flex justify-between py-3 flex-wrap gap-3 items-center">
-        {/* AUTHOR */}
-        <div className="flex gap-2 items-center">
-          <Image
-            src={post.author.avatar || "/noAvatar.jpeg"}
-            alt="home"
-            width={24}
-            className="rounded-full aspect-square"
-            height={24}
-          />
-          <p className="text-xs">{post.author.username}</p>
-        </div>
-        {/* DATE */}
-        <p className="text-xs">
-          {post.createdAt.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </p>
-      </div>
-      {isAuthor && (
-        <div className="flex justify-between items-center pb-4">
-          {/* COMMENTS & LIKES */}
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1 items-center hover:text-pink-500 ">
-              <MessageCircle size={20} className="" />
-              <span className="text-xs">
-                {(post._count && post._count.comments) || 0}
-              </span>
-            </div>
-            <div className="flex gap-1 items-center hover:text-cyan-500 ">
-              <ThumbsUp size={20} />
-              <span className="text-xs">
-                {(post._count && post._count.likes) || 0}
-              </span>
-            </div>
+      </CardHeader>
+
+      <CardContent className="pt-5">
+        <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/20 p-3">
+          <div className="relative size-10 overflow-hidden rounded-full border border-border/70">
+            <Image
+              alt={post.author.username || "Author avatar"}
+              className="object-cover"
+              fill
+              src={post.author.avatar || "/noAvatar.jpeg"}
+            />
           </div>
-          {/* POST STATE */}
-          <div className="">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">
+              {post.author.username || "Anonymous author"}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {post.author.bio || "Short updates and long-form writing."}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+
+      <CardFooter className="mt-auto flex flex-col items-stretch gap-4 border-t border-border/60 pt-5">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <MessageCircle className="size-4" />
+              {(post._count && post._count.comments) || 0}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <ThumbsUp className="size-4" />
+              {(post._count && post._count.likes) || 0}
+            </span>
+          </div>
+          {isAuthor && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <MoreVertical size={20} />
+                <Button disabled={isPending} size="icon" type="button" variant="ghost">
+                  <MoreVertical />
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align="end">
                 {post.state === "DRAFT" && (
-                  <DropdownMenuItem onClick={() => handlePostChange("draft")}>
-                    <Printer /> Publish
+                  <DropdownMenuItem onClick={() => handlePostChange("publish")}>
+                    <Rocket />
+                    Publish
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem>
-                  <Pencil /> <Link href={`/blog/edit/${post.id}`}>Edit</Link>
+                <DropdownMenuItem asChild>
+                  <Link href={`/blog/edit/${post.id}`}>
+                    <Pencil />
+                    Edit
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handlePostChange("delete")}
-                  className="text-red-500"
+                  variant="destructive"
                 >
-                  <Trash2 color="red" />
+                  <Trash2 />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardFooter>
+    </Card>
   );
 };
 

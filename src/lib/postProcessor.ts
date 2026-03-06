@@ -1,5 +1,3 @@
-// lib/postProcessor.ts
-
 import * as cheerio from 'cheerio';
 import slug from 'slug';
 
@@ -30,7 +28,7 @@ export function processContent(htmlString: string): ProcessedContent {
   });
 
   // 2. Generate Table of Contents
-  $('h1, h2').each((i, el) => {
+  $('h1, h2, h3').each((i, el) => {
     const tagName = el.tagName;
     const headingText = $(el).text();
     const headingId = $(el).attr('id') || slug(headingText);
@@ -47,7 +45,7 @@ export function processContent(htmlString: string): ProcessedContent {
 
   // 3. Return both the modified HTML and the TOC
   return {
-    html: $.html(),
+    html: $("body").html() ?? $.root().html() ?? htmlString,
     toc,
   };
 }

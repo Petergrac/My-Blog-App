@@ -1,4 +1,9 @@
+"use client";
+
 import { Menu, SearchIcon } from "lucide-react";
+import Link from "next/link";
+
+import { clerkModalAppearance } from "@/lib/clerk";
 import { ModeToggle } from "./ThemeToggle";
 import {
   DropdownMenu,
@@ -6,14 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Link from "next/link";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +22,7 @@ import {
 import ProgressiveSearch from "./SearchBar";
 
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const role = user?.publicMetadata.role as string;
   return (
     <nav
@@ -48,7 +46,6 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
           <ProgressiveSearch />
         </DialogContent>
       </Dialog>
-
       {/* DESKTOP */}
       <div className="hidden md:flex gap-20 justify-between">
         <div className="flex gap-3 text-gray-200 text-sm">
@@ -64,19 +61,19 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
         </div>
         <div className="flex sm-2 md:gap-5">
           <ModeToggle />
-          <SignedIn>
+          {isSignedIn ? (
             <UserButton
+              appearance={clerkModalAppearance}
               userProfileUrl="/user-profile"
               userProfileMode="navigation"
             />
-          </SignedIn>
-          <SignedOut>
-            <SignInButton>
+          ) : (
+            <SignInButton appearance={clerkModalAppearance} mode="modal">
               <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
                 Sign In
               </button>
             </SignInButton>
-          </SignedOut>
+          )}
         </div>
       </div>
       {/* MOBILE */}
@@ -110,19 +107,19 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-        <SignedIn>
+        {isSignedIn ? (
           <UserButton
+            appearance={clerkModalAppearance}
             userProfileUrl="/user-profile"
             userProfileMode="navigation"
           />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton>
+        ) : (
+          <SignInButton appearance={clerkModalAppearance} mode="modal">
             <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
               Sign In
             </button>
           </SignInButton>
-        </SignedOut>
+        )}
       </div>
     </nav>
   );

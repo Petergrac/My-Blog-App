@@ -57,6 +57,10 @@ interface TooltipContextValue extends UseFloatingReturn<ReferenceType> {
   ) => Record<string, unknown>
 }
 
+type TooltipTriggerElement = React.ReactElement<
+  React.HTMLProps<HTMLElement> & { ref?: React.Ref<HTMLElement> }
+>
+
 function useTooltip({
   initialOpen = false,
   placement = "top",
@@ -167,19 +171,18 @@ export const TooltipTrigger = React.forwardRef<
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
   if (asChild && React.isValidElement(children)) {
+    const child = children as TooltipTriggerElement
+    const Child = child.type as React.ElementType
     const dataAttributes = {
       "data-tooltip-state": context.open ? "open" : "closed",
     }
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...(typeof child.props === "object" ? child.props : {}),
+      ...dataAttributes,
+    })
 
-    return React.cloneElement(
-      children,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...(typeof children.props === "object" ? children.props : {}),
-        ...dataAttributes,
-      })
-    )
+    return <Child {...referenceProps} ref={ref} />
   }
 
   return (

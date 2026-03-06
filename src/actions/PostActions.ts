@@ -55,6 +55,7 @@ export async function newPost(finalPost: finalPost) {
     });
     revalidatePath('/');
     revalidatePath(`/blog/${createdPost.id}`);
+    revalidatePath(`/categories/${encodeURIComponent(createdPost.category)}`);
     return {
       message: "Post created successfully!",
       data: createdPost,
@@ -70,7 +71,44 @@ export async function newPost(finalPost: finalPost) {
  *
  */
 export async function patchPost(updatedPost: editPost, id: string) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return auth.protect();
+  }
+
   try {
+    const author = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!author) {
+      throw new Error("Only authors can update posts.");
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        authorId: true,
+        category: true,
+      },
+    });
+
+    if (!post) {
+      throw new Error("Post not found.");
+    }
+
+    if (post.authorId !== author.id) {
+      throw new Error("You can only update your own posts.");
+    }
+
     await prisma.post.update({
       where: {
         id: id,
@@ -79,21 +117,83 @@ export async function patchPost(updatedPost: editPost, id: string) {
         ...updatedPost,
       },
     });
+    revalidatePath("/");
+    revalidatePath("/blog/my-blogs");
     revalidatePath(`/blog/${id}`);
+    revalidatePath(`/categories/${encodeURIComponent(post.category)}`);
+    if (updatedPost.category) {
+      revalidatePath(`/categories/${encodeURIComponent(updatedPost.category)}`);
+    }
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 export async function deletePost(id: string) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return auth.protect();
+  }
+
   try {
-    const deletedPost = await prisma.post.delete({
-      where:{
-        id: id
-      }
+    const author = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+      },
     });
-    revalidatePath('/blog')
-    return !!deletedPost;
+
+    if (!author) {
+      throw new Error("Only authors can delete posts.");
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        authorId: true,
+        category: true,
+      },
+    });
+
+    if (!post) {
+      throw new Error("Post not found.");
+    }
+
+    if (post.authorId !== author.id) {
+      throw new Error("You can only delete your own posts.");
+    }
+
+    await prisma.$transaction([
+      prisma.like.deleteMany({
+        where: {
+          postId: id,
+        },
+      }),
+      prisma.comment.deleteMany({
+        where: {
+          postId: id,
+        },
+      }),
+      prisma.post.delete({
+        where: {
+          id,
+        },
+      }),
+    ]);
+
+    revalidatePath("/");
+    revalidatePath("/blog");
+    revalidatePath("/blog/my-blogs");
+    revalidatePath(`/blog/${id}`);
+    revalidatePath(`/categories/${encodeURIComponent(post.category)}`);
+
+    return true;
   } catch (error) {
     console.log(error);
     throw error;

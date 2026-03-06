@@ -1,8 +1,28 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FilePenLine, Rocket, Save } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { patchPost } from "@/actions/PostActions";
+import { postCategories, postCategoryValues } from "@/lib/categories";
+import { usePost } from "@/store/EditorStore";
+import UploadExample from "./ImageUpload";
+import { SimpleEditor } from "./tiptap-templates/simple/simple-editor";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import {
   Form,
   FormControl,
@@ -12,7 +32,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import {
   Select,
   SelectContent,
@@ -20,14 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useState } from "react";
-import Image from "next/image";
-import UploadExample from "./ImageUpload";
-import { usePost } from "@/store/EditorStore";
-import { Button } from "./ui/button";
-import { patchPost } from "@/actions/PostActions";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Textarea } from "./ui/textarea";
 
 export interface PostDetailsType {
   title: string;
@@ -38,29 +50,20 @@ export interface PostDetailsType {
   state: "DRAFT" | "PUBLISHED";
 }
 
-const categories: string[] = [
-  "frontend",
-  "backend",
-  "devops",
-  "data structures",
-  "data science",
-  "testing",
-  "system design",
-];
-
-// Basic zod schema
 const postSchema = z.object({
-  title: z.string().min(5, { error: "Title requires at-least 5 characters" }),
-  category: z.enum(categories, { error: "You must choose the given category" }),
+  title: z.string().min(5, { error: "Title requires at least 5 characters." }),
+  category: z.enum(postCategoryValues, {
+    error: "Choose one of the supported categories.",
+  }),
   coverImage: z.string().min(4, {
-    error: "Cover image url is needed. Make sure the image was uploaded",
+    error: "Cover image URL is required.",
   }),
   description: z
     .string()
-    .min(15, { error: "A short description about this post is needed" })
-    .max(100, { error: "That description is too long." }),
+    .min(15, { error: "Add a clearer short description." })
+    .max(160, { error: "Keep the description concise." }),
   state: z.enum(["DRAFT", "PUBLISHED"], {
-    error: "Post can only be either draft or published",
+    error: "Post can only be draft or published.",
   }),
 });
 
@@ -71,191 +74,255 @@ const UpdatePost = ({
   postDetails: PostDetailsType;
   id: string;
 }) => {
-  // Cover image preview
   const [imagePreview, setPreview] = useState(postDetails.coverImage);
   const router = useRouter();
-  const { coverImage, content, setContent } = usePost();
-  // React hook form to attach zod
-  const form = useForm({
-    resolver: zodResolver(postSchema),
+  const { content, setContent } = usePost();
+
+  const form = useForm<z.infer<typeof postSchema>>({
     defaultValues: {
       title: postDetails.title,
-      category: postDetails.category,
+      category: postDetails.category as z.infer<typeof postSchema>["category"],
       coverImage: postDetails.coverImage,
       description: postDetails.description,
       state: postDetails.state,
     },
+    resolver: zodResolver(postSchema),
   });
 
-  // handle image upload
+  useEffect(() => {
+    setContent(JSON.parse(postDetails.content));
+  }, [postDetails.content, setContent]);
+
   const handleCoverUpload = (url: string) => {
-    form.setValue("coverImage", url, { shouldValidate: true });
-    URL.revokeObjectURL(imagePreview);
+    form.setValue("coverImage", url, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setPreview(url);
   };
 
   const onSubmit = async (values: z.infer<typeof postSchema>) => {
-    if (!content) {
-      setContent(JSON.parse(postDetails.content));
-    }
-    // Stringify the content
-    const newContent = JSON.stringify(content);
-    // Create the final post object
-    const updatedPost = { content: newContent, ...values };
+    const contentToSave = content ?? JSON.parse(postDetails.content);
+    const updatedPost = {
+      ...values,
+      content: JSON.stringify(contentToSave),
+    };
+
     try {
-      // Call post action
       await patchPost(updatedPost, id);
-      toast.success("Post updated");
+      toast.success("Post updated.");
       router.push(`/blog/${id}`);
     } catch (error) {
-      toast.error("Post could not be updated");
-      throw error;
+      console.log(error);
+      toast.error("Post could not be updated.");
     }
   };
+
+  const currentCover =
+    useWatch({
+      control: form.control,
+      name: "coverImage",
+    }) || imagePreview;
+  const currentState = useWatch({
+    control: form.control,
+    name: "state",
+  });
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 2xl:mx-10 4xl:mx-20 6xl:mx-40 mt-10 ring mx-2 rounded-sm py-5 ring-muted"
-      >
-        <div className=" flex sm:flex-row flex-1 flex-col justify-between">
-          <div className="border-r  pr-2 flex-1 gap-5 flex flex-col px-5">
-            {/* TITLE */}
-            <p className="border-b font-bold text-amber-600 text-2xl tracking-wider">
-              Part 1
-            </p>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter a compelling title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* DESCRIPTION */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <Textarea
-                    placeholder="Enter the post description"
-                    {...field}
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <Card className="border-border/70 bg-card/95 shadow-lg">
+          <CardHeader className="border-b border-border/60 bg-muted/30">
+            <Badge className="w-fit" variant="outline">
+              Draft setup
+            </Badge>
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <FilePenLine className="size-5 text-sky-500" />
+              Update your story setup
+            </CardTitle>
+            <CardDescription>
+              Refresh the headline, summary, category, and visual before you
+              move through the editor canvas below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 pt-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Sharpen the headline" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Summarize the refreshed angle of the piece."
+                        rows={5}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Used for cards, preview snippets, and SEO copy.</span>
+                      <span>{field.value.length}/160</span>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Choose a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {postCategories.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-4 rounded-3xl border border-border/70 bg-muted/20 p-4">
+              <div>
+                <p className="text-sm font-medium">Cover image</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Replace the visual only if the story angle or positioning has
+                  changed.
+                </p>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-border/70 bg-background">
+                <div className="relative aspect-[16/10]">
+                  <Image
+                    alt="Current cover preview"
+                    className="object-cover"
+                    fill
+                    src={currentCover}
                   />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex-1 border-r w-full  pr-2 justify-center items-center gap-8 flex flex-col px-5">
-            <p className="border-b font-bold text-amber-600 text-2xl tracking-wider">
-              Part 2
-            </p>
-            {/* COVER-IMAGE */}
-            <FormField
-              control={form.control}
-              name="coverImage"
-              render={() => (
-                <FormItem>
-                  <FormLabel className="text-base">
-                    Upload your cover Image
-                  </FormLabel>
-                  <FormControl>
-                    <div className="">
-                      {coverImage ? (
-                        <div className="">
-                          <p className="text-xs text-sky-500 py-2">
-                            Your new cover image
-                          </p>
-                          <Image
-                            src={coverImage || imagePreview}
-                            alt=""
-                            width={100}
-                            height={100}
-                          />
-                        </div>
-                      ) : (
-                        imagePreview && (
-                          <div className="">
-                            <p className="text-xs py-2 text-slate-500">
-                              Previous cover image
-                            </p>
-                            <Image
-                              src={imagePreview}
-                              alt=""
-                              width={100}
-                              height={100}
-                              className="aspect-video"
-                            />
-                          </div>
-                        )
-                      )}
-                      <FormLabel
-                        htmlFor="image"
-                        className="flex flex-col gap-2 w-fit my-2 text-sm"
-                      >
-                        <span className="ring-[1px] p-[3px] text-xs rounded-sm">
-                          Choose an Image
-                        </span>
-                      </FormLabel>
+                </div>
+              </div>
+              <FormField
+                control={form.control}
+                name="coverImage"
+                render={() => (
+                  <FormItem>
+                    <FormControl>
                       <UploadExample
                         getImageUrl={handleCoverUpload}
-                        update={true}
                         setImageUrl={setPreview}
+                        update
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* CATEGORY */}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-border/70 bg-card/95 shadow-xl">
+          <CardHeader className="border-b border-border/60 bg-muted/30">
+            <CardTitle className="text-2xl">Editor canvas</CardTitle>
+            <CardDescription>
+              The editor now sits in the center of the workflow with the full
+              page width available for writing and revision.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 md:p-6">
+            <SimpleEditor updateContent={JSON.parse(postDetails.content)} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/70 bg-card/95 shadow-lg">
+          <CardHeader className="border-b border-border/60 bg-muted/30">
+            <Badge className="w-fit" variant="outline">
+              Publish controls
+            </Badge>
+            <CardTitle className="text-2xl">Finalize this update</CardTitle>
+            <CardDescription>
+              Choose whether the refreshed version stays private or goes live
+              immediately after save.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5 pt-6">
             <FormField
               control={form.control}
-              name="category"
+              name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select Category</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select one category" />
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Choose a status" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="DRAFT">Keep as draft</SelectItem>
+                      <SelectItem value="PUBLISHED">Publish update</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-        </div>
-        <div className="flex w-full items-center justify-center flex-col gap-4">
-          <p className="border-b font-bold text-amber-600 text-2xl tracking-wider">
-            Part 3
-          </p>
-          <p className="text-center w-fit">
-            This is the final section, that is after you have modified
-            <br />
-            everything including the content.
-            <br /> Click this button to update your post in the database.
-          </p>
-          <Button type="submit">Submit</Button>
-        </div>
+
+            <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4 text-sm leading-6 text-muted-foreground">
+              {currentState === "DRAFT" ? (
+                <div className="flex items-start gap-3">
+                  <Save className="mt-0.5 size-4 shrink-0 text-sky-500" />
+                  <p>
+                    Draft mode keeps this revision in your workspace until you
+                    are satisfied with the content and metadata.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-start gap-3">
+                  <Rocket className="mt-0.5 size-4 shrink-0 text-sky-500" />
+                  <p>
+                    Publish mode sends the refreshed version live immediately,
+                    so make sure the editor content is final.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <Button
+              className="w-full bg-sky-500 text-black hover:bg-sky-400"
+              size="lg"
+              type="submit"
+            >
+              Save changes
+            </Button>
+          </CardContent>
+        </Card>
       </form>
     </Form>
   );

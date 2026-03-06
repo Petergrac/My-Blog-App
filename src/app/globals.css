@@ -157,5 +157,3 @@ h2 {
 .toc-level-2 > a.active {
   @apply border-l-4 border-fuchsia-500 pl-2 font-bold flex-grow text-fuchsia-600;
 }
-@import "@clerk/themes/shadcn.css";
-

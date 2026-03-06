@@ -1,121 +1,147 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { useState } from "react";
-import { usePost } from "@/store/EditorStore";
-import UploadExample from "./ImageUpload";
 
-const categories: string[] = [
-  "frontend",
-  "backend",
-  "devops",
-  "data structures",
-  "data science",
-  "testing",
-  "system design",
-];
+import Image from "next/image";
+import { ImagePlus, PenSquare, Shapes } from "lucide-react";
+
+import UploadExample from "./ImageUpload";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Textarea } from "./ui/textarea";
+import { Badge } from "./ui/badge";
+import { usePost } from "@/store/EditorStore";
+import { postCategories } from "@/lib/categories";
 
 const NewPost = () => {
-  const { setTitle, setCategory, setDescription } = usePost();
-  const [errors, setErrors] = useState({
-    titleError: "hidden",
-    imageError: "hidden",
-    categoryError: "hidden",
-  });
-  const [selectedCategory, setSelectedCategory] = useState("Category");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Handle Title
-    if (e.target.name === "title") {
-      const titleValue = e.target.value.trim();
-      if (!titleValue) {
-        setErrors((prev) => ({ ...prev, titleError: "" }));
-      } else {
-        setTitle(titleValue);
-        setErrors((prev) => ({ ...prev, titleError: "hidden" }));
-      }
-    }
-  };
-
-  const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    setCategory(category);
-    setErrors((prev) => ({ ...prev, categoryError: "hidden" }));
-  };
+  const {
+    title,
+    category,
+    description,
+    coverImage,
+    setTitle,
+    setCategory,
+    setDescription,
+  } = usePost();
 
   return (
-    <div className="flex flex-col max-w-2xl mx-auto my-10 p-8 border  rounded-lg shadow-lg space-y-8">
-      <h1 className="text-2xl font-bold text-center">Create a New Post</h1>
+    <Card className="border-border/70 bg-card/90 shadow-lg">
+      <CardHeader className="border-b border-border/60 bg-muted/30">
+        <Badge className="w-fit" variant="outline">
+          Draft setup
+        </Badge>
+        <CardTitle className="flex items-center gap-2 text-2xl">
+          <PenSquare className="size-5 text-sky-500" />
+          Shape the post before you write
+        </CardTitle>
+        <CardDescription>
+          Set the headline, summary, category, and cover in one place before
+          moving into the editor canvas.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-6 pt-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="post-title">Title</Label>
+            <Input
+              id="post-title"
+              placeholder="Designing reliable systems for busy teams"
+              value={title ?? ""}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Aim for a specific headline that signals value immediately.
+            </p>
+          </div>
 
-      {/* TITLE SECTION */}
-      <div className="space-y-2">
-        <label htmlFor="title" className="font-medium">
-          Post Title:
-        </label>
-        <input
-          type="text"
-          name="title"
-          onChange={(e) => handleChange(e)}
-          // onBlur={(e) => handleChange(e)}
-          placeholder="Enter a compelling title"
-          id="title"
-          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-        />
-        <p className={`${errors.titleError} text-rose-500 text-sm mt-1`}>
-          Title cannot be empty
-        </p>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="post-description">Short description</Label>
+            <Textarea
+              id="post-description"
+              placeholder="Summarize the key takeaway in one or two sharp sentences."
+              rows={5}
+              value={description ?? ""}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Used in cards, previews, and metadata.</span>
+              <span>{description?.length ?? 0}/140</span>
+            </div>
+          </div>
 
-      {/* COVER IMAGE SECTION */}
-      <div className="space-y-2">
-        <UploadExample />
-      </div>
-      {/* SHORT DESCRIPTION */}
-      <div className="flex items-start gap-2 flex-col justify-center">
-        Add a short description:
-        <textarea
-          className="outline-none border-[2px] rounded-sm p-2"
-          placeholder="Description"
-          minLength={20}
-          maxLength={100}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-            setDescription(e.target.value)
-          }
-        />
-      </div>
-      {/* CATEGORY SECTION */}
-      <div className="space-y-2">
-        <span className="font-medium text-gray-500">Choose a Category:</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="w-full p-3 flex justify-between items-center border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-            <span>{selectedCategory}</span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-            <DropdownMenuLabel >
-              Available Categories
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {categories.map((category, i) => (
-              <DropdownMenuItem
-                onClick={() => handleCategorySelect(category)}
-                key={category + i}
-              >
-                {category}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <p className={`${errors.categoryError} text-rose-500 text-sm mt-1`}>
-          Category cannot be empty
-        </p>
-      </div>
-    </div>
+          <div className="space-y-2">
+            <Label>Category</Label>
+            <Select
+              value={category ?? undefined}
+              onValueChange={(value) => setCategory(value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {postCategories.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-start gap-2 rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
+              <Shapes className="mt-0.5 size-4 shrink-0" />
+              <p>
+                Category selection helps the landing page, discovery feed, and
+                author dashboard stay organized.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-3xl border border-border/70 bg-muted/20 p-4">
+          <div>
+            <p className="text-sm font-medium">Cover image</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Upload a strong visual anchor for cards, story previews, and the
+              landing page spotlight.
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-border/70 bg-background">
+            {coverImage ? (
+              <div className="relative aspect-[16/10]">
+                <Image
+                  alt="Uploaded cover preview"
+                  className="object-cover"
+                  fill
+                  src={coverImage}
+                />
+              </div>
+            ) : (
+              <div className="flex aspect-[16/10] items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                Upload an image and it will appear here as your live preview.
+              </div>
+            )}
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <ImagePlus className="size-4 text-sky-500" />
+              Asset upload
+            </div>
+            <UploadExample />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

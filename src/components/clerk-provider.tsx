@@ -1,18 +1,33 @@
-import { ClerkProvider as ClerkNextJSProvider } from '@clerk/nextjs'
-import { shadcn } from '@clerk/themes'
+import { ClerkProvider as ClerkNextJSProvider } from "@clerk/nextjs";
 
-type ClerkProviderProps = React.ComponentProps<typeof ClerkNextJSProvider>
+import { clerkAppearance } from "@/lib/clerk";
 
-export function ClerkProvider({ children, appearance, ...props }: ClerkProviderProps) {
+type ClerkProviderProps = React.ComponentProps<typeof ClerkNextJSProvider>;
+
+export function ClerkProvider({
+  children,
+  appearance,
+  ...props
+}: ClerkProviderProps) {
   return (
     <ClerkNextJSProvider
       appearance={{
-        theme: shadcn,
+        ...clerkAppearance,
         ...appearance,
+        elements: {
+          ...clerkAppearance.elements,
+          ...appearance?.elements,
+        },
+        variables: {
+          ...clerkAppearance.variables,
+          ...appearance?.variables,
+        },
       }}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
       {...props}
     >
       {children}
     </ClerkNextJSProvider>
-  )
+  );
 }

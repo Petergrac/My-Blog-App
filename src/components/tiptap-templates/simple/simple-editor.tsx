@@ -79,7 +79,6 @@ import { usePost } from "@/store/EditorStore";
 
 import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
 import { createLowlight, common } from "lowlight";
-import { resolve } from "path";
 
 const lowlight = createLowlight(common);
 
@@ -249,6 +248,12 @@ export function SimpleEditor({
   });
 
   // Save the content
+  React.useEffect(() => {
+    if (!editor) return;
+
+    setContent(editor.getJSON());
+  }, [editor, setContent]);
+
   React.useEffect(() => {
     if (!editor) return;
     editor.on("update", () => {

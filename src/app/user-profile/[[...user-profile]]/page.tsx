@@ -11,7 +11,7 @@ const UserProfilePage = () => {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col flex-1 justify-center items-center h-screen">
+    <div className="flex flex-col flex-1 justify-center items-center min-h-screen">
       <Link
         onClick={() => router.replace("/")}
         href="/"
