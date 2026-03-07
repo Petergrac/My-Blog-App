@@ -1,10 +1,10 @@
 "use client";
 
-import type { ChangeEvent } from "react";
+import type { FormEvent } from "react";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useSignUp } from "@clerk/nextjs";
+import { useAuth, useSignUp } from "@clerk/nextjs";
 
 import {
   AuthDivider,
@@ -28,6 +28,9 @@ const AUTH_COMPLETE_URL = "/";
 
 export default function SignUpPage() {
   const router = useRouter();
+  // FIX: useAuth() lets us detect an already-signed-in user and redirect them
+  // so clicking OAuth while signed in doesn't show a Clerk error message.
+  const { isSignedIn } = useAuth();
   const { errors: signUpErrors, fetchStatus, signUp } = useSignUp();
 
   const [view, setView] = useState<SignUpView>("start");
@@ -67,7 +70,11 @@ export default function SignUpPage() {
       }) => {
         const destination = decorateUrl(AUTH_COMPLETE_URL);
 
-        if (destination.startsWith("http")) {
+        // FIX: More robust URL check — covers both http:// and https://
+        if (
+          destination.startsWith("http://") ||
+          destination.startsWith("https://")
+        ) {
           window.location.assign(destination);
           return;
         }
@@ -89,9 +96,9 @@ export default function SignUpPage() {
       return;
     }
 
-    setNotice(
-      `We sent a verification code to ${signUp.emailAddress ?? emailAddress}.`,
-    );
+    // FIX: Use local emailAddress state — signUp.emailAddress is not reliably
+    // set in Core 3 at this point in the flow.
+    setNotice(`We sent a verification code to ${emailAddress}.`);
     setVerificationCode("");
     setView("verify_email");
   };
@@ -99,6 +106,13 @@ export default function SignUpPage() {
   const handleOAuthSignUp = async (
     strategy: "oauth_google" | "oauth_github",
   ) => {
+    // FIX: If the user is already signed in, redirect home immediately
+    // instead of triggering a Clerk error / showing an error message.
+    if (isSignedIn) {
+      router.replace(AUTH_COMPLETE_URL);
+      return;
+    }
+
     clearFeedback();
     setPendingAction(strategy);
 
@@ -114,7 +128,8 @@ export default function SignUpPage() {
     }
   };
 
-  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
+  // FIX: Was typed as ChangeEvent<HTMLFormElement> — must be FormEvent
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     clearFeedback();
@@ -144,8 +159,9 @@ export default function SignUpPage() {
     setPendingAction(null);
   };
 
+  // FIX: Was typed as ChangeEvent<HTMLFormElement> — must be FormEvent
   const handleVerificationSubmit = async (
-    event: ChangeEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
@@ -286,6 +302,14 @@ export default function SignUpPage() {
               Submit
             </AuthSubmitButton>
           </form>
+
+          {/*
+            FIX: <div id="clerk-captcha" /> is REQUIRED for Clerk's bot sign-up
+            protection (CAPTCHA). It must be present in the DOM before
+            signUp.password() is called — without it Clerk throws an error
+            and no user can register.
+          */}
+          <div id="clerk-captcha" />
 
           <p className="text-xs text-muted-foreground">
             By signing up, you agree to the Terms of Service, Privacy Policy,

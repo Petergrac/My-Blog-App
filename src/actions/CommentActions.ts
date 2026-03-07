@@ -1,5 +1,9 @@
 "use server";
-import prisma from "@/lib/prisma";
+import {
+  accelerateTags,
+  invalidateAccelerateTags,
+} from "@/lib/prisma-cache";
+import { directPrisma } from "@/lib/prisma";
 import { requireCurrentDatabaseUser } from "@/lib/current-user";
 import { revalidatePath } from "next/cache";
 
@@ -11,13 +15,17 @@ export async function createComment(postId: string, content: string) {
   try {
     const currentUser = await requireCurrentUser();
 
-    await prisma.comment.create({
+    await directPrisma.comment.create({
       data: {
         content,
         postId,
         authorId: currentUser.id,
       },
     });
+    await invalidateAccelerateTags([
+      accelerateTags.publicPosts,
+      accelerateTags.post(postId),
+    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);
@@ -32,7 +40,7 @@ export async function patchComment(
 ) {
   try {
     const currentUser = await requireCurrentUser();
-    const currentComment = await prisma.comment.findUnique({
+    const currentComment = await directPrisma.comment.findUnique({
       where: {
         id: commentId,
       },
@@ -49,7 +57,7 @@ export async function patchComment(
       throw new Error("You can only edit your own comments.");
     }
 
-    await prisma.comment.update({
+    await directPrisma.comment.update({
       where: {
         id: commentId,
       },
@@ -57,6 +65,10 @@ export async function patchComment(
         content: content,
       },
     });
+    await invalidateAccelerateTags([
+      accelerateTags.publicPosts,
+      accelerateTags.post(postId),
+    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);
@@ -67,7 +79,7 @@ export async function patchComment(
 export async function deleteComment(commentId: string, postId: string) {
   try {
     const currentUser = await requireCurrentUser();
-    const currentComment = await prisma.comment.findUnique({
+    const currentComment = await directPrisma.comment.findUnique({
       where: {
         id: commentId,
       },
@@ -84,11 +96,15 @@ export async function deleteComment(commentId: string, postId: string) {
       throw new Error("You can only delete your own comments.");
     }
 
-    await prisma.comment.delete({
+    await directPrisma.comment.delete({
       where: {
         id: commentId,
       },
     });
+    await invalidateAccelerateTags([
+      accelerateTags.publicPosts,
+      accelerateTags.post(postId),
+    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);

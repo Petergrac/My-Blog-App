@@ -1,5 +1,9 @@
 "use server";
-import prisma from "@/lib/prisma";
+import {
+  accelerateTags,
+  invalidateAccelerateTags,
+} from "@/lib/prisma-cache";
+import { directPrisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -31,7 +35,7 @@ export async function newPost(finalPost: finalPost) {
   }
 
   // Get user id
-  const authorId = await prisma.user.findUnique({
+  const authorId = await directPrisma.user.findUnique({
     where: {
       clerkId: userId,
     },
@@ -42,7 +46,7 @@ export async function newPost(finalPost: finalPost) {
   if (!authorId) throw new Error("You must be an author in order to post");
   // Post the data
   try {
-    const createdPost = await prisma.post.create({
+    const createdPost = await directPrisma.post.create({
       data: {
         title: finalPost.title,
         content: finalPost.content,
@@ -53,6 +57,13 @@ export async function newPost(finalPost: finalPost) {
         authorId: authorId.id,
       },
     });
+    if (createdPost.state === "PUBLISHED") {
+      await invalidateAccelerateTags([
+        accelerateTags.publicPosts,
+        accelerateTags.post(createdPost.id),
+        accelerateTags.category(createdPost.category),
+      ]);
+    }
     revalidatePath('/');
     revalidatePath(`/blog/${createdPost.id}`);
     revalidatePath(`/categories/${encodeURIComponent(createdPost.category)}`);
@@ -78,7 +89,7 @@ export async function patchPost(updatedPost: editPost, id: string) {
   }
 
   try {
-    const author = await prisma.user.findUnique({
+    const author = await directPrisma.user.findUnique({
       where: {
         clerkId: userId,
       },
@@ -91,13 +102,14 @@ export async function patchPost(updatedPost: editPost, id: string) {
       throw new Error("Only authors can update posts.");
     }
 
-    const post = await prisma.post.findUnique({
+    const post = await directPrisma.post.findUnique({
       where: {
         id,
       },
       select: {
         authorId: true,
         category: true,
+        state: true,
       },
     });
 
@@ -109,14 +121,27 @@ export async function patchPost(updatedPost: editPost, id: string) {
       throw new Error("You can only update your own posts.");
     }
 
-    await prisma.post.update({
+    const savedPost = await directPrisma.post.update({
       where: {
         id: id,
       },
       data: {
         ...updatedPost,
       },
+      select: {
+        id: true,
+        category: true,
+        state: true,
+      },
     });
+    if (post.state === "PUBLISHED" || savedPost.state === "PUBLISHED") {
+      await invalidateAccelerateTags([
+        accelerateTags.publicPosts,
+        accelerateTags.post(id),
+        accelerateTags.category(post.category),
+        accelerateTags.category(savedPost.category),
+      ]);
+    }
     revalidatePath("/");
     revalidatePath("/blog/my-blogs");
     revalidatePath(`/blog/${id}`);
@@ -137,7 +162,7 @@ export async function deletePost(id: string) {
   }
 
   try {
-    const author = await prisma.user.findUnique({
+    const author = await directPrisma.user.findUnique({
       where: {
         clerkId: userId,
       },
@@ -150,7 +175,7 @@ export async function deletePost(id: string) {
       throw new Error("Only authors can delete posts.");
     }
 
-    const post = await prisma.post.findUnique({
+    const post = await directPrisma.post.findUnique({
       where: {
         id,
       },
@@ -158,6 +183,7 @@ export async function deletePost(id: string) {
         id: true,
         authorId: true,
         category: true,
+        state: true,
       },
     });
 
@@ -169,23 +195,31 @@ export async function deletePost(id: string) {
       throw new Error("You can only delete your own posts.");
     }
 
-    await prisma.$transaction([
-      prisma.like.deleteMany({
+    await directPrisma.$transaction([
+      directPrisma.like.deleteMany({
         where: {
           postId: id,
         },
       }),
-      prisma.comment.deleteMany({
+      directPrisma.comment.deleteMany({
         where: {
           postId: id,
         },
       }),
-      prisma.post.delete({
+      directPrisma.post.delete({
         where: {
           id,
         },
       }),
     ]);
+
+    if (post.state === "PUBLISHED") {
+      await invalidateAccelerateTags([
+        accelerateTags.publicPosts,
+        accelerateTags.post(id),
+        accelerateTags.category(post.category),
+      ]);
+    }
 
     revalidatePath("/");
     revalidatePath("/blog");

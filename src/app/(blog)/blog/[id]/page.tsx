@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card";
 import { getCategoryHref, getCategoryLabel } from "@/lib/categories";
 import { getCurrentDatabaseUser } from "@/lib/current-user";
-import prisma from "@/lib/prisma";
+import { accelerateTags, withPublicPostCache } from "@/lib/prisma-cache";
+import { prismaAccelerate } from "@/lib/prisma";
 import { getPost } from "@/lib/postQueries";
 import {
   CalendarDays,
@@ -30,8 +31,27 @@ import { notFound } from "next/navigation";
 
 export const revalidate = 60;
 
+type RelatedPost = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  category: string;
+  coverImage: string;
+  description: string;
+  _count: {
+    comments: number;
+    likes: number;
+  };
+  author: {
+    username: string | null;
+    avatar: string | null;
+    bio: string | null;
+  };
+};
+
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
+  const posts = await prismaAccelerate.post.findMany({
+    ...withPublicPostCache(),
     select: {
       id: true,
     },
@@ -58,7 +78,8 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
   const postComments = post.comments;
   const postContent = JSON.parse(post.content) as JSONContent;
-  const relatedPosts = await prisma.post.findMany({
+  const relatedPosts = (await prismaAccelerate.post.findMany({
+    ...withPublicPostCache([accelerateTags.category(post.category)]),
     orderBy: {
       updatedAt: "desc",
     },
@@ -91,7 +112,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       },
       state: "PUBLISHED",
     },
-  });
+  })) as unknown as RelatedPost[];
 
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 md:px-6 lg:py-10">

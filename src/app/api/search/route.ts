@@ -1,4 +1,5 @@
-import prisma from "@/lib/prisma";
+import { withPublicPostCache } from "@/lib/prisma-cache";
+import { prismaAccelerate } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest){
@@ -8,7 +9,11 @@ export async function GET(request: NextRequest){
     if(!query.trim()){
         return NextResponse.json([]);
     }
-    const posts  = await prisma.post.findMany({
+    const posts  = await prismaAccelerate.post.findMany({
+            ...withPublicPostCache([], {
+                ttl: 30,
+                swr: 60,
+            }),
             where:{
                 OR:[
                     {title: {contains: query,mode:'insensitive'}},

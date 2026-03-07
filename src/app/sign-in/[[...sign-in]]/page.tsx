@@ -275,6 +275,8 @@ export default function SignInPage() {
   const sendEmailCode = async () => {
     clearFeedback();
     setPendingAction("send-email-code");
+
+    // FIX: Always pass the emailAddress — signIn.identifier is unreliable in Core 3
     const { error } = await signIn.emailCode.sendCode({
       emailAddress: identifier.trim(),
     });

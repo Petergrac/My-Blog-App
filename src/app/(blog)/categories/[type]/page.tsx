@@ -8,15 +8,35 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { getCategoryLabel, postCategories } from "@/lib/categories";
-import prisma from "@/lib/prisma";
+import { accelerateTags, withPublicPostCache } from "@/lib/prisma-cache";
+import { prismaAccelerate } from "@/lib/prisma";
 import { ArrowRight, BookOpenText, Layers3 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export const revalidate = 60;
 
+type CategoryPagePost = {
+  title: string;
+  id: string;
+  createdAt: Date;
+  coverImage: string;
+  description: string;
+  category: string;
+  _count: {
+    comments: number;
+    likes: number;
+  };
+  author: {
+    username: string | null;
+    bio: string | null;
+    avatar: string | null;
+  };
+};
+
 export async function generateStaticParams() {
-  const categories = await prisma.post.findMany({
+  const categories = await prismaAccelerate.post.findMany({
+    ...withPublicPostCache([accelerateTags.postCategories]),
     distinct: ["category"],
     select: {
       category: true,
@@ -38,8 +58,10 @@ const CategoriesPage = async ({
 }) => {
   const { type } = await params;
   const categoryType = decodeURIComponent(type);
+  const categoryTag = accelerateTags.category(categoryType);
 
-  const posts = await prisma.post.findMany({
+  const posts = (await prismaAccelerate.post.findMany({
+    ...withPublicPostCache([categoryTag]),
     orderBy: {
       updatedAt: "desc",
     },
@@ -68,7 +90,7 @@ const CategoriesPage = async ({
       category: categoryType,
       state: "PUBLISHED",
     },
-  });
+  })) as unknown as CategoryPagePost[];
 
   const currentCategory = postCategories.find(
     (category) => category.value === categoryType

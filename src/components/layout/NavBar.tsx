@@ -2,7 +2,7 @@
 
 import { Menu, SearchIcon } from "lucide-react";
 import Link from "next/link";
-import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 import ProgressiveSearch from "@/components/layout/SearchBar";
 import { ModeToggle } from "@/components/layout/ThemeToggle";
@@ -21,19 +21,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { clerkModalAppearance } from "@/lib/clerk";
 
+// FIX: Removed SignInButton import — we no longer use it.
+// The modal mode was showing a Clerk modal overlay instead of redirecting
+// the user to the dedicated /sign-in page.
+
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
   const { user, isSignedIn } = useUser();
   const role = user?.publicMetadata.role as string;
+
   return (
     <nav
-      className={`bg-gradient-to-b from-black pb-5 pt-3 flex ${
+      className={`bg-linear-to-b from-black pb-5 pt-3 flex ${
         isTrue && "absolute"
       } items-center justify-between md:justify-around w-full z-20 px-5`}
     >
-      <Link href='/' className="text-2xl line-clamp-3 font-sans font-bold">
+      <Link href="/" className="text-2xl line-clamp-3 font-sans font-bold">
         <span className="text-sky-500">Blo</span>
         <span className="text-yellow-300">og</span>
       </Link>
+
       <Dialog>
         <DialogTrigger>
           <SearchIcon className="text-white" />
@@ -46,6 +52,7 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
           <ProgressiveSearch />
         </DialogContent>
       </Dialog>
+
       {/* DESKTOP */}
       <div className="hidden md:flex gap-20 justify-between">
         <div className="flex gap-3 text-gray-200 text-sm">
@@ -59,7 +66,8 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             <Link href="/blog/my-blogs">MY POSTS</Link>
           )}
         </div>
-        <div className="flex sm-2 md:gap-5">
+
+        <div className="flex sm-2 md:gap-5 items-center">
           <ModeToggle />
           {isSignedIn ? (
             <UserButton
@@ -68,14 +76,19 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
               userProfileMode="navigation"
             />
           ) : (
-            <SignInButton appearance={clerkModalAppearance} mode="modal">
-              <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
-                Sign In
-              </button>
-            </SignInButton>
+            // FIX: Replace <SignInButton mode="modal"> with a plain Link.
+            // This redirects to the custom /sign-in page instead of opening
+            // Clerk's modal overlay on top of the current page.
+            <Link
+              href="/sign-in"
+              className="bg-white text-black text-sm px-3 py-1 font-semibold rounded-sm hover:bg-gray-100 transition-colors"
+            >
+              Sign In
+            </Link>
           )}
         </div>
       </div>
+
       {/* MOBILE */}
       <div className="flex gap-2 items-center md:hidden">
         <ModeToggle />
@@ -96,17 +109,17 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             </DropdownMenuItem>
             {(role === "Author" || role === "Admin") && (
               <DropdownMenuItem>
-                <Link href="/new">NEW POST</Link>{" "}
+                <Link href="/new">NEW POST</Link>
               </DropdownMenuItem>
             )}
-
             {(role === "Author" || role === "Admin") && (
               <DropdownMenuItem>
-                <Link href="/blog/my-blogs">MY POSTS</Link>{" "}
+                <Link href="/blog/my-blogs">MY POSTS</Link>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+
         {isSignedIn ? (
           <UserButton
             appearance={clerkModalAppearance}
@@ -114,11 +127,13 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
             userProfileMode="navigation"
           />
         ) : (
-          <SignInButton appearance={clerkModalAppearance} mode="modal">
-            <button className="bg-white text-black text-sm p-1 font-semibold rounded-sm">
-              Sign In
-            </button>
-          </SignInButton>
+          // FIX: Same fix for mobile — Link instead of modal SignInButton
+          <Link
+            href="/sign-in"
+            className="bg-white text-black text-sm px-3 py-1 font-semibold rounded-sm hover:bg-gray-100 transition-colors"
+          >
+            Sign In
+          </Link>
         )}
       </div>
     </nav>

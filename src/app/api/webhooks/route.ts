@@ -1,6 +1,7 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
+import { accelerateTags, invalidateAccelerateTags } from "@/lib/prisma-cache";
+import { directPrisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function POST(req: NextRequest) {
     if (evt.type === "user.created") {
       const userInfo = evt.data;
       try {
-       await prisma.user.create({
+       await directPrisma.user.create({
           data: {
             clerkId: userInfo.id,
             username: userInfo.username
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
     if (evt.type === "user.updated") {
       const userInfo = evt.data;
       try {
-        await prisma.user.update({
+        await directPrisma.user.update({
           where: {
             clerkId: userInfo.id,
           },
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
             avatar: userInfo.image_url,
           },
         });
+        await invalidateAccelerateTags([accelerateTags.publicPosts]);
 
         return new Response("Webhook received", { status: 200 });
       } catch (error) {
@@ -73,11 +75,12 @@ export async function POST(req: NextRequest) {
       const userInfo = evt.data;
       try {
         console.log('This block has been executed')
-         await prisma.user.delete({
+         await directPrisma.user.delete({
           where: {
             clerkId: userInfo.id,
           },
         });
+        await invalidateAccelerateTags([accelerateTags.publicPosts]);
     
         return new Response("Webhook received", { status: 200 });
       } catch (error) {

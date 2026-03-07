@@ -26,7 +26,8 @@ import {
   getCategoryLabel,
   postCategories,
 } from "@/lib/categories";
-import prisma from "@/lib/prisma";
+import { withPublicPostCache } from "@/lib/prisma-cache";
+import { prismaAccelerate } from "@/lib/prisma";
 
 export const revalidate = 60;
 
@@ -59,16 +60,10 @@ function scorePost(post: LandingPost) {
   return post._count.likes * 2 + post._count.comments;
 }
 
-function StatCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-border/70 bg-background/75 p-4 shadow-sm backdrop-blur">
-      <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+      <p className="text-xs uppercase tracking-[0.24em] sm:tracking-tight text-muted-foreground">
         {label}
       </p>
       <p className="mt-2 text-2xl font-semibold">{value}</p>
@@ -108,8 +103,9 @@ export default async function Home() {
     totalComments,
     totalLikes,
     categoryRows,
-  ] = await prisma.$transaction([
-    prisma.post.findMany({
+  ] = (await Promise.all([
+    prismaAccelerate.post.findMany({
+      ...withPublicPostCache(),
       where: { state: "PUBLISHED" },
       orderBy: {
         createdAt: "desc",
@@ -136,10 +132,12 @@ export default async function Home() {
         },
       },
     }),
-    prisma.post.count({
+    prismaAccelerate.post.count({
+      ...withPublicPostCache(),
       where: { state: "PUBLISHED" },
     }),
-    prisma.user.count({
+    prismaAccelerate.user.count({
+      ...withPublicPostCache(),
       where: {
         posts: {
           some: {
@@ -148,9 +146,10 @@ export default async function Home() {
         },
       },
     }),
-    prisma.comment.count(),
-    prisma.like.count(),
-    prisma.post.findMany({
+    prismaAccelerate.comment.count(withPublicPostCache()),
+    prismaAccelerate.like.count(withPublicPostCache()),
+    prismaAccelerate.post.findMany({
+      ...withPublicPostCache(),
       where: {
         state: "PUBLISHED",
       },
@@ -158,7 +157,14 @@ export default async function Home() {
         category: true,
       },
     }),
-  ]);
+  ])) as unknown as [
+    LandingPost[],
+    number,
+    number,
+    number,
+    number,
+    Array<{ category: string }>
+  ];
 
   if (publishedPosts.length === 0) {
     return (
@@ -180,10 +186,13 @@ export default async function Home() {
   const latestPosts = publishedPosts
     .filter((post) => post.id !== heroPost.id && !spotlightIds.has(post.id))
     .slice(0, 6);
-  const categoryCountMap = categoryRows.reduce<Map<string, number>>((map, row) => {
-    map.set(row.category, (map.get(row.category) ?? 0) + 1);
-    return map;
-  }, new Map());
+  const categoryCountMap = categoryRows.reduce<Map<string, number>>(
+    (map, row) => {
+      map.set(row.category, (map.get(row.category) ?? 0) + 1);
+      return map;
+    },
+    new Map(),
+  );
 
   return (
     <div className="pb-16">
@@ -204,9 +213,9 @@ export default async function Home() {
                 audience.
               </h1>
               <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                Bloog now feels like a product, not a demo. Discover fresh
-                engineering stories, publish with a richer editor, and manage
-                your writing flow with a calmer workspace.
+                Bloog is an open source blog app.Discover fresh engineering
+                stories, publish with a richer editor, and manage your writing
+                flow with a calmer workspace.
               </p>
             </div>
 
@@ -222,14 +231,22 @@ export default async function Home() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href={`/blog/${heroPost.id}`}>Read editor&apos;s pick</Link>
+                <Link href={`/blog/${heroPost.id}`}>
+                  Read editor&apos;s pick
+                </Link>
               </Button>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label="Published posts" value={totalPosts.toString()} />
-              <StatCard label="Active authors" value={totalAuthors.toString()} />
-              <StatCard label="Conversations" value={totalComments.toString()} />
+              <StatCard
+                label="Active authors"
+                value={totalAuthors.toString()}
+              />
+              <StatCard
+                label="Conversations"
+                value={totalComments.toString()}
+              />
               <StatCard label="Reader likes" value={totalLikes.toString()} />
             </div>
           </div>
@@ -272,7 +289,7 @@ export default async function Home() {
       <CategoryLinks />
 
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-6 flex flex-col gap-3">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">
               Topics
@@ -282,7 +299,7 @@ export default async function Home() {
             </h2>
           </div>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            The landing page now surfaces the core editorial lanes clearly, so
+            The landing page surfaces the core editorial lanes clearly, so
             readers can move from browsing to deep reading without friction.
           </p>
         </div>
@@ -304,7 +321,11 @@ export default async function Home() {
                 <CardDescription>{category.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button asChild className="w-full justify-between" variant="ghost">
+                <Button
+                  asChild
+                  className="w-full justify-between"
+                  variant="ghost"
+                >
                   <Link href={getCategoryHref(category.value)}>
                     Explore topic
                     <ArrowRight />
@@ -328,7 +349,10 @@ export default async function Home() {
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <Card className="overflow-hidden border-border/70 bg-card/80 shadow-lg">
-            <Link href={`/blog/${heroPost.id}`} className="grid h-full md:grid-cols-2">
+            <Link
+              href={`/blog/${heroPost.id}`}
+              className="grid h-full md:grid-cols-2"
+            >
               <div className="relative min-h-72">
                 <Image
                   src={heroPost.coverImage}
@@ -339,7 +363,9 @@ export default async function Home() {
               </div>
               <div className="flex flex-col justify-between p-6">
                 <div className="space-y-4">
-                  <Badge variant="secondary">{getCategoryLabel(heroPost.category)}</Badge>
+                  <Badge variant="secondary">
+                    {getCategoryLabel(heroPost.category)}
+                  </Badge>
                   <h3 className="text-2xl font-semibold leading-tight">
                     {heroPost.title}
                   </h3>
@@ -423,7 +449,7 @@ export default async function Home() {
             (post) => (
               <Link key={post.id} href={`/blog/${post.id}`} className="group">
                 <Card className="h-full overflow-hidden border-border/70 bg-card/80 shadow-sm transition duration-200 group-hover:-translate-y-1 group-hover:shadow-lg">
-                  <div className="relative aspect-[16/10] overflow-hidden">
+                  <div className="relative aspect-16/10 overflow-hidden">
                     <Image
                       src={post.coverImage}
                       alt={post.title}
@@ -460,20 +486,24 @@ export default async function Home() {
       <section className="mx-auto max-w-7xl px-4 py-4 md:px-6">
         <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(14,165,233,0.08),rgba(250,204,21,0.08),transparent)] shadow-lg">
           <CardHeader className="gap-3">
-            <Badge variant="outline">Platform refresh</Badge>
+            <Badge variant="outline" className="p-1 pl-5">
+              Platform refresh
+            </Badge>
             <CardTitle className="text-3xl">
               Built to feel more production-ready
             </CardTitle>
             <CardDescription className="max-w-3xl leading-6">
-              The app now presents a clearer reading funnel and a more deliberate
-              authoring surface. The next step after this pass is expanding the
-              product model, not just the styling.
+              The app presents a clearer reading funnel and a more deliberate
+              authoring surface. The next update will be to expand the product
+              model.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <Sparkles className="mb-4 text-sky-500" />
-              <h3 className="text-lg font-semibold">Intentional landing page</h3>
+              <h3 className="text-lg font-semibold">
+                Intentional landing page
+              </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Readers can now discover topics, spotlight posts, and fresh
                 content without scrolling through unstructured strips.
@@ -481,17 +511,21 @@ export default async function Home() {
             </div>
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <PenSquare className="mb-4 text-sky-500" />
-              <h3 className="text-lg font-semibold">Cleaner writing workflow</h3>
+              <h3 className="text-lg font-semibold">
+                Cleaner writing workflow
+              </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Metadata, cover image, publish state, and editor canvas are being
-                reorganized into a calmer author workspace.
+                Metadata, cover image, publish state, and editor canvas are
+                being reorganized into a calmer author workspace.
               </p>
             </div>
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <ChartColumnIncreasing className="mb-4 text-sky-500" />
-              <h3 className="text-lg font-semibold">Better query foundations</h3>
+              <h3 className="text-lg font-semibold">
+                Better query foundations
+              </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Indexes now favor the actual read paths: published feeds,
+                Indexes that favor the actual read paths: published feeds,
                 category browsing, author dashboards, comments, and likes.
               </p>
             </div>
@@ -507,7 +541,7 @@ export default async function Home() {
               <CardTitle>Reader-first discovery</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              Editorial picks, topic navigation, and social proof now carry the
+              Editorial picks, topic navigation, and social proof carry the
               first screen instead of thin horizontal carousels.
             </CardContent>
           </Card>
@@ -517,8 +551,8 @@ export default async function Home() {
               <CardTitle>Stronger engagement signals</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              Likes and comment volume are surfaced more deliberately to make the
-              ecosystem feel active and trustworthy.
+              Likes and comment volume are surfaced more deliberately to make
+              the ecosystem feel active and trustworthy.
             </CardContent>
           </Card>
           <Card className="border-border/70 bg-card/80">
@@ -527,8 +561,9 @@ export default async function Home() {
               <CardTitle>Ready for more product depth</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              The interface is now in a better place to support future models like
-              tags, bookmarks, or editorial workflows without collapsing visually.
+              The interface is now in a better place to support future models
+              like tags, bookmarks, or editorial workflows without collapsing
+              visually.
             </CardContent>
           </Card>
         </div>

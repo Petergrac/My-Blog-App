@@ -1,7 +1,8 @@
 "use server";
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import prisma from "./prisma";
+import { accelerateTags, invalidateAccelerateTags } from "./prisma-cache";
+import { directPrisma } from "./prisma";
 
 // Update user metadata
 const changeRole = async (role: string) => {
@@ -40,7 +41,7 @@ export const saveUserData = async ({
   if (!userId) return { error: "This user is not available on the database" };
   // Add data to the database
   try {
-    await prisma.user.update({
+    await directPrisma.user.update({
       where: {
         id,
       },
@@ -49,6 +50,7 @@ export const saveUserData = async ({
         bio,
       },
     });
+    await invalidateAccelerateTags([accelerateTags.publicPosts]);
     return {message: "User data updated successfully!"}
   } catch (err) {
     console.log(err);
