@@ -4,7 +4,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useSignIn } from "@clerk/nextjs";
+import { useAuth, useSignIn } from "@clerk/nextjs";
 
 import {
   AuthDivider,
@@ -30,8 +30,15 @@ type SignInView =
   | "reset_password"
   | "second_factor";
 
-type FirstFactorStrategy = "password" | "email_code" | "reset_password_email_code";
-type SecondFactorStrategy = "email_code" | "phone_code" | "totp" | "backup_code";
+type FirstFactorStrategy =
+  | "password"
+  | "email_code"
+  | "reset_password_email_code";
+type SecondFactorStrategy =
+  | "email_code"
+  | "phone_code"
+  | "totp"
+  | "backup_code";
 
 const SECOND_FACTOR_LABELS: Record<SecondFactorStrategy, string> = {
   email_code: "Email code",
@@ -45,6 +52,9 @@ const AUTH_COMPLETE_URL = "/";
 
 export default function SignInPage() {
   const router = useRouter();
+  // FIX: useAuth() lets us detect an already-signed-in user and redirect them
+  const { isSignedIn } = useAuth();
+  // FIX: Core 3 — `errors` and `fetchStatus` are top-level return values
   const { errors: signInErrors, fetchStatus, signIn } = useSignIn();
 
   const [view, setView] = useState<SignInView>("start");
@@ -63,12 +73,13 @@ export default function SignInPage() {
   const [localErrors, setLocalErrors] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
-  const safeIdentifier = signIn.identifier || identifier;
+  // FIX: Use local identifier state as the source of truth. signIn.identifier
+  // is not reliably present in Core 3 before a create() call completes.
+  const safeIdentifier = identifier;
+
   const supportedFirstFactors = signIn.supportedFirstFactors ?? [];
   const supportedSecondFactors = (signIn.supportedSecondFactors ?? []).filter(
-    (
-      factor,
-    ): factor is typeof factor & { strategy: SecondFactorStrategy } =>
+    (factor): factor is typeof factor & { strategy: SecondFactorStrategy } =>
       factor.strategy === "email_code" ||
       factor.strategy === "phone_code" ||
       factor.strategy === "totp" ||
@@ -80,6 +91,8 @@ export default function SignInPage() {
   const canUseEmailCode = supportedFirstFactors.some(
     (factor) => factor.strategy === "email_code",
   );
+
+  // FIX: Core 3 errors structure — `signInErrors.global` is the array of global errors
   const errors =
     localErrors.length > 0
       ? localErrors
@@ -99,10 +112,18 @@ export default function SignInPage() {
 
   const finalizeSignIn = async () => {
     const { error } = await signIn.finalize({
-      navigate: async ({ decorateUrl }: { decorateUrl: (url: string) => string }) => {
+      navigate: async ({
+        decorateUrl,
+      }: {
+        decorateUrl: (url: string) => string;
+      }) => {
         const destination = decorateUrl(AUTH_COMPLETE_URL);
 
-        if (destination.startsWith("http")) {
+        // FIX: Handle both absolute and relative URLs robustly
+        if (
+          destination.startsWith("http://") ||
+          destination.startsWith("https://")
+        ) {
           window.location.assign(destination);
           return;
         }
@@ -198,7 +219,16 @@ export default function SignInPage() {
     setNotice(null);
   };
 
-  const handleOAuthSignIn = async (strategy: "oauth_google" | "oauth_github") => {
+  const handleOAuthSignIn = async (
+    strategy: "oauth_google" | "oauth_github",
+  ) => {
+    // FIX: If the user is already signed in, just redirect them home instead
+    // of showing an error message or trying to re-authenticate.
+    if (isSignedIn) {
+      router.replace(AUTH_COMPLETE_URL);
+      return;
+    }
+
     clearFeedback();
     setPendingAction(strategy);
 
@@ -214,6 +244,7 @@ export default function SignInPage() {
     }
   };
 
+  // FIX: Form submit handlers must use FormEvent, not ChangeEvent<HTMLFormElement>
   const handleStartSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -244,10 +275,9 @@ export default function SignInPage() {
   const sendEmailCode = async () => {
     clearFeedback();
     setPendingAction("send-email-code");
-
-    const { error } = await signIn.emailCode.sendCode(
-      signIn.identifier ? undefined : { emailAddress: identifier.trim() },
-    );
+    const { error } = await signIn.emailCode.sendCode({
+      emailAddress: identifier.trim(),
+    });
 
     if (error) {
       handleFailure(error);
@@ -268,11 +298,7 @@ export default function SignInPage() {
     clearFeedback();
     setPendingAction("password");
 
-    const { error } = await signIn.password(
-      signIn.identifier
-        ? { password }
-        : { identifier: identifier.trim(), password },
-    );
+    const { error } = await signIn.password({ password });
 
     if (error) {
       handleFailure(error);
@@ -306,11 +332,15 @@ export default function SignInPage() {
     clearFeedback();
     setPendingAction("reset-password-send");
 
-    if (!signIn.identifier) {
-      const created = await signIn.create({ identifier: identifier.trim() });
+    // FIX: In Core 3, if there is no active sign-in attempt we create one first.
+    // signIn.status being undefined/null means no attempt has been initiated.
+    if (!signIn.status) {
+      const { error: createError } = await signIn.create({
+        identifier: identifier.trim(),
+      });
 
-      if (created.error) {
-        handleFailure(created.error);
+      if (createError) {
+        handleFailure(createError);
         setPendingAction(null);
         return;
       }
@@ -379,7 +409,9 @@ export default function SignInPage() {
     setPendingAction(null);
   };
 
-  const handleSecondFactorSelection = async (strategy: SecondFactorStrategy) => {
+  const handleSecondFactorSelection = async (
+    strategy: SecondFactorStrategy,
+  ) => {
     clearFeedback();
     setPendingAction(`second-factor-${strategy}`);
     setSecondFactorStrategy(strategy);
@@ -453,7 +485,7 @@ export default function SignInPage() {
           <span className="text-fuchsia-500">og</span>
         </>
       }
-      subtitle="Your custom auth flow is back on Clerk Core 3."
+      subtitle="Welcome to Bloog Application!"
     >
       <AuthErrors errors={errors} />
       {notice ? <AuthNotice>{notice}</AuthNotice> : null}
@@ -506,6 +538,14 @@ export default function SignInPage() {
             </AuthSubmitButton>
           </form>
 
+          {/*
+            FIX: The <div id="clerk-captcha" /> placeholder is required for
+            Clerk's bot sign-up protection (CAPTCHA) to render correctly.
+            It must be present in the DOM before signIn.create() is called.
+            Without it, Clerk throws an error and sign-in is blocked.
+          */}
+          <div id="clerk-captcha" />
+
           <AuthFooterLink
             action="Sign up"
             href="/sign-up"
@@ -522,7 +562,9 @@ export default function SignInPage() {
               clearFeedback();
               setView("start");
               setPassword("");
-              void signIn.reset();
+              // FIX: signIn.reset() does not exist in Core 3.
+              // Resetting local state is sufficient; a new signIn.create()
+              // call on the next submission will start a fresh attempt.
             }}
             type="button"
           >
@@ -530,7 +572,10 @@ export default function SignInPage() {
             Back
           </button>
           <AuthNotice>
-            Continue as <span className="font-semibold text-foreground">{safeIdentifier}</span>
+            Continue as{" "}
+            <span className="font-semibold text-foreground">
+              {safeIdentifier}
+            </span>
           </AuthNotice>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -747,7 +792,9 @@ export default function SignInPage() {
                         : "border-border text-muted-foreground hover:text-foreground"
                     }`}
                     key={factor.strategy}
-                    onClick={() => void handleSecondFactorSelection(factor.strategy)}
+                    onClick={() =>
+                      void handleSecondFactorSelection(factor.strategy)
+                    }
                     type="button"
                   >
                     {SECOND_FACTOR_LABELS[factor.strategy]}
@@ -765,7 +812,9 @@ export default function SignInPage() {
             <Input
               autoComplete="one-time-code"
               id="second-factor-code"
-              inputMode={secondFactorStrategy === "backup_code" ? "text" : "numeric"}
+              inputMode={
+                secondFactorStrategy === "backup_code" ? "text" : "numeric"
+              }
               onChange={(event) => setSecondFactorCode(event.target.value)}
               placeholder={
                 secondFactorStrategy === "backup_code"

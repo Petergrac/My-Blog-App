@@ -71,7 +71,6 @@ export async function getPost(id: string) {
 export async function postLikes(postId: string, likeStatus: boolean) {
   try {
     const currentUser = await requireCurrentDatabaseUser();
-
     if (likeStatus) {
       await prisma.like.deleteMany({
         where: {

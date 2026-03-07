@@ -1,6 +1,6 @@
 "use client";
 
-import type { FormEvent } from "react";
+import type { ChangeEvent } from "react";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -60,7 +60,11 @@ export default function SignUpPage() {
 
   const finalizeSignUp = async () => {
     const { error } = await signUp.finalize({
-      navigate: async ({ decorateUrl }: { decorateUrl: (url: string) => string }) => {
+      navigate: async ({
+        decorateUrl,
+      }: {
+        decorateUrl: (url: string) => string;
+      }) => {
         const destination = decorateUrl(AUTH_COMPLETE_URL);
 
         if (destination.startsWith("http")) {
@@ -92,7 +96,9 @@ export default function SignUpPage() {
     setView("verify_email");
   };
 
-  const handleOAuthSignUp = async (strategy: "oauth_google" | "oauth_github") => {
+  const handleOAuthSignUp = async (
+    strategy: "oauth_google" | "oauth_github",
+  ) => {
     clearFeedback();
     setPendingAction(strategy);
 
@@ -108,7 +114,7 @@ export default function SignUpPage() {
     }
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     clearFeedback();
@@ -139,7 +145,7 @@ export default function SignUpPage() {
   };
 
   const handleVerificationSubmit = async (
-    event: FormEvent<HTMLFormElement>,
+    event: ChangeEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
@@ -185,7 +191,7 @@ export default function SignUpPage() {
           <span className="text-yellow-300">og</span> account
         </>
       }
-      subtitle="A custom sign-up flow running on Clerk Core 3."
+      subtitle="Welcome to bloog application"
     >
       <AuthErrors errors={errors} />
       {notice ? <AuthNotice>{notice}</AuthNotice> : null}
