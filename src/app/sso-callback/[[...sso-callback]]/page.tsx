@@ -10,7 +10,12 @@ export default function SSOCallbackPage() {
         <Loader2 className="h-4 w-4 animate-spin" />
         Completing sign-in...
       </div>
-      <AuthenticateWithRedirectCallback signInUrl="/sign-in" signUpUrl="/sign-up" />
+      <AuthenticateWithRedirectCallback
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+        signInFallbackRedirectUrl="/"
+        signUpForceRedirectUrl="/onboarding"
+      />
     </div>
   );
 }

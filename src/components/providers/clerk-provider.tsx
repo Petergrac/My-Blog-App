@@ -25,6 +25,8 @@ export function ClerkProvider({
       }}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/"
+      signUpForceRedirectUrl="/onboarding"
       {...props}
     >
       {children}

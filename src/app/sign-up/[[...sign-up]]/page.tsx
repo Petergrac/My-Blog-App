@@ -116,10 +116,19 @@ export default function SignUpPage() {
     clearFeedback();
     setPendingAction(strategy);
 
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "";
+    const redirectCallbackUrl = origin
+      ? `${origin}${OAUTH_CALLBACK_URL}`
+      : OAUTH_CALLBACK_URL;
+    const redirectUrl = origin
+      ? `${origin}${AUTH_COMPLETE_URL}`
+      : AUTH_COMPLETE_URL;
+
     const { error } = await signUp.sso({
       strategy,
-      redirectCallbackUrl: OAUTH_CALLBACK_URL,
-      redirectUrl: AUTH_COMPLETE_URL,
+      redirectCallbackUrl,
+      redirectUrl,
     });
 
     if (error) {
