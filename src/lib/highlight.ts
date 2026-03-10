@@ -1,48 +1,20 @@
 import hljs from 'highlight.js';
-
-import { JSDOM } from 'jsdom'
-
+import * as cheerio from 'cheerio';
 
 export async function highlightCodeBlocks(htmlString: string) {
+  const $ = cheerio.load(htmlString);
 
-// Create a virtual DOM environment
+  $('pre code').each((_, el) => {
+    const text = $(el).text();
+    if (!text) return;
 
-const dom = new JSDOM(htmlString);
+    try {
+      const result = hljs.highlightAuto(text);
+      $(el).html(result.value);
+    } catch (error) {
+      console.error('Highlighting failed for a code block:', error);
+    }
+  });
 
-const document = dom.window.document;
-
-
-// Find all pre > code blocks
-
-const codeBlocks = document.querySelectorAll('pre code');
-
-// Iterate through each block and apply highlighting
-
-codeBlocks.forEach(block => {
-
-// Check if the block has text content to highlight
-
-if (block.textContent) {
-
-try {
-
-const result = hljs.highlightAuto(block.textContent);
-
-block.innerHTML = result.value;
-
-} catch (e) {
-
-console.error("Highlighting failed for a code block:", e);
-
+  return $('body').html() ?? $.root().html() ?? htmlString;
 }
-
-}
-
-});
-
-
-// Return the modified HTML string
-
-return dom.serialize();
-
-} 
