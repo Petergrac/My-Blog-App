@@ -19,7 +19,7 @@ const ContactPage = () => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -115,10 +115,11 @@ const ContactPage = () => {
         <p>
           Follow us on Twitter:{" "}
           <a
-            href="https://twitter.com/yourhandle"
+            target="_blank"
+            href="https://x.com/@peterz254"
             className="text-primary underline"
           >
-            @apostle254
+            Nemesis
           </a>
         </p>
       </div>

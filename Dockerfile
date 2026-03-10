@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 FROM node:20-alpine AS base
-
+RUN apk update && apk upgrade --no-cache
 WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
