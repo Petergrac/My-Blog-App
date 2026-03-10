@@ -1,7 +1,6 @@
 "use server";
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { accelerateTags, invalidateAccelerateTags } from "./prisma-cache";
 import { directPrisma } from "./prisma";
 
 // Update user metadata
@@ -50,7 +49,6 @@ export const saveUserData = async ({
         bio,
       },
     });
-    await invalidateAccelerateTags([accelerateTags.publicPosts]);
     return {message: "User data updated successfully!"}
   } catch (err) {
     console.log(err);

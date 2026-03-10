@@ -3,13 +3,9 @@ import MostRecent from "@/components/blog/MostRecent";
 import PostNotFound from "@/components/blog/PostNotFound";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { getCategoryLabel, postCategories } from "@/lib/categories";
-import { accelerateTags, withPublicPostCache } from "@/lib/prisma-cache";
-import { prismaAccelerate } from "@/lib/prisma";
+import { directPrisma } from "@/lib/prisma";
 import { ArrowRight, BookOpenText, Layers3 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,8 +31,7 @@ type CategoryPagePost = {
 };
 
 export async function generateStaticParams() {
-  const categories = await prismaAccelerate.post.findMany({
-    ...withPublicPostCache([accelerateTags.postCategories]),
+  const categories = await directPrisma.post.findMany({
     distinct: ["category"],
     select: {
       category: true,
@@ -46,7 +41,7 @@ export async function generateStaticParams() {
     },
   });
 
-  return categories.map((cat) => ({
+  return categories.map((cat: { category: string }) => ({
     type: cat.category,
   }));
 }
@@ -58,10 +53,8 @@ const CategoriesPage = async ({
 }) => {
   const { type } = await params;
   const categoryType = decodeURIComponent(type);
-  const categoryTag = accelerateTags.category(categoryType);
 
-  const posts = (await prismaAccelerate.post.findMany({
-    ...withPublicPostCache([categoryTag]),
+  const posts = (await directPrisma.post.findMany({
     orderBy: {
       updatedAt: "desc",
     },
@@ -93,7 +86,7 @@ const CategoriesPage = async ({
   })) as unknown as CategoryPagePost[];
 
   const currentCategory = postCategories.find(
-    (category) => category.value === categoryType
+    (category) => category.value === categoryType,
   );
   const leadPost = posts[0];
   const remainingPosts = posts.slice(1);
@@ -146,8 +139,8 @@ const CategoriesPage = async ({
                   Curated topic
                 </p>
                 <p className="mt-2 max-w-xs text-sm leading-6">
-                  Move between categories without losing the polished card layout
-                  or reading context.
+                  Move between categories without losing the polished card
+                  layout or reading context.
                 </p>
               </div>
             </div>

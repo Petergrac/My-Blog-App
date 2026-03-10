@@ -1,8 +1,4 @@
 "use server";
-import {
-  accelerateTags,
-  invalidateAccelerateTags,
-} from "@/lib/prisma-cache";
 import { directPrisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -57,13 +53,6 @@ export async function newPost(finalPost: finalPost) {
         authorId: authorId.id,
       },
     });
-    if (createdPost.state === "PUBLISHED") {
-      await invalidateAccelerateTags([
-        accelerateTags.publicPosts,
-        accelerateTags.post(createdPost.id),
-        accelerateTags.category(createdPost.category),
-      ]);
-    }
     revalidatePath('/');
     revalidatePath(`/blog/${createdPost.id}`);
     revalidatePath(`/categories/${encodeURIComponent(createdPost.category)}`);
@@ -109,7 +98,6 @@ export async function patchPost(updatedPost: editPost, id: string) {
       select: {
         authorId: true,
         category: true,
-        state: true,
       },
     });
 
@@ -131,17 +119,8 @@ export async function patchPost(updatedPost: editPost, id: string) {
       select: {
         id: true,
         category: true,
-        state: true,
       },
     });
-    if (post.state === "PUBLISHED" || savedPost.state === "PUBLISHED") {
-      await invalidateAccelerateTags([
-        accelerateTags.publicPosts,
-        accelerateTags.post(id),
-        accelerateTags.category(post.category),
-        accelerateTags.category(savedPost.category),
-      ]);
-    }
     revalidatePath("/");
     revalidatePath("/blog/my-blogs");
     revalidatePath(`/blog/${id}`);
@@ -183,7 +162,6 @@ export async function deletePost(id: string) {
         id: true,
         authorId: true,
         category: true,
-        state: true,
       },
     });
 
@@ -212,14 +190,6 @@ export async function deletePost(id: string) {
         },
       }),
     ]);
-
-    if (post.state === "PUBLISHED") {
-      await invalidateAccelerateTags([
-        accelerateTags.publicPosts,
-        accelerateTags.post(id),
-        accelerateTags.category(post.category),
-      ]);
-    }
 
     revalidatePath("/");
     revalidatePath("/blog");

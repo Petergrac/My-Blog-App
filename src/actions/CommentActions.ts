@@ -1,8 +1,4 @@
 "use server";
-import {
-  accelerateTags,
-  invalidateAccelerateTags,
-} from "@/lib/prisma-cache";
 import { directPrisma } from "@/lib/prisma";
 import { requireCurrentDatabaseUser } from "@/lib/current-user";
 import { revalidatePath } from "next/cache";
@@ -22,10 +18,6 @@ export async function createComment(postId: string, content: string) {
         authorId: currentUser.id,
       },
     });
-    await invalidateAccelerateTags([
-      accelerateTags.publicPosts,
-      accelerateTags.post(postId),
-    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);
@@ -65,10 +57,6 @@ export async function patchComment(
         content: content,
       },
     });
-    await invalidateAccelerateTags([
-      accelerateTags.publicPosts,
-      accelerateTags.post(postId),
-    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);
@@ -101,10 +89,6 @@ export async function deleteComment(commentId: string, postId: string) {
         id: commentId,
       },
     });
-    await invalidateAccelerateTags([
-      accelerateTags.publicPosts,
-      accelerateTags.post(postId),
-    ]);
     revalidatePath(`/blog/${postId}`);
   } catch (error) {
     console.log(error);

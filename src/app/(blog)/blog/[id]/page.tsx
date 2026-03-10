@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/card";
 import { getCategoryHref, getCategoryLabel } from "@/lib/categories";
 import { getCurrentDatabaseUser } from "@/lib/current-user";
-import { accelerateTags, withPublicPostCache } from "@/lib/prisma-cache";
-import { prismaAccelerate } from "@/lib/prisma";
+import { directPrisma } from "@/lib/prisma";
 import { getPost } from "@/lib/postQueries";
 import {
   CalendarDays,
@@ -50,14 +49,13 @@ type RelatedPost = {
 };
 
 export async function generateStaticParams() {
-  const posts = await prismaAccelerate.post.findMany({
-    ...withPublicPostCache(),
+  const posts = await directPrisma.post.findMany({
     select: {
       id: true,
     },
   });
 
-  return posts.map((post) => ({
+  return posts.map((post: { id: string }) => ({
     id: post.id,
   }));
 }
@@ -78,8 +76,7 @@ const PostPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
   const postComments = post.comments;
   const postContent = JSON.parse(post.content) as JSONContent;
-  const relatedPosts = (await prismaAccelerate.post.findMany({
-    ...withPublicPostCache([accelerateTags.category(post.category)]),
+  const relatedPosts = (await directPrisma.post.findMany({
     orderBy: {
       updatedAt: "desc",
     },

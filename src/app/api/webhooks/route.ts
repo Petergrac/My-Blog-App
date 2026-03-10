@@ -1,6 +1,5 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
-import { accelerateTags, invalidateAccelerateTags } from "@/lib/prisma-cache";
 import { directPrisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -58,7 +57,6 @@ export async function POST(req: NextRequest) {
             avatar: userInfo.image_url,
           },
         });
-        await invalidateAccelerateTags([accelerateTags.publicPosts]);
 
         return new Response("Webhook received", { status: 200 });
       } catch (error) {
@@ -80,7 +78,6 @@ export async function POST(req: NextRequest) {
             clerkId: userInfo.id,
           },
         });
-        await invalidateAccelerateTags([accelerateTags.publicPosts]);
     
         return new Response("Webhook received", { status: 200 });
       } catch (error) {

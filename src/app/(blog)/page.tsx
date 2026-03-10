@@ -26,8 +26,7 @@ import {
   getCategoryLabel,
   postCategories,
 } from "@/lib/categories";
-import { withPublicPostCache } from "@/lib/prisma-cache";
-import { prismaAccelerate } from "@/lib/prisma";
+import { directPrisma } from "@/lib/prisma";
 
 export const revalidate = 60;
 
@@ -104,8 +103,7 @@ export default async function Home() {
     totalLikes,
     categoryRows,
   ] = (await Promise.all([
-    prismaAccelerate.post.findMany({
-      ...withPublicPostCache(),
+    directPrisma.post.findMany({
       where: { state: "PUBLISHED" },
       orderBy: {
         createdAt: "desc",
@@ -132,12 +130,10 @@ export default async function Home() {
         },
       },
     }),
-    prismaAccelerate.post.count({
-      ...withPublicPostCache(),
+    directPrisma.post.count({
       where: { state: "PUBLISHED" },
     }),
-    prismaAccelerate.user.count({
-      ...withPublicPostCache(),
+    directPrisma.user.count({
       where: {
         posts: {
           some: {
@@ -146,10 +142,9 @@ export default async function Home() {
         },
       },
     }),
-    prismaAccelerate.comment.count(withPublicPostCache()),
-    prismaAccelerate.like.count(withPublicPostCache()),
-    prismaAccelerate.post.findMany({
-      ...withPublicPostCache(),
+    directPrisma.comment.count(),
+    directPrisma.like.count(),
+    directPrisma.post.findMany({
       where: {
         state: "PUBLISHED",
       },

@@ -2,12 +2,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireCurrentDatabaseUser } from "@/lib/current-user";
-import {
-  accelerateTags,
-  invalidateAccelerateTags,
-  withPublicPostCache,
-} from "./prisma-cache";
-import { directPrisma, prismaAccelerate } from "./prisma";
+import { directPrisma } from "./prisma";
 
 export type PublicPost = {
   id: string;
@@ -49,8 +44,7 @@ export type PublicPost = {
  */
 export async function getPost(id: string): Promise<PublicPost | null> {
   try {
-    const post = await prismaAccelerate.post.findUnique({
-      ...withPublicPostCache([accelerateTags.post(id)]),
+    const post = await directPrisma.post.findUnique({
       where: {
         id: id,
         state: "PUBLISHED",
@@ -139,10 +133,6 @@ export async function postLikes(postId: string, likeStatus: boolean) {
         },
       });
     }
-    await invalidateAccelerateTags([
-      accelerateTags.publicPosts,
-      accelerateTags.post(postId),
-    ]);
   } catch (error) {
     console.error("Failed to update like:", error);
     throw error;
