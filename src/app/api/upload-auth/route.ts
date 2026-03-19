@@ -1,15 +1,16 @@
 // File: app/api/upload-auth/route.ts
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import { getUploadAuthParams } from "@imagekit/next/server";
 
 
 export async function GET() {
   // Your application logic to authenticate the user
-  const user = await currentUser();
+  const session = await auth();
+  const role = session?.user?.role;
 
   if (
-    user?.publicMetadata.role !== "Author" &&
-    user?.publicMetadata.role !== "Admin"
+    role !== "Author" &&
+    role !== "Admin"
   )
     return Response.json({ message: "You must be an author or admin" });
 

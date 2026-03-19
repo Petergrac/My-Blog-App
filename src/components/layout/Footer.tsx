@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <div className="bg-gradient-to-b to-slate-900 from-slate-300">
+    <div className="bg-linear-to-b to-slate-900 from-slate-300">
       <h1 className="text-2xl font-bold text-center py-5 font-lora text-white/75">
         Stay in Touch
       </h1>
@@ -12,6 +12,8 @@ const Footer = () => {
           <Link href="/">HOME</Link>
           <Link href="/about">ABOUT</Link>
           <Link href="/contact">CONTACTS</Link>
+          <Link href="/privacy-policy">PRIVACY POLICY</Link>{" "}
+          <Link href="/terms-of-service">TERMS OF SERVICE</Link>
         </div>
       </div>
     </div>

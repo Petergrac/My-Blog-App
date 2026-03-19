@@ -24,7 +24,7 @@ export function AuthShell({
   return (
     <div className="bg-muted flex min-h-screen w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-md border-border bg-background/95 shadow-xl backdrop-blur">
-        <CardHeader className="space-y-3">
+        <CardHeader className="space-y-3 text-center">
           <Link
             href="/"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"

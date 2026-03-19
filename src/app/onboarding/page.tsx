@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
@@ -68,10 +68,20 @@ export default function OnboardingComponent() {
   const [membershipType, setMembershipType] =
     React.useState<MembershipType>("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const { user } = useUser();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
 
-  const firstName = user?.firstName ?? "there";
+  const firstName =
+    session?.user?.firstName ??
+    session?.user?.username?.split(" ")[0] ??
+    session?.user?.name?.split(" ")[0] ??
+    "there";
+
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/sign-in");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (formData: FormData) => {
     if (!membershipType) {
@@ -85,8 +95,13 @@ export default function OnboardingComponent() {
     const res = await completeOnboarding(formData);
 
     if (res?.message) {
-      await user?.reload();
-      router.push("/");
+      await update({
+        user: {
+          onboardingComplete: true,
+          role: membershipType,
+        },
+      });
+      window.location.href = "/";
       return;
     }
 

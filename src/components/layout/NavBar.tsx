@@ -2,7 +2,8 @@
 
 import { Menu, SearchIcon } from "lucide-react";
 import Link from "next/link";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
+import CustomUserButton from "@/components/user/UserButton";
 
 import ProgressiveSearch from "@/components/layout/SearchBar";
 import { ModeToggle } from "@/components/layout/ThemeToggle";
@@ -19,15 +20,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { clerkModalAppearance } from "@/lib/clerk";
-
-// FIX: Removed SignInButton import — we no longer use it.
-// The modal mode was showing a Clerk modal overlay instead of redirecting
-// the user to the dedicated /sign-in page.
+// Use a dedicated sign-in page instead of a modal overlay.
 
 const NavBar = ({ isTrue }: { isTrue: boolean }) => {
-  const { user, isSignedIn } = useUser();
-  const role = user?.publicMetadata.role as string;
+  const { data: session, status } = useSession();
+  const isSignedIn = status === "authenticated";
+  const role = session?.user?.role as string | undefined;
 
   return (
     <nav
@@ -54,7 +52,7 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
       </Dialog>
 
       {/* DESKTOP */}
-      <div className="hidden md:flex gap-20 justify-between">
+      <div className="hidden md:flex gap-20 justify-between items-center">
         <div className="flex gap-3 text-gray-200 text-sm">
           <Link href="/">HOME</Link>
           <Link href="/about">ABOUT</Link>
@@ -70,15 +68,9 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
         <div className="flex sm-2 md:gap-5 items-center">
           <ModeToggle />
           {isSignedIn ? (
-            <UserButton
-              appearance={clerkModalAppearance}
-              userProfileUrl="/user-profile"
-              userProfileMode="navigation"
-            />
+            <CustomUserButton />
           ) : (
-            // FIX: Replace <SignInButton mode="modal"> with a plain Link.
-            // This redirects to the custom /sign-in page instead of opening
-            // Clerk's modal overlay on top of the current page.
+            // Redirect to the custom /sign-in page instead of opening a modal.
             <Link
               href="/sign-in"
               className="bg-white text-black text-sm px-3 py-1 font-semibold rounded-sm hover:bg-gray-100 transition-colors"
@@ -121,13 +113,9 @@ const NavBar = ({ isTrue }: { isTrue: boolean }) => {
         </DropdownMenu>
 
         {isSignedIn ? (
-          <UserButton
-            appearance={clerkModalAppearance}
-            userProfileUrl="/user-profile"
-            userProfileMode="navigation"
-          />
+          <CustomUserButton />
         ) : (
-          // FIX: Same fix for mobile — Link instead of modal SignInButton
+          // Mobile sign-in link
           <Link
             href="/sign-in"
             className="bg-white text-black text-sm px-3 py-1 font-semibold rounded-sm hover:bg-gray-100 transition-colors"

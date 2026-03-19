@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "img.clerk.com",
-      },
-      {
-        protocol: "https",
         hostname: "ik.imagekit.io",
       },
       {
@@ -23,7 +19,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.jsdelivr.net",
+      },
+        {
+        protocol: "https",
+        hostname: "img.clerk.com",
       },
     ],
   },

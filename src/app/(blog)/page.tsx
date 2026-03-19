@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import {
   ArrowRight,
   BookOpenText,
@@ -91,8 +91,8 @@ function StoryMeta({ post }: { post: LandingPost }) {
 }
 
 export default async function Home() {
-  const { sessionClaims } = await auth();
-  const role = sessionClaims?.metadata?.role;
+  const session = await auth();
+  const role = session?.user?.role;
   const canWrite = role === "Author" || role === "Admin";
 
   const [
@@ -481,47 +481,46 @@ export default async function Home() {
       <section className="mx-auto max-w-7xl px-4 py-4 md:px-6">
         <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(14,165,233,0.08),rgba(250,204,21,0.08),transparent)] shadow-lg">
           <CardHeader className="gap-3">
-            <Badge variant="outline" className="p-1 pl-5">
-              Platform refresh
+            <Badge variant="outline" className="py-3 pl-5">
+              What you can do
             </Badge>
             <CardTitle className="text-3xl">
-              Built to feel more production-ready
+              Read, write, and grow in one place
             </CardTitle>
             <CardDescription className="max-w-3xl leading-6">
-              The app presents a clearer reading funnel and a more deliberate
-              authoring surface. The next update will be to expand the product
-              model.
+              Bloog brings together discovery, publishing, and community
+              engagement so readers and authors can stay in the same flow.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <Sparkles className="mb-4 text-sky-500" />
               <h3 className="text-lg font-semibold">
-                Intentional landing page
+                Discover fresh stories
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Readers can now discover topics, spotlight posts, and fresh
-                content without scrolling through unstructured strips.
+                Jump into featured posts, latest releases, and curated topics
+                without digging through noisy feeds.
               </p>
             </div>
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <PenSquare className="mb-4 text-sky-500" />
               <h3 className="text-lg font-semibold">
-                Cleaner writing workflow
+                Write and publish with ease
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Metadata, cover image, publish state, and editor canvas are
-                being reorganized into a calmer author workspace.
+                Draft posts, set cover images, manage metadata, and publish
+                when you are ready.
               </p>
             </div>
             <div className="rounded-2xl border border-border/60 bg-background/85 p-5">
               <ChartColumnIncreasing className="mb-4 text-sky-500" />
               <h3 className="text-lg font-semibold">
-                Better query foundations
+                Engage with the community
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Indexes that favor the actual read paths: published feeds,
-                category browsing, author dashboards, comments, and likes.
+                Add comments, share reactions, and follow the conversations
+                that matter to you.
               </p>
             </div>
           </CardContent>
@@ -533,32 +532,31 @@ export default async function Home() {
           <Card className="border-border/70 bg-card/80">
             <CardHeader>
               <BookOpenText className="text-sky-500" />
-              <CardTitle>Reader-first discovery</CardTitle>
+              <CardTitle>Browse by topic</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              Editorial picks, topic navigation, and social proof carry the
-              first screen instead of thin horizontal carousels.
+              Explore categories to find what matters most to you, from
+              spotlight posts to the latest stories.
             </CardContent>
           </Card>
           <Card className="border-border/70 bg-card/80">
             <CardHeader>
               <MessageSquareText className="text-sky-500" />
-              <CardTitle>Stronger engagement signals</CardTitle>
+              <CardTitle>React and respond</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              Likes and comment volume are surfaced more deliberately to make
-              the ecosystem feel active and trustworthy.
+              Like posts, add thoughtful comments, and follow the discussion
+              around every article.
             </CardContent>
           </Card>
           <Card className="border-border/70 bg-card/80">
             <CardHeader>
               <PenSquare className="text-sky-500" />
-              <CardTitle>Ready for more product depth</CardTitle>
+              <CardTitle>Manage your posts</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-6 text-muted-foreground">
-              The interface is now in a better place to support future models
-              like tags, bookmarks, or editorial workflows without collapsing
-              visually.
+              Keep drafts organized, edit published work, and stay on top of
+              your author dashboard.
             </CardContent>
           </Card>
         </div>

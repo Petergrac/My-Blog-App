@@ -14,7 +14,6 @@ export type PublicPost = {
   createdAt: Date;
   author: {
     id: string;
-    clerkId: string;
     username: string | null;
     avatar: string | null;
     bio: string | null;
@@ -60,7 +59,6 @@ export async function getPost(id: string): Promise<PublicPost | null> {
         author: {
           select: {
             id: true,
-            clerkId: true,
             username: true,
             avatar: true,
             bio: true,

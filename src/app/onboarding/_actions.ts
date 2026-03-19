@@ -1,26 +1,33 @@
-'use server'
+"use server";
 
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { auth } from "@/auth";
+import { directPrisma } from "@/lib/prisma";
 
 export const completeOnboarding = async (formData: FormData) => {
-  const { userId } = await auth()
+  const session = await auth();
+  const userId = session?.user?.id;
 
   if (!userId) {
-    return { message: 'No Logged In User' }
+    return { message: "No Logged In User" };
   }
 
-  const client = await clerkClient()
+  const role = (formData.get("membershipType") as string) || "User";
 
   try {
-    const res = await client.users.updateUser(userId, {
-      publicMetadata: {
+    const res = await directPrisma.user.update({
+      where: { id: userId },
+      data: {
         onboardingComplete: true,
-        role: formData.get("membershipType"),
+        role,
+      },
+      select: {
+        role: true,
+        onboardingComplete: true,
       },
     });
-    return { message: res.publicMetadata }
+    return { message: res };
   } catch (err: unknown) {
     console.log(err);
-    return { error: 'There was an error updating the user metadata.' }
+    return { error: "There was an error updating the user metadata." };
   }
-}
+};

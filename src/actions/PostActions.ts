@@ -1,6 +1,6 @@
 "use server";
 import { directPrisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -24,22 +24,27 @@ interface editPost{
   description?: string;
 }
 export async function newPost(finalPost: finalPost) {
-  const { userId } = await auth();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   if (!userId) {
-    return auth.protect();
+    return { error: "Unauthorized" };
   }
 
   // Get user id
-  const authorId = await directPrisma.user.findUnique({
+  const author = await directPrisma.user.findUnique({
     where: {
-      clerkId: userId,
+      id: userId,
     },
     select: {
       id: true,
+      role: true,
     },
   });
-  if (!authorId) throw new Error("You must be an author in order to post");
+  if (!author) throw new Error("You must be an author in order to post");
+  if (author.role !== "Author" && author.role !== "Admin") {
+    throw new Error("You must be an author in order to post");
+  }
   // Post the data
   try {
     const createdPost = await directPrisma.post.create({
@@ -50,7 +55,7 @@ export async function newPost(finalPost: finalPost) {
         description: finalPost.description,
         state: finalPost.state,
         coverImage: finalPost.coverImage,
-        authorId: authorId.id,
+        authorId: author.id,
       },
     });
     revalidatePath('/');
@@ -71,23 +76,28 @@ export async function newPost(finalPost: finalPost) {
  *
  */
 export async function patchPost(updatedPost: editPost, id: string) {
-  const { userId } = await auth();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   if (!userId) {
-    return auth.protect();
+    throw new Error("Unauthorized");
   }
 
   try {
     const author = await directPrisma.user.findUnique({
       where: {
-        clerkId: userId,
+        id: userId,
       },
       select: {
         id: true,
+        role: true,
       },
     });
 
     if (!author) {
+      throw new Error("Only authors can update posts.");
+    }
+    if (author.role !== "Author" && author.role !== "Admin") {
       throw new Error("Only authors can update posts.");
     }
 
@@ -109,7 +119,7 @@ export async function patchPost(updatedPost: editPost, id: string) {
       throw new Error("You can only update your own posts.");
     }
 
-    const savedPost = await directPrisma.post.update({
+    await directPrisma.post.update({
       where: {
         id: id,
       },
@@ -134,23 +144,28 @@ export async function patchPost(updatedPost: editPost, id: string) {
   }
 }
 export async function deletePost(id: string) {
-  const { userId } = await auth();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   if (!userId) {
-    return auth.protect();
+    throw new Error("Unauthorized");
   }
 
   try {
     const author = await directPrisma.user.findUnique({
       where: {
-        clerkId: userId,
+        id: userId,
       },
       select: {
         id: true,
+        role: true,
       },
     });
 
     if (!author) {
+      throw new Error("Only authors can delete posts.");
+    }
+    if (author.role !== "Author" && author.role !== "Admin") {
       throw new Error("Only authors can delete posts.");
     }
 

@@ -1,22 +1,24 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Assuming you have these Shadcn UI components
-import { toast } from "sonner"; // For nice notifications
-import changeRole from "@/lib/_roleUpdate";
-import { ChevronDownIcon, CheckIcon, UserIcon, PencilLine } from "lucide-react"; // Icons for a richer UI
+} from "@/components/ui/dropdown-menu"; 
+import { toast } from "sonner"; 
+import { changeRole } from "@/lib/_roleUpdate";
+import { ChevronDownIcon, CheckIcon, UserIcon, PencilLine } from "lucide-react";
 
 const UserRole = () => {
-  const { user, isLoaded } = useUser();
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  if (!isLoaded) {
+  if (status === "loading") {
     // Show a skeleton or loading spinner while user data is loading
     return (
       <div className="flex flex-col items-center justify-center p-8 rounded-lg shadow-md max-w-sm mx-auto animate-pulse">
@@ -27,8 +29,8 @@ const UserRole = () => {
       </div>
     );
   }
-
-  const currentRole = (user?.publicMetadata.role as string) || "User";
+  console.log(session?.user)
+  const currentRole = session?.user?.role || "User";
 
   const handleRoleChange = async (newRole: string) => {
     if (newRole === currentRole) {
@@ -42,14 +44,14 @@ const UserRole = () => {
     const response = await changeRole(newRole);
 
     if (response?.message) {
-      await user?.reload(); // Reload user to get fresh metadata
+      await update({ user: { role: newRole } });
+      router.refresh();
       toast.success(response.message, { id: "role-update" });
     } else if (response?.error) {
       toast.error(response.error, { id: "role-update" });
     }
     setIsUpdating(false);
   };
-
   return (
     <div className="flex flex-col  items-center justify-center p-8 rounded-lg shadow-md max-w-sm mx-auto transform transition-all duration-300 hover:shadow-lg">
       <UserIcon className="text-blue-600 w-12 h-12 mb-4 animate-bounce-slow" />{" "}

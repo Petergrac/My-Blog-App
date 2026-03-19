@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -54,17 +54,16 @@ interface userDataType {
 
 const Bio = () => {
   const router = useRouter();
-  const { user, isLoaded } = useUser();
-  const userId = user?.id;
+  const { data: session, status, update } = useSession();
+  const userId = session?.user?.id;
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
-  const [currentUserId, setId] = useState("");
 
   useEffect(() => {
-    if (isLoaded && !userId) {
+    if (status === "unauthenticated") {
       router.replace("/");
     }
-  }, [isLoaded, router, userId]);
+  }, [status, router]);
 
   // Get user data from the database
   useEffect(() => {
@@ -75,12 +74,11 @@ const Bio = () => {
     (async () => {
       // Fetch user data
       try {
-        const res = await fetch(`/api/userdata?userId=${userId}`);
+        const res = await fetch(`/api/userdata`);
         const userData = (await res.json()) as userDataType;
         if (userData) {
           setBio(userData.bio || "");
           setCountry(userData.country || "");
-          setId(userData.id || "");
         }
       } catch (error) {
         console.error(error);
@@ -91,7 +89,7 @@ const Bio = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   // If user data is not loaded yet, display a loading state
-  if (!isLoaded || !userId) {
+  if (status === "loading" || !userId) {
     return <div>Loading...</div>;
   }
 
@@ -100,11 +98,11 @@ const Bio = () => {
     toast.info("Updating your profile...", { id: "profile-update" });
 
     // Call the server action to save the data
-    const response = await saveUserData({ bio, country, id: currentUserId });
+    const response = await saveUserData({ bio, country });
 
     if (response?.message) {
-      // Reload user to get the updated metadata from Clerk
-      await user?.reload();
+      // Refresh session to pick up the latest profile data
+      await update?.();
       toast.success(response.message, { id: "profile-update" });
     } else {
       toast.error(response?.error || "Failed to save data.", {

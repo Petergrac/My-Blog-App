@@ -1,13 +1,18 @@
+import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET() {
+  const session = await auth();
+  const userId = session?.user?.id;
 
-  const userId = searchParams.get("userId")!;
+  if (!userId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const userData = await prisma.user.findUnique({
       where: {
-        clerkId: userId,
+        id: userId,
       },
       select: {
         country: true,

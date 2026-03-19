@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 const AuthorBlogs = async () => {
-  const { userId } = await auth();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   if (!userId) {
     redirect("/unauthorized");
@@ -43,9 +44,7 @@ const AuthorBlogs = async () => {
       },
     },
     where: {
-      author: {
-        clerkId: userId,
-      },
+      authorId: userId,
     },
   });
 

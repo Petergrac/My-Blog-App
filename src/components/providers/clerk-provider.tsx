@@ -1,35 +1,3 @@
-import { ClerkProvider as ClerkNextJSProvider } from "@clerk/nextjs";
+import { AuthProvider } from "@/components/providers/auth-provider";
 
-import { clerkAppearance } from "@/lib/clerk";
-
-type ClerkProviderProps = React.ComponentProps<typeof ClerkNextJSProvider>;
-
-export function ClerkProvider({
-  children,
-  appearance,
-  ...props
-}: ClerkProviderProps) {
-  return (
-    <ClerkNextJSProvider
-      appearance={{
-        ...clerkAppearance,
-        ...appearance,
-        elements: {
-          ...clerkAppearance.elements,
-          ...appearance?.elements,
-        },
-        variables: {
-          ...clerkAppearance.variables,
-          ...appearance?.variables,
-        },
-      }}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpForceRedirectUrl="/onboarding"
-      {...props}
-    >
-      {children}
-    </ClerkNextJSProvider>
-  );
-}
+export { AuthProvider as ClerkProvider };

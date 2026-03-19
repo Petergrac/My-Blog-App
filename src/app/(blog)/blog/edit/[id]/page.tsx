@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import UpdatePost from "@/components/editor/UpdatePost";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ const UpdateBlog = async ({ params }: { params: Promise<{ id: string }> }) => {
     include: {
       author: {
         select: {
-          clerkId: true,
+          id: true,
         },
       },
     },
@@ -21,11 +21,12 @@ const UpdateBlog = async ({ params }: { params: Promise<{ id: string }> }) => {
 
  
 
-  if (!post) redirect('/')
-   const { userId } = await auth();
+  if (!post) redirect('/');
+  const session = await auth();
+  const userId = session?.user?.id;
 
-  if (post?.author.clerkId !== userId) {
-      redirect('/unauthorized')
+  if (!userId || post?.author.id !== userId) {
+    redirect('/unauthorized');
   }
   const postDetails = {
     title: post.title,

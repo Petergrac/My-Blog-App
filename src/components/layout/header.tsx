@@ -1,9 +1,14 @@
-import { Button } from '@/components/ui/button'
-import { clerkModalAppearance } from "@/lib/clerk";
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
-import Link from 'next/link'
+"use client";
+
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import CustomUserButton from "@/components/user/UserButton";
 
 export function Header() {
+  const { status } = useSession();
+  const signedIn = status === "authenticated";
+
   return (
     <header className="flex h-16 items-center justify-between gap-4 border-b px-4">
       <Link href="/" className="flex items-center gap-x-4">
@@ -16,17 +21,18 @@ export function Header() {
         <span className="font-semibold">Acme Co.</span>
       </Link>
       <div className="flex items-center gap-x-4">
-        <Show when="signed-out">
-          <SignInButton appearance={clerkModalAppearance} mode="modal">
-            <Button variant="ghost">Sign in</Button>
-          </SignInButton>
-          <SignUpButton appearance={clerkModalAppearance} mode="modal">
-            <Button>Sign up</Button>
-          </SignUpButton>
-        </Show>
-        <Show when="signed-in">
-          <UserButton appearance={clerkModalAppearance} />
-        </Show>
+        {signedIn ? (
+          <CustomUserButton />
+        ) : (
+          <>
+            <Button asChild variant="ghost">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/sign-up">Sign up</Link>
+            </Button>
+          </>
+        )}
       </div>
     </header>
   );

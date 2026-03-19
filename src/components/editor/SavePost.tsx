@@ -105,7 +105,7 @@ const SavePost = () => {
           router.push("/blog/my-blogs");
         } else {
           toast.success("Post published.");
-          router.push(`/blog/${createdPost.id}`);
+          if (createdPost) router.push(`/blog/${createdPost.id}`);
         }
       } else {
         toast.error("Authentication failed. Only authors can publish.");

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { ClerkProvider } from "@/components/providers/clerk-provider";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "sonner";
 
@@ -32,7 +32,7 @@ export default async function AppLayout({
       <body
         className={`${geistSans.variable}  ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>
+        <AuthProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -42,7 +42,7 @@ export default async function AppLayout({
             {children}
             <Toaster richColors={true} position={"top-center"} />
           </ThemeProvider>
-        </ClerkProvider>
+        </AuthProvider>
       </body>
     </html>
   );
